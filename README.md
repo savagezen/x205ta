@@ -1,14 +1,25 @@
-# Installing Arch Linux on Asus Eee Book X205TA
+# Arch Linux on Asus X205TA
 
 ### Description
 
-Tools for installing Arch Linux on Asus X205TA netbook.  Short version of the [Arch Wiki Page for this machine](https://wiki.archlinux.org/index.php/Asus_x205ta).  To save everyone some time and effort, I'll roll a fresh iso with each monthly Arch Linux release.
+Tools for installing Arch Linux on Asus X205TA netbook / EeeBook.  For more information see the [Arch Wiki Page for this 
+machine](https://wiki.archlinux.org/index.php/Asus_x205ta).  I will try to roll a fresh ISO with each Arch Linux official monthly release.
 
 ----------
 
-* arch_201508_x205ta.iso
+### Preparation
 
-> bootable installation medis with required drivers and bootloader for Asus X205TA.  *Download Link Coming Soon!*
+> 
+
+### Installation
+
+### Post-Installation
+
+### Additional Files
+
+* roll_x205ta.sh
+
+> Script used to configure and compile monthly releases
 
 * grub_x205ta.cfg
 
