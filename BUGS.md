@@ -11,9 +11,10 @@ Bugs with running Arch Linux on Asus X205TA and solutions as I find them.
 1) Touchpad
 * The Wiki reports that as of kernel 4.3 the touchpad should work ```out of the box```.
 * Make sure that you have ```xf86-input-synaptics``` installed.
-* To enable more features of the touchpad:
-* * ```# nano /etc/X11/xorg.conf.d/elan_synaptics.conf```
+* To enable more features of the touchpad:`
 ```
+# nano /etc/X11/xorg.conf.d/elan_synaptics.conf
+-----
 Section "InpuClass"
 Identifier "Elan Touchpad"
 MatchIsTouchpad "on"
