@@ -6,21 +6,118 @@ Performance tips for running Arch Linux on Asus X205TA netbook (instructions and
 
 -----
 
+### Machine Specific Performance:
+* (In Progres)
+
+* I am working on tuning a kernel for this machine; stay tuned!
+
+### General Performance:
+1) Mount User Cache to Tmpfs
+
+> Benefit:  Improve (browser) speed and reduce wirtes to
+physical
+disk.  Size limited to not eat entire memory and cause
+crash.
+
+*
+```
+# nano /etc/fstab
+....
+......
+........
+tmpfs /home/username/.cache  tmpfs
+noatime,nodev,nosuid,size=500M  0 0
+```
+
+2) I/O Scheduler
+
+> The Arch Wiki suggests the (NOOP)[https://en.wikipedia.org/wiki/Noop_scheduler] or (Deadline)[https://en.wikipedia.org/wiki/Deadline_scheduler] schedulers.  With other SSD machines I've gotten similar performance from both, but Deadline feels a bit more robust.
+
+* ```# echo deadline > /sys/block/mmcblk0/queue/shceduler```
+Note:  Not persistent across reboots.
+
+3) Mount App Profiles as tmpfs (VOLATILE!)
+
+> Benefit:  Improved app speed and perofrmance with hard
+disk backup.
+
+* This will use an app timer
+((cron)[https://wiki.archlinux.org/index.php/Cron]), a
+system
+service call (```systemd``` service that starts on boot),
+and a sync utility (```rsync```) to back up profiles every hour in
+case of a system crash.  For a more automated process you can use (Profiile-Sync-Daemon)[https://wiki.archlinux.org/index.php/Profile-sync-daemon]
+
+*
+```
+# pacman -S cronie
+# systemctl enable cronie
+# systemctl start cronie
+```
+
+*
+```
+# nano /etc/fstab
+---------
+...
+.....
+.......
+tmpfs  /home/username/.config/chromium     tmpfs  size=300M  0 0
+tmpfs  /home/username/.config/libreoffice  tmpfs  size=5M    0 0
+```
+
+*
+```
+# nano /etc/crontab.root
+----------
+0 0 * * * ~/scripts/profile-backup.sh
+```
+
+*
+```
+$ nano ~/scripts/profile-backup.sh
+---------
+#!/usr/bin
+
+rsync -aAXv /home/username/.config/chromium/
+/home/username/.config/chromium-backup
+
+rsync -aAXv /home/username/.config/libreoffice/
+/home/username/.config/libreoffice-backup
+```
+
+*
+```
+# crontab /etc/crontab.root
+# reboot
+```
+
+4) Libre Office
+* Tools > Options > Memory
+
+* Number of Undo Steps: 20
+
+* Graphics Cache:  128 MB
+
+* Memory per Object: 20 MB
+
+* Check:  "Enable systray Quickstarter"
+
 -----
 
 ### References:
 
-Arch Wiki - Maximixing Performance
-  https://wiki.archlinux.org/index.php/Maximizing_performance
+* [Maximizing Performance - Arch
+Wiki](https://wiki.archlinux.org/index.php/Maximizing_performance)
   
-Arch Wiki - Boot Performance
-  https://wiki.archlinux.org/index.php/Improve_boot_performance
+* [Boot Performance - Arch
+Wiki](https://wiki.archlinux.org/index.php/Improve_boot_performance)
 
-Arch Wiki - Solid State Drives
-  https://wiki.archlinux.org/index.php/Solid_State_Drives
+* [Solid State Drives - Arch
+Wiki](https://wiki.archlinux.org/index.php/Solid_State_Drives)
 
-Arch Wiki - Chromium
-  https://wiki.archlinux.org/index.php/Chromium/Tips_and_tricks
+* [Chromium Performance - Arch
+Wiki](https://wiki.archlinux.org/index.php/Chromium/Tips_and_tricks)
 
-Arch Wiki - libreoffice
-  https://wiki.archlinux.org/index.php/LibreOffice#Speed_up_LibreOffice
+* [Libreoffice Performance - Arch
+Wiki](https://wiki.archlinux.org/index.php/LibreOffice#Speed_up_LibreOffice)
