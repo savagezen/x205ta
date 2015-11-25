@@ -19,7 +19,6 @@ physical
 disk.  Size limited to not eat entire memory and cause
 crash.
 
-*
 ```
 # nano /etc/fstab
 ....
@@ -48,14 +47,14 @@ service call (```systemd``` service that starts on boot),
 and a sync utility (```rsync```) to back up profiles every hour in
 case of a system crash.  For a more automated process you can use (Profiile-Sync-Daemon)[https://wiki.archlinux.org/index.php/Profile-sync-daemon]
 
-*
+First, get the tools set up:
 ```
 # pacman -S cronie
 # systemctl enable cronie
 # systemctl start cronie
 ```
 
-*
+Then, edit your fstab:
 ```
 # nano /etc/fstab
 ---------
@@ -66,14 +65,14 @@ tmpfs  /home/username/.config/chromium     tmpfs  size=300M  0 0
 tmpfs  /home/username/.config/libreoffice  tmpfs  size=5M    0 0
 ```
 
-*
+Next, configure cron:
 ```
 # nano /etc/crontab.root
 ----------
 0 0 * * * ~/scripts/profile-backup.sh
 ```
 
-*
+Write the script you directed cron to:
 ```
 $ nano ~/scripts/profile-backup.sh
 ---------
@@ -86,11 +85,23 @@ rsync -aAXv /home/username/.config/libreoffice/
 /home/username/.config/libreoffice-backup
 ```
 
-*
+Update cron's config:
 ```
 # crontab /etc/crontab.root
-# reboot
 ```
+
+Edit user profile to retrieve backup on login:
+```
+$ nano ~/.xinitrc
+---------
+...
+.....
+......
+rsync -aAXv ~/.config/chormium-backup/ ~/.config/chromium
+rsync -aAXv ~/.cofnig/libreoffice-backup/ ~/.config/libreoffice
+```
+Reboot for changes to take effect:
+```# reboot```
 
 4) Libre Office
 * Tools > Options > Memory
