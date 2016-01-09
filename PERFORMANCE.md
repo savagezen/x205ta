@@ -65,7 +65,7 @@ tmpfs  /home/username/.config/chromium     tmpfs  size=300M  0 0
 tmpfs  /home/username/.config/libreoffice  tmpfs  size=5M    0 0
 ```
 
-Next, configure cron:
+Next, configure cron (It may be better to use a shorter time frame given this machine has a freeze/crash bug:
 ```
 # nano /etc/crontab.root
 ----------
