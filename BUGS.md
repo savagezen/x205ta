@@ -52,15 +52,51 @@ options root=/dev/mmcblk0p2 rw intel_idle.max_cstate=1
 ##### Function Keys (F1 - F12):
 * Appear to be working out of the boxy on Kernel 4.3.3-2-ARCH
 
+##### Touchpad and WiFi Resume After Suspend:
+1) For WiFi, ```netctl.service``` needs to be restarted.
+2) For the touchpad, the kernel module ```elan_i2c``` needs removed and reloaded, so
+3) Create a custom systemd service
+    * (```suspend-resume.service```) that, on resume from suspend,
+    * executes a script (```/usr/bin/suspend-resume.sh```) containing the necessary commands.
+    * Then make the script executable and load the systemd service.
+
+> ```$ sudo nano /etc/systemd/system/suspend-resume.service```
+```
+[Unit]
+Description=Local system resume actions
+After=suspend.target
+
+[Service]
+ExecStart=/usr/bin/suspend-resume.sh
+
+[Install]
+WantedBy=suspend.target
+```
+
+> ```$ sudo nano /usr/bin/suspend-resume.sh```
+```
+#!/usr/bin/sh
+# resume wifi and touchpad after suspend
+
+# restart wireless service
+systemctl restart netctl
+
+# remove and reload touchpad kernel module
+rmmod elan_i2c
+modprobe elan_i2c
+```
+> ```$ sudo chmod u+x /usr/bin/suspend-resume.sh```
+
+> ```$ sudo systemctl enable suspend-resume```
+
+> ```$ sudo systemctl start suspend-resume```
+
 ___
 
 ### Persistent Bugs:
 
 ##### Sound:
 * [Bug report filed for Kernel](https://bugzilla.kernel.org/show_bug.cgi?id=95681).
-
-##### Touchpad and WiFi freeze after suspend / resume:
-* Reloading the touchpad's kernel module is the suggested change, I don't know what that is at the moment though.
 
 ##### Bluetooth:
 * No leads yet
@@ -69,6 +105,9 @@ ___
 
 ### References:
 * [Arch Wiki article for Asus X205TA](https://wiki.archlinux.org/index.php/Asus_x205ta)
-* [Ubuntu Forum fix for touchpad](http://ubuntuforums.org/showthread.php?t=2254322&page=11&p=13302773#post13302773)
+* Ubuntu Forum
+    * [fix for touchpad](http://ubuntuforums.org/showthread.php?t=2254322&page=11&p=13302773#post13302773)
+    * [fix for WiFi resume](http://ubuntuforums.org/showthread.php?t=2254322&p=13402195#post13402195)
+    * [fix for touchpad resume]()
 * [Debian Wiki fix for SD Card Reader](https://wiki.debian.org/InstallingDebianOn/Asus/X205TA)
 * [Ifran's Blog](http://ifranali.blogspot.com/2015/04/installing-arch-linux-on-asus-x205ta.html)
