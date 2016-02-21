@@ -1,0 +1,127 @@
+Module                  Size  Used by
+nf_log_ipv4            16384  1
+nf_log_common          16384  1 nf_log_ipv4
+xt_LOG                 16384  1
+xt_tcpudp              16384  3
+ipt_REJECT             16384  6
+nf_reject_ipv4         16384  1 ipt_REJECT
+xt_recent              20480  6
+xt_limit               16384  2
+nf_conntrack_ipv4      16384  2
+nf_defrag_ipv4         16384  1 nf_conntrack_ipv4
+xt_conntrack           16384  2
+nf_conntrack           81920  2 xt_conntrack,nf_conntrack_ipv4
+iptable_filter         16384  1
+input_leds             16384  0
+joydev                 20480  0
+mousedev               20480  0
+hid_generic            16384  0
+asus_nb_wmi            24576  0
+asus_wmi               24576  1 asus_nb_wmi
+sparse_keymap          16384  1 asus_wmi
+intel_rapl             20480  0
+mac_hid                16384  0
+evdev                  20480  12
+intel_soc_dts_thermal    16384  0
+intel_powerclamp       16384  0
+coretemp               16384  0
+kvm_intel             155648  0
+nls_iso8859_1          16384  1
+iTCO_wdt               16384  0
+nls_cp437              16384  1
+iTCO_vendor_support    16384  1 iTCO_wdt
+vfat                   20480  1
+kvm                   409600  1 kvm_intel
+fat                    57344  1 vfat
+irqbypass              16384  1 kvm
+uvcvideo               77824  0
+crc32_pclmul           16384  0
+crc32c_intel           16384  0
+videobuf2_vmalloc      16384  1 uvcvideo
+brcmfmac              212992  0
+aesni_intel            20480  0
+videobuf2_memops       16384  1 videobuf2_vmalloc
+videobuf2_v4l2         24576  1 uvcvideo
+videobuf2_core         32768  2 uvcvideo,videobuf2_v4l2
+v4l2_common            16384  1 videobuf2_v4l2
+brcmutil               16384  1 brcmfmac
+aes_i586               20480  1 aesni_intel
+xts                    16384  1 aesni_intel
+lrw                    16384  1 aesni_intel
+gf128mul               16384  2 lrw,xts
+videodev              131072  4 uvcvideo,v4l2_common,videobuf2_core,videobuf2_v4l2
+cfg80211              430080  1 brcmfmac
+ablk_helper            16384  1 aesni_intel
+media                  20480  2 uvcvideo,videodev
+cryptd                 20480  1 ablk_helper
+rfkill                 20480  4 cfg80211,asus_wmi
+pcspkr                 16384  0
+wmi                    20480  1 asus_wmi
+thermal                20480  0
+elan_i2c               32768  0
+i2c_hid                20480  0
+snd_intel_sst_acpi     16384  0
+hid                    90112  2 i2c_hid,hid_generic
+battery                16384  0
+snd_intel_sst_core     61440  1 snd_intel_sst_acpi
+snd_soc_sst_mfld_platform    57344  1 snd_intel_sst_core
+i915                 1073152  3
+tpm_crb                16384  0
+dw_dmac                16384  0
+dw_dmac_core           24576  1 dw_dmac
+video                  28672  2 i915,asus_wmi
+button                 16384  1 i915
+drm_kms_helper         98304  1 i915
+snd_soc_core          159744  1 snd_soc_sst_mfld_platform
+snd_compress           20480  1 snd_soc_core
+snd_pcm_dmaengine      16384  1 snd_soc_core
+ac97_bus               16384  1 snd_soc_core
+snd_pcm                77824  3 snd_soc_core,snd_soc_sst_mfld_platform,snd_pcm_dmaengine
+snd_timer              28672  1 snd_pcm
+snd                    57344  5 snd_soc_core,snd_timer,snd_pcm,snd_soc_sst_mfld_platform,snd_compress
+drm                   245760  5 i915,drm_kms_helper
+soundcore              16384  1 snd
+intel_gtt              20480  1 i915
+agpgart                32768  2 drm,intel_gtt
+syscopyarea            16384  1 drm_kms_helper
+sysfillrect            16384  1 drm_kms_helper
+sysimgblt              16384  1 drm_kms_helper
+fb_sys_fops            16384  1 drm_kms_helper
+i2c_algo_bit           16384  1 i915
+processor_thermal_device    16384  0
+int3403_thermal        16384  0
+tpm_tis                20480  0
+intel_soc_dts_iosf     16384  2 intel_soc_dts_thermal,processor_thermal_device
+tpm                    36864  2 tpm_crb,tpm_tis
+int3402_thermal        16384  0
+int3400_thermal        16384  0
+int340x_thermal_zone    16384  3 int3402_thermal,processor_thermal_device,int3403_thermal
+acpi_thermal_rel       16384  1 int3400_thermal
+i2c_designware_platform    16384  0
+i2c_designware_core    20480  1 i2c_designware_platform
+fjes                   28672  0
+snd_soc_sst_acpi       16384  0
+acpi_pad               16384  0
+ac                     16384  0
+iosf_mbi               16384  2 intel_soc_dts_iosf,intel_rapl
+spi_pxa2xx_platform    24576  0
+mei_txe                20480  0
+lpc_ich                20480  0
+mei                    81920  1 mei_txe
+processor              32768  0
+8250_dw                16384  0
+pwm_lpss_platform      16384  0
+pwm_lpss               16384  1 pwm_lpss_platform
+sch_fq_codel           20480  2
+ip_tables              20480  1 iptable_filter
+x_tables               20480  8 xt_recent,ip_tables,xt_tcpudp,xt_limit,xt_conntrack,xt_LOG,iptable_filter,ipt_REJECT
+f2fs                  237568  1
+mmc_block              32768  3
+ehci_pci               16384  0
+ehci_hcd               65536  1 ehci_pci
+usbcore               172032  4 brcmfmac,uvcvideo,ehci_hcd,ehci_pci
+usb_common             16384  1 usbcore
+sdhci_acpi             16384  0
+sdhci                  40960  1 sdhci_acpi
+led_class              16384  3 sdhci,input_leds,asus_wmi
+mmc_core              102400  4 mmc_block,sdhci,brcmfmac,sdhci_acpi
