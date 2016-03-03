@@ -50,7 +50,9 @@ options root=/dev/mmcblk0p2 rw intel_idle.max_cstate=1
 * NOTE:  Sometimes there is a warning from ```wifi-menu``` saying device not found.
 
 ##### Function Keys (F1 - F12):
-* Appear to be working out of the boxy on Kernel 4.3.3-2-ARCH
+> As of kernel 4.3.3-2-ARCH:
+* The following key combinations work out of the box:  ```fn``` + ```(pgup, pgdn, home, next f{8,10,11,12})```.
+* ```fn``` does not appear to get mapped correctly as a standard ```MOD``` key ([dwm documentation](http://dwm.suckless.org/customisation/windows_key)).  Alternatively, the use of ```alt``` in conjunction with function keys allows for use as intended.
 
 ##### Touchpad and WiFi Resume After Suspend:
 1) For WiFi, ```netctl.service``` needs to be restarted.
