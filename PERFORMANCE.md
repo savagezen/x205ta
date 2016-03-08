@@ -7,9 +7,8 @@ Performance tips for running Arch Linux on Asus X205TA netbook (instructions and
 -----
 
 ### Machine Specific Performance:
-* (In Progres)
-
-* I am working on tuning a kernel for this machine; stay tuned!
+* Minimizing Kernel / Initramfs Size for Boot Performance 
+([blog post link](https://gtbjj.github.io/linux/performance/2016/03/07/2318.html))
 
 ### General Performance:
 1) Mount User Cache to Tmpfs
