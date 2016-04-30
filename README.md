@@ -6,7 +6,9 @@
 
 Installation, maintenance, and performance tools for running Arch Linux on an Asus X205TA netbook.  This page draws heavily form the [Arch Wiki Page for this machine](https://wiki.archlinux.org/index.php/Asus_x205ta).  See also the [manufacturer's device page](https://www.asus.com/us/Notebooks/ASUS_EeeBook_X205TA/).
 
-NOTE:  This is for running a pure Arch Linux machine.  Other procedures may be required if you're wanting to [dual boot Arch Linux and Windows](https://wiki.archlinux.org/index.php/Dual_boot_with_Windows).
+The content herein may not be persistently updated.  Please 
+see [posts relating to the X205TA](https://gtbjj.github.io/tags/#x205ta) at 
+[archnfoss.com](https://gtbjj.github.io)
 
 ### Contents:
 
@@ -64,13 +66,15 @@ Boot](http://itsfoss.com/disable-uefi-secure-boot-in-windows-8/)
 
 ### Files:
 
-* (grub_x205ta.cfg)[https://raw.githubusercontent.com/gtbjj/x205ta/master/grub_x205ta.cfg]
+* 
+[grub_x205ta.cfg](https://raw.githubusercontent.com/gtbjj/x205ta/master/grub_x205ta.cfg)
 > This is the GRUB config file that is used to compile the bootia32.efi loader.  It is not needed unless you want to roll your own iso.
 
 * bootia32.efi
-> You can follow the [wiki instructino](https://wiki.archlinux.org/index.php/Asus_x205ta#Creating_bootia32.efi) or download the one I compiled.
+> You can follow the [wiki instructions](https://wiki.archlinux.org/index.php/Asus_x205ta#Creating_bootia32.efi) 
+or download the one I compiled.
 
-* (device-bcm.mk)[https://raw.githubusercontent.com/gtbjj/x205ta/master/device-bcm.mk] and (fw_bcm43341.bin)[https://github.com/gtbjj/x205ta/blob/master/fw_bcm43341.bin?raw=true]
+* [device-bcm.mk](https://raw.githubusercontent.com/gtbjj/x205ta/master/device-bcm.mk) and [fw_bcm43341.bin](https://github.com/gtbjj/x205ta/blob/master/fw_bcm43341.bin?raw=true)
 > These are what you get when you unzip the [wireless driver download](https://android.googlesource.com/platform/hardware/broadcom/wlan/+archive/master/bcmdhd/firmware/bcm43341.tar.gz).  This is also included in the above iso, but [additional installation installation steps](https://wiki.archlinux.org/index.php/Asus_x205ta#Enable_wifi) are required.
 
 -----
