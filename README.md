@@ -51,7 +51,7 @@ Boot](http://itsfoss.com/disable-uefi-secure-boot-in-windows-8/)
 > Adding Wireless Drivers:
 
 * Wireless drives appear patched into upstream at least as of kernel 4.3.3-2-ARCH
-* If you're just that hardcore, see the appropriate Arch Wiki section on [Adding Wireless Drivers](https://wiki.archlinux.org/index.php/Asus_x205ta#Adding_wireless_drivers_to_the_install_image).
+* If you must, see the Arch Wiki section on [Adding Wireless Drivers](https://wiki.archlinux.org/index.php/Asus_x205ta#Adding_wireless_drivers_to_the_install_image).
 
 ### Booting Installation Media:
 
@@ -70,9 +70,8 @@ Boot](http://itsfoss.com/disable-uefi-secure-boot-in-windows-8/)
 [grub_x205ta.cfg](https://raw.githubusercontent.com/gtbjj/x205ta/master/grub_x205ta.cfg)
 > This is the GRUB config file that is used to compile the bootia32.efi loader.  It is not needed unless you want to roll your own iso.
 
-* bootia32.efi
-> You can follow the [wiki instructions](https://wiki.archlinux.org/index.php/Asus_x205ta#Creating_bootia32.efi) 
-or download the one I compiled.
+* [bootia32.efi](https://github.com/gtbjj/x205ta/blob/master/bootia32.efi?raw=true)
+> You can follow the [wiki instructions](https://wiki.archlinux.org/index.php/Asus_x205ta#Creating_bootia32.efi) or download the one I compiled.
 
 * [device-bcm.mk](https://raw.githubusercontent.com/gtbjj/x205ta/master/device-bcm.mk) and [fw_bcm43341.bin](https://github.com/gtbjj/x205ta/blob/master/fw_bcm43341.bin?raw=true)
 > These are what you get when you unzip the [wireless driver download](https://android.googlesource.com/platform/hardware/broadcom/wlan/+archive/master/bcmdhd/firmware/bcm43341.tar.gz).  This is also included in the above iso, but [additional installation installation steps](https://wiki.archlinux.org/index.php/Asus_x205ta#Enable_wifi) are required.

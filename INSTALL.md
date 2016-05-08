@@ -31,6 +31,19 @@ Installing Arch Linux on Asus X205TA netbook.  These recommendations are specifi
 
 * If you're into splitting hairs, Phornonix has plenty of [Filesystem benchmark comparisons](http://www.phoronix.com/scan.php?page=article&item=linux-41-filesystem&num=1) to show you.
 
+### Grub Wizardry
+
+* Following this guide will land you *successfully* at GRUB's recovery 
+prompt.  Enter the following commands to boot iso as normal.  (Device name 
+and desire architecture may vary).
+
+```
+>  set root=(hd0,gpt1)
+>  linux /arch/boot/i686/vmlinuz archisobasedir=arch archisolabel=ARCH_201506 # adjust label as needed
+>  initrd /arch/booti686/archiso.img
+>  boot
+```
+
 #### Installation
 1) For the  most part you can follow the [Begninner's Guide](https://wiki.archlinux.org/index.php/Beginners'_guide) and [Installation Guide](https://wiki.archlinux.org/index.php/Installation_guide).  There are some specialties though...
 
@@ -49,3 +62,4 @@ Installing Arch Linux on Asus X205TA netbook.  These recommendations are specifi
 ### References
 - [Ifran's Blog](http://ifranali.blogspot.com/2015/04/installing-arch-linux-on-asus-x205ta.html)
 - [Arch Wiki article for Asus X205TA](https://wiki.archlinux.org/index.php/Asus_x205ta)
+- [Ubuntu Forum's Distro Agnostic Guide for X205TA](http://ubuntuforums.org/showthread.php?t=2254322&page=34&p=13414345#post13414345)
