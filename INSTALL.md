@@ -8,14 +8,30 @@ Installing Arch Linux on Asus X205TA netbook.  These recommendations are specifi
 
 -----
 
-#### Preparation:
-* See [my preparation guide and materials](https://github.com/gtbjj/x205ta).
+### Grub Wizardry
 
-1) This machine's internal drive (32 GiB), will be recognized by the Linux kernel as /dev/mmcblk0 (or something similar).
+1) Inert your USB and hammer *F2* to enter the machine's BIOS.
 
-* ```Option 1```: is to have a single ```/``` partition.  However, I'd advise
+2) Select your USB drive to boot from.
 
-* ```Option 2```: at least a separate ```/boot``` and ```/```, or if you'd like
+3) Following this guide will land you *successfully* at GRUB's recovery
+prompt.  Enter the following commands to boot iso as normal.  (Device name
+and desire architecture may vary).
+
+```
+>  set root=(hd0,gpt1)
+>  linux /arch/boot/i686/vmlinuz archisobasedir=arch archisolabel=ARCH_201506 # adjust label as needed
+>  initrd /arch/booti686/archiso.img
+>  boot
+```
+
+#### Partitioning:
+
+1) This machine's internal drive (32 GiB), will be recognized by the Linux kernel as */dev/mmcblk0* (or something similar).
+
+* ```Option 1```: is to have a single ```/``` partition.
+
+* ```Option 2```: a separate ```/boot``` and ```/```, or if you'd like...
 
 * ```Option 3```: ```/boot``` and ```/``` on the internal storage and then adding an external MicroUSB as large as you'd like to mount as ```/home```. (See [Arch Wiki 'fstab' article](https://wiki.archlinux.org/index.php/Fstab))
 
@@ -30,19 +46,6 @@ Installing Arch Linux on Asus X205TA netbook.  These recommendations are specifi
 * See [Arch Wiki article on filesystems](https://wiki.archlinux.org/index.php/File_systems#Types_of_file_systems).
 
 * If you're into splitting hairs, Phornonix has plenty of [Filesystem benchmark comparisons](http://www.phoronix.com/scan.php?page=article&item=linux-41-filesystem&num=1) to show you.
-
-### Grub Wizardry
-
-* Following this guide will land you *successfully* at GRUB's recovery 
-prompt.  Enter the following commands to boot iso as normal.  (Device name 
-and desire architecture may vary).
-
-```
->  set root=(hd0,gpt1)
->  linux /arch/boot/i686/vmlinuz archisobasedir=arch archisolabel=ARCH_201506 # adjust label as needed
->  initrd /arch/booti686/archiso.img
->  boot
-```
 
 #### Installation
 1) For the  most part you can follow the [Begninner's Guide](https://wiki.archlinux.org/index.php/Beginners'_guide) and [Installation Guide](https://wiki.archlinux.org/index.php/Installation_guide).  There are some specialties though...

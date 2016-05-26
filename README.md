@@ -6,8 +6,8 @@
 
 Installation, maintenance, and performance tools for running Arch Linux on an Asus X205TA netbook.  This page draws heavily form the [Arch Wiki Page for this machine](https://wiki.archlinux.org/index.php/Asus_x205ta).  See also the [manufacturer's device page](https://www.asus.com/us/Notebooks/ASUS_EeeBook_X205TA/).
 
-The content herein may not be persistently updated.  Please 
-see [posts relating to the X205TA](https://gtbjj.github.io/tags/#x205ta) at 
+The content herein may not be persistently updated.  Please
+see [posts relating to the X205TA](https://gtbjj.github.io/tags/#x205ta) at
 [archnfoss.com](https://gtbjj.github.io)
 
 ### Contents:
@@ -22,19 +22,27 @@ see [posts relating to the X205TA](https://gtbjj.github.io/tags/#x205ta) at
 
 -----
 
-### Preparation
+Regardless of the method you choose, the [Arch Linux installation media](https://www.archlinux.org/download/) does not come packed for the X205TA's 32-bit boot loader.  You'll need to [compile a bootia32.efi file yourself](https://www.archlinux.org/download/) or download [the one I've compiled](https://github.com/gtbjj/x205ta/blob/master/bootia32.efi?raw=true).
 
-1) The [Arch Linux installation media](https://www.archlinux.org/download/) does not come packed for the X205TA's 32-bit boot loader.  You'll need to [compile a bootia.32 file yourself](https://www.archlinux.org/download/) or download [the one I've compiled](https://github.com/gtbjj/x205ta/blob/master/bootia32.efi?raw=true)
+You will also need to [disable Windows Secure
+Boot](http://itsfoss.com/disable-uefi-secure-boot-in-windows-8/) and find a USB thumb drive to use as the installation media.  After you've created the installation media, *F2* is the trigger to bring up the BIOS on this machine during boot time.
 
-2) You'll need a thumb drive > 2GB to use as the installation medium.
+### Preparation (Option 1):
 
-3) Another linux machine to edit the installation media.  You can also set up an [Arch Linux virtual guest inside Windows](https://wiki.archlinux.org/index.php/VirtualBox#Installation_steps_for_Arch_Linux_guests) to accomplish the same things.
+1) Download the [Arch Linux ISO](https://www.archlinux.org/download/)
+2) Use [Rufus](https://rufus.akeo.ie/) to write the ISO to a USB drive
+3) Disconnect and Reconnect the USB drive and open with file manager
+4) Download and Copy / Paste ```bootia32.efi``` file to ```/path/to/usb/EFI/boot/```,
+5) Open Rufus > select USB device
+6) Set "partition scheme" to "GPT Partition"
+7) Select "quick format"
+8) Open the ISO file, and start it up.
+9) Remove USB and proceed to [Installation / GRUB Wizardry](https://github.com/gtbjj/x205ta/blob/master/INSTALL.md)
 
-4) [Disable Windows Secure
-Boot](http://itsfoss.com/disable-uefi-secure-boot-in-windows-8/)
+*NOTE: If Windows gives you static about the USB being *read only*, proceed below*
 
-### Creating Installation Media:
-> Initial Set Up and Boot Loader:
+### Preparation (Option 2):
+You may need another Linux machine to edit the installation media.  You can set up an [Arch Linux virtual guest inside Windows](https://wiki.archlinux.org/index.php/VirtualBox#Installation_steps_for_Arch_Linux_guests) to accomplish the same thing.
 
 1) Dowload the latest [Arch Linux installation ISO](https://www.archlinux.org/download/) (ISO-SOURCE)
 
@@ -43,31 +51,29 @@ Boot](http://itsfoss.com/disable-uefi-secure-boot-in-windows-8/)
 * ```# mount -t iso9660 -o loop /path/to/ISO-SOURCE /mnt/archiso```
 
 3) Copy the contents to an editable directory:
-* ```$ cp -a /mnt/archiso ~/customiso```
+* ```# cp -a /mnt/archiso /mnt/customiso```
 
 4) Copy the [bootia32.efi](https://github.com/gtbjj/x205ta/blob/master/bootia32.efi?raw=true) file you downloaded to the custom ISO:
-* ```$ cp /path/to/bootia32.efi ~/customiso/EFI/boot/```
+* ```# cp /path/to/bootia32.efi /mnt/customiso/EFI/boot/```
 
 > Adding Wireless Drivers:
 
 * Wireless drives appear patched into upstream at least as of kernel 4.3.3-2-ARCH
 * If you must, see the Arch Wiki section on [Adding Wireless Drivers](https://wiki.archlinux.org/index.php/Asus_x205ta#Adding_wireless_drivers_to_the_install_image).
 
-### Booting Installation Media:
+5) Creating and Writing the ISO:
+> Generate the ISO:
+* ```# genisoimage -l -r -J -V "ARCH_YYYMM" -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o ~/arch-x205ta.iso /mnt/customiso```
 
-1) Insert your USB drive and wirte the arch-x205ta.iso to it using [Rufus](https://rufus.akeo.ie/).
-* Select USB device
-* Set "partition scheme" to GPT partition
-* Select "quick format"
-* Open your arch-x205ta.iso file and start it up
-* Once it's done, reboot and use F2 to enter the machine's BIOS and boot from the USB device
+> Writing the ISO:
+* You can [use dd to write the ISO to the USB drive](https://wiki.archlinux.org/index.php/USB_flash_installation_media#In_GNU.2FLinux), but I've had varying degrees of success with this on this machine.
+* Alternatively you can use the Windows program [Rufus](https://rufus.akeo.ie/) (see Option 1 steps 5 - 9 regarding Rufus).
 
 -----
 
 ### Files:
 
-* 
-[grub_x205ta.cfg](https://raw.githubusercontent.com/gtbjj/x205ta/master/grub_x205ta.cfg)
+* [grub_x205ta.cfg](https://raw.githubusercontent.com/gtbjj/x205ta/master/grub_x205ta.cfg)
 > This is the GRUB config file that is used to compile the bootia32.efi loader.  It is not needed unless you want to roll your own iso.
 
 * [bootia32.efi](https://github.com/gtbjj/x205ta/blob/master/bootia32.efi?raw=true)
