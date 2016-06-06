@@ -8,21 +8,17 @@ Installing Arch Linux on Asus X205TA netbook.  These recommendations are specifi
 
 -----
 
-### Grub Wizardry
+### Booting:
 
-1) Inert your USB and hammer *F2* to enter the machine's BIOS.
+With my [custom Arch Linux ISO for this machine](https://drive.google.com/file/d/0B2RH_BSaD6YPWlJGV2xlSy1tcVU/view?usp=sharing) there shouldn't be a need any trickery with GRUB (as seen Ubuntu thread linked below).  That appeared to happen when a (sometimes misconfigured) bootia32.efi was copied and pasted rather than rolled with the other files when the ISO was gnereated.
 
-2) Select your USB drive to boot from.
-
-3) Following this guide will land you *successfully* at GRUB's recovery
-prompt.  Enter the following commands to boot iso as normal.  (Device name
-and desire architecture may vary).
+However, after booting and selecting either x86_64 or i686 architecture you will need to [enable WiFi](https://wiki.archlinux.org/index.php/Asus_x205ta#Enable_wifi) before connecting to the internet:
 
 ```
->  set root=(hd0,gpt1)
->  linux /arch/boot/i686/vmlinuz archisobasedir=arch archisolabel=ARCH_201506 # adjust label as needed
->  initrd /arch/booti686/archiso.img
->  boot
+# cp /sys/firmware/efi/efivars/nvram-74b00bd9-805a-4d61-b51f-43268123d113 /lib/firmware/brcm/brcmfmac43340-sdio.txt```
+# rmmod brcmfmac
+# modprobe brcmfmac
+# wifi-menu
 ```
 
 #### Partitioning:
@@ -50,16 +46,15 @@ and desire architecture may vary).
 #### Installation
 1) For the  most part you can follow the [Begninner's Guide](https://wiki.archlinux.org/index.php/Beginners'_guide) and [Installation Guide](https://wiki.archlinux.org/index.php/Installation_guide).  There are some specialties though...
 
-2) Wireless Drivers appear to load fine as of kernel 4.3.3-2-ARCH (Linux-Zen also works out of the box.  I don't know about other kernels).  If you encounter problems see the Arch Wiki section on [Enabling Wifi](https://wiki.archlinux.org/index.php/Asus_x205ta#Install_Arch)
+2) Wireless Drivers have worked fine on my installation (since Kernel 4.3.3-2), but [errors have been reported](https://github.com/gtbjj/x205ta/issues/6) with ISOs using Kernel 4.5.4-1.  In which case refer to [Enabling Wifi](https://wiki.archlinux.org/index.php/Asus_x205ta#Install_Arch) and apply to your permanent installation.
 
 3) I did not have any luck with either [GRUB](https://wiki.archlinux.org/index.php/GRUB) or [SYSLINUX](https://wiki.archlinux.org/index.php/GRUB) and resorted to [systemd-boot](https://wiki.archlinux.org/index.php/Systemd-boot) which has been working fine.
 
 -----
 
 ### Other Sections:
-* [Performance](https://github.com/gtbjj/x205ta/blob/master/PERFORMANCE.md)
 * [Bugs](https://github.com/gtbjj/x205ta/blob/master/BUGS.md)
-
+* [Preparation](https://github.com/gtbjj/x205ta/blob/master/README.md)
 -----
 
 ### References
