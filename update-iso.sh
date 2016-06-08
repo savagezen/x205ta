@@ -31,7 +31,10 @@ unsquashfs $ISO_DIR/arch/x86_64/airootfs.sfs
 unsquashfs $ISO_DIR/arch/i686/airootfs.sfs
 
 cp $GIT_DIR/fw_bcm43341.bin $ISO_DIR/arch/x86_64/lib/firmware/brcm/brcmfmac43340-sdio.bin
-cp $GIT_DIR/fw_bcm43341.bin $ISO_DIR/arch/i686/lib.firmware/brcm/brcmfmac43340-sdio.bin
+cp $GIT_DIR/fw_bcm43341.bin $ISO_DIR/arch/i686/lib/firmware/brcm/brcmfmac43340-sdio.bin
+
+cp $GIT_DIR/brcmfmac-sdio-x86.txt $ISO_DIR/arch/x86_64/lib/firmware/brcm/brcmfmac43340-sdio.txt
+cp $GIT_DIR/brcmfmac-sdio-i686.txt $ISO_DIR/arch/i686/lib/firmware/brcm/brcmfmac43340-sdio.txt
 
 mksquashfs $ISO_DIR/arch/x86_64/squashfs-root airootfs.sfs
 mksquashfs $ISO_DIR/arch/i686/squashfs-root airootfs.sfs
@@ -44,3 +47,8 @@ md5sum $ISO_DIR/arch/i686/airootfs.sfs > $ISO_DIR/arch/i686/airootfs.md5
 
 # Generate ISO Image
 genisoimage -l -r -J -V "ARCH_201606" -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -c isolinux/boot.cat -o $HOME/download/arch-x205ta-$ISO_VER.iso $ISO_DIR
+
+# Cleanup
+umount /mnt/archiso
+rm -r /mnt/{archiso,customiso}
+
