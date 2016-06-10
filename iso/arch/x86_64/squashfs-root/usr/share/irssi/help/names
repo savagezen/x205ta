@@ -1,0 +1,27 @@
+
+%9Syntax:%9
+
+NAMES %|[-count | -ops -halfops -voices -normal] [<channels> | **]
+
+%9Parameters:%9
+
+    -count:      Displays the amount of users in the channel.
+    -ops:        Displays the channel operators.
+    -halfops:    Displays the channel demi-operators.
+    -voices:     Displays the users who are voiced in a channel.
+
+    The channels to report or ** for all channels you have joined; if no
+    arguments are given, the users in the active channel will be displayed.
+
+%9Description:%9
+
+    Displays the users who are in a channel; you can provide multiple channels
+    by separating them with a comma.
+
+%9Examples:%9
+
+    /NAMES -ops
+    /NAMES -voices #irssi,#freenode
+
+%9See also:%9 JOIN, PART, WHO, WHOIS
+

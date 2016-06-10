@@ -1,0 +1,21 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>4.1. Care about standard library calls</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_ADG.html" title="The Linux-PAM Application Developers' Guide"><link rel="up" href="adg-security.html" title="Chapter 4.  Security issues of Linux-PAM"><link rel="prev" href="adg-security.html" title="Chapter 4.  Security issues of Linux-PAM"><link rel="next" href="adg-security-service-name.html" title="4.2. Choice of a service name"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">4.1. Care about standard library calls</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="adg-security.html">Prev</a> </td><th width="60%" align="center">Chapter 4. 
+      Security issues of <span class="emphasis"><em>Linux-PAM</em></span>
+    </th><td width="20%" align="right"> <a accesskey="n" href="adg-security-service-name.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="adg-security-library-calls"></a>4.1. Care about standard library calls</h2></div></div></div><p>
+        In general, writers of authorization-granting applications should
+        assume that each module is likely to call any or
+        <span class="emphasis"><em>all</em></span> 'libc' functions. For 'libc' functions
+        that return pointers to static/dynamically allocated structures
+        (ie. the library allocates the memory and the user is not expected
+        to '<code class="function">free()</code>' it) any module call to this
+        function is likely to corrupt a pointer previously
+        obtained by the application. The application programmer should
+        either re-call such a 'libc' function after a call to the
+        <span class="emphasis"><em>Linux-PAM</em></span> library, or copy the
+        structure contents to some safe area of memory before passing
+        control to the <span class="emphasis"><em>Linux-PAM</em></span> library.
+      </p><p>
+        Two important function classes that fall into this category are
+        <span class="citerefentry"><span class="refentrytitle">getpwnam</span>(3)</span> and <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span>.
+      </p></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="adg-security.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="adg-security.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="adg-security-service-name.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 4. 
+      Security issues of <span class="emphasis"><em>Linux-PAM</em></span>
+     </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_ADG.html">Home</a></td><td width="40%" align="right" valign="top"> 4.2. Choice of a service name</td></tr></table></div></body></html>

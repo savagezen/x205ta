@@ -1,0 +1,39 @@
+%NAME%
+hdparm
+
+%VERSION%
+9.48-1
+
+%DESC%
+A shell utility for manipulating Linux IDE drive/driver parameters
+
+%URL%
+http://sourceforge.net/projects/hdparm/
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1436444382
+
+%INSTALLDATE%
+1464799588
+
+%PACKAGER%
+Tobias Powalowski <tpowa@archlinux.org>
+
+%SIZE%
+159744
+
+%LICENSE%
+BSD
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+glibc
+
+%OPTDEPENDS%
+bash: for wiper.sh script
+

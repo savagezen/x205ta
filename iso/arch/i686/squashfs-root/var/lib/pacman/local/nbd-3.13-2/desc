@@ -1,0 +1,36 @@
+%NAME%
+nbd
+
+%VERSION%
+3.13-2
+
+%DESC%
+tools for network block devices, allowing you to use remote block devices over TCP/IP
+
+%URL%
+http://nbd.sourceforge.net
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1464182132
+
+%INSTALLDATE%
+1464799532
+
+%PACKAGER%
+Christian Hesse <arch@eworm.de>
+
+%SIZE%
+113664
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+glib2
+

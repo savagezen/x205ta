@@ -1,0 +1,12 @@
+[Unit]
+Description=(Re)store the netctl profile state
+Before=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=-/usr/bin/netctl restore
+ExecStop=/usr/bin/netctl store
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,42 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>4.2. Choice of a service name</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_ADG.html" title="The Linux-PAM Application Developers' Guide"><link rel="up" href="adg-security.html" title="Chapter 4.  Security issues of Linux-PAM"><link rel="prev" href="adg-security-library-calls.html" title="4.1. Care about standard library calls"><link rel="next" href="adg-security-conv-function.html" title="4.3. The conversation function"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">4.2. Choice of a service name</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="adg-security-library-calls.html">Prev</a> </td><th width="60%" align="center">Chapter 4. 
+      Security issues of <span class="emphasis"><em>Linux-PAM</em></span>
+    </th><td width="20%" align="right"> <a accesskey="n" href="adg-security-conv-function.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="adg-security-service-name"></a>4.2. Choice of a service name</h2></div></div></div><p>
+        When picking the <span class="emphasis"><em>service-name</em></span> that
+        corresponds to the first entry in the
+        <span class="emphasis"><em>Linux-PAM</em></span> configuration file,
+        the application programmer should <span class="emphasis"><em>avoid</em></span>
+        the temptation of choosing something related to
+        <code class="varname">argv[0]</code>. It is a trivial matter for any user
+        to invoke any application on a system under a different name and
+        this should not be permitted to cause a security breach.
+      </p><p>
+        In general, this is always the right advice if the program is
+        setuid, or otherwise more privileged than the user that invokes
+        it. In some cases, avoiding this advice is convenient, but as an
+        author of such an application, you should consider well the ways
+        in which your program will be installed and used. (Its often the
+        case that programs are not intended to be setuid, but end up
+        being installed that way for convenience. If your program falls
+        into this category, don't fall into the trap of making this mistake.)
+      </p><p>
+        To invoke some <span class="emphasis"><em>target</em></span> application by
+        another name, the user may symbolically link the target application
+        with the desired name. To be precise all the user need do is,
+        <span class="command"><strong>ln -s /target/application ./preferred_name</strong></span>
+        and then run <span class="command"><strong>./preferred_name</strong></span>.
+      </p><p>
+        By studying the <span class="emphasis"><em>Linux-PAM</em></span>
+        configuration file(s), an attacker can choose the
+        <span class="command"><strong>preferred_name</strong></span> to be that of a service enjoying
+        minimal protection; for example a game which uses
+        <span class="emphasis"><em>Linux-PAM</em></span> to restrict access to
+        certain hours of the day.  If the service-name were to be linked
+        to the filename under which the service was invoked, it
+        is clear that the user is effectively in the position of
+        dictating which authentication scheme the service uses. Needless
+        to say, this is not a secure situation.
+      </p><p>
+        The conclusion is that the application developer should carefully
+        define the service-name of an application. The safest thing is to
+        make it a single hard-wired name.
+      </p></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="adg-security-library-calls.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="adg-security.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="adg-security-conv-function.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">4.1. Care about standard library calls </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_ADG.html">Home</a></td><td width="40%" align="right" valign="top"> 4.3. The conversation function</td></tr></table></div></body></html>

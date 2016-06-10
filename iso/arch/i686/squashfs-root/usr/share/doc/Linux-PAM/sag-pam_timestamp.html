@@ -1,0 +1,61 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.35. pam_timestamp - authenticate using cached successful authentication attempts</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_time.html" title="6.34. pam_time - time controled access"><link rel="next" href="sag-pam_umask.html" title="6.36. pam_umask - set the file mode creation mask"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.35. pam_timestamp - authenticate using cached successful authentication attempts</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_time.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_umask.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_timestamp"></a>6.35. pam_timestamp - authenticate using cached successful authentication attempts</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_timestamp.so</code>  [
+        timestampdir=<em class="replaceable"><code>directory</code></em>
+      ] [
+        timestamp_timeout=<em class="replaceable"><code>number</code></em>
+      ] [
+        verbose
+      ] [
+        debug
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_timestamp-description"></a>6.35.1. DESCRIPTION</h3></div></div></div><p>
+      In a nutshell, <span class="emphasis"><em>pam_timestamp</em></span> caches successful
+authentication attempts, and allows you to use a recent successful attempt as
+the basis for authentication. This is similar mechanism which is used in
+<span class="command"><strong>sudo</strong></span>.
+    </p><p>
+      When an application opens a session using <span class="emphasis"><em>pam_timestamp</em></span>,
+a timestamp file is created in the <span class="emphasis"><em>timestampdir</em></span> directory
+for the user.  When an application attempts to authenticate the user, a
+<span class="emphasis"><em>pam_timestamp</em></span> will treat a sufficiently recent timestamp
+file as grounds for succeeding.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_timestamp-options"></a>6.35.2. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+            <code class="option">timestampdir=<em class="replaceable"><code>directory</code></em></code>
+         </span></dt><dd><p>
+               Specify an alternate directory where
+	       <span class="emphasis"><em>pam_timestamp</em></span> creates timestamp files.
+            </p></dd><dt><span class="term">
+            <code class="option">timestamp_timeout=<em class="replaceable"><code>number</code></em></code>
+         </span></dt><dd><p>
+               How long should <span class="emphasis"><em>pam_timestamp</em></span>
+	       treat timestamp as valid after their
+               last modification date (in seconds). Default is 300 seconds.
+            </p></dd><dt><span class="term">
+            <code class="option">verbose</code>
+         </span></dt><dd><p>
+               Attempt to inform the user when access is granted.
+            </p></dd><dt><span class="term">
+            <code class="option">debug</code>
+         </span></dt><dd><p>
+               Turns on debugging messages sent to <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span>.
+            </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_timestamp-types"></a>6.35.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      The <code class="option">auth</code> and <code class="option">session</code>
+      module types are provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_timestamp-return_values"></a>6.35.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_AUTH_ERR</span></dt><dd><p>
+            The module was not able to retrieve the user name or
+            no valid timestamp file was found.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+            Everything was successful.
+          </p></dd><dt><span class="term">PAM_SESSION_ERR</span></dt><dd><p>
+	    Timestamp file could not be created or updated.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_timestamp-notes"></a>6.35.5. NOTES</h3></div></div></div><p>
+      Users can get confused when they are not always asked for passwords when
+running a given program. Some users reflexively begin typing information before
+noticing that it is not being asked for.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_timestamp-examples"></a>6.35.6. EXAMPLES</h3></div></div></div><pre class="programlisting">
+auth sufficient pam_timestamp.so verbose
+auth required   pam_unix.so
+
+session required pam_unix.so
+session optional pam_timestamp.so
+    </pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_timestamp-files"></a>6.35.7. FILES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="filename">/var/run/pam_timestamp/...</code></span></dt><dd><p>timestamp files and directories</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_timestamp-author"></a>6.35.8. AUTHOR</h3></div></div></div><p>
+        pam_timestamp was written by Nalin Dahyabhai.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_time.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_umask.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.34. pam_time - time controled access </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.36. pam_umask - set the file mode creation mask</td></tr></table></div></body></html>

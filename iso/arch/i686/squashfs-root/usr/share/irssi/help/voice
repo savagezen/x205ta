@@ -1,0 +1,23 @@
+
+%9Syntax:%9
+
+VOICE %|<nicks>
+
+%9Parameters:%9
+
+    A list of nicknames to voice.
+
+%9Description:%9
+
+    Grants the channel voice privileges to the given nicknames; you may use
+    the wildcard character '*' in a nickname.
+
+%9Examples:%9
+
+    /VOICE mike
+    /VOICE bob sarah
+    /VOICE jo*n
+    /VOICE *
+
+%9See also:%9 DEOP, DEVOICE, KICK, MODE, OP
+

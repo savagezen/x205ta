@@ -1,0 +1,15 @@
+
+%9Syntax:%9
+
+TS
+
+%9Description:%9
+
+    Displays a list of the channels you are on and their topics.
+
+%9Examples:%9
+
+    /TS
+
+%9See also:%9 JOIN, TOPIC
+

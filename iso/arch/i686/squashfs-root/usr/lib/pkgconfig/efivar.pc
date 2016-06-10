@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=/usr
+libdir=/usr/lib/
+includedir=/usr/include
+
+Name: efivar
+Description: UEFI Variable Management
+Version: 0.23
+Libs: -L${libdir} -lefivar
+Libs.private: -ldl
+Cflags: -I${includedir}/efivar

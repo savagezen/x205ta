@@ -1,0 +1,5 @@
+# note: '#' introduces comments
+#add only users allowed to connect partimaged
+# (only one login per line)
+
+#sample # user 'sample' is allowed to connect partimaged

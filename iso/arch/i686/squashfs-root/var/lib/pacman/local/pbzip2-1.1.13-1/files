@@ -1,0 +1,14 @@
+%FILES%
+usr/
+usr/bin/
+usr/bin/pbunzip2
+usr/bin/pbzcat
+usr/bin/pbzip2
+usr/share/
+usr/share/licenses/
+usr/share/licenses/pbzip2/
+usr/share/licenses/pbzip2/COPYING
+usr/share/man/
+usr/share/man/man1/
+usr/share/man/man1/pbzip2.1.gz
+

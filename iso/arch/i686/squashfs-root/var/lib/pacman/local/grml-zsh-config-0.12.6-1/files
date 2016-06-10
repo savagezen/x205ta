@@ -1,0 +1,14 @@
+%FILES%
+etc/
+etc/skel/
+etc/skel/.zshrc
+etc/zsh/
+etc/zsh/keephack
+etc/zsh/zshrc
+usr/
+usr/share/
+usr/share/man/
+usr/share/man/man5/
+usr/share/man/man5/grml-zsh-config.5.gz
+usr/share/man/man5/grmlzshrc.5.gz
+

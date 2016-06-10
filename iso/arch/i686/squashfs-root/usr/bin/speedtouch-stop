@@ -1,0 +1,44 @@
+#!/bin/sh
+
+# Author: Benoit PAPILLAULT <benoit.papillault@free.fr>
+# Creation: 12/05/2004
+
+# Goal: Stop the connection
+
+# Ensure to have a working PATH
+export PATH="/sbin:/bin:/usr/sbin:/usr/bin:/usr/bin:/usr/bin"
+
+# check for root privileges
+
+if [ "`whoami`" != "root" ]; then
+  echo "You must launch this script with root privileges. Enter root password."
+  exec su -c "$0 $@"
+  exit 1 
+fi
+
+echo "Stopping ADSL connection..."
+
+# if one configuration file exists, read it. This file should define :
+# 
+# FIRMWARE_LOADER_FILE
+# FIRMWARE_FILE
+# PPPD_PEER
+#
+
+if [ -f /etc/speedtouch/speedtouch.conf ]; then
+  . /etc/speedtouch/speedtouch.conf
+fi
+
+if [ ! -f "/var/run/ppp-${PPPD_PEER}.pid" ]; then
+  echo "Connection ${PPPD_PEER} does not exist"
+  exit 1
+fi
+
+PID=`head -1 "/var/run/ppp-${PPPD_PEER}.pid"`
+kill -TERM $PID
+
+# like we said in speedtouch-start, we don't ever kill modem_run
+# killall modem_run
+
+# should not be needed
+# killall ppppoa2 pppoa3

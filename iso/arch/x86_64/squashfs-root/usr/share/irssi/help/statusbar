@@ -1,0 +1,44 @@
+
+%9Syntax:%9
+
+STATUSBAR %|<name> ENABLE
+STATUSBAR %|<name> DISABLE
+STATUSBAR %|<name> RESET
+STATUSBAR %|<name> TYPE window|root
+STATUSBAR %|<name> PLACEMENT top|bottom
+STATUSBAR %|<name> POSITION <num>
+STATUSBAR %|<name> VISIBLE always|active|inactive
+STATUSBAR %|<name> ADD [-before | -after <item>] [-priority #] [-alignment left|right] <item>
+STATUSBAR %|<name> REMOVE <item>
+
+%9Parameters:%9
+
+    ENABLE:       Enables the statusbar.
+    DISABLE:      Disabled the statusbar.
+    RESET:        Restores the default statusbar configuration.
+    TYPE:         Identifies the type of statusbar.
+    PLACEMENT:    Identifies the placement of the statusbar.
+    POSITION:     Identifies the position of the statusbar.
+    VISIBLE:      Identifies the visibility of the statusbar.
+    ADD:          Adds a statusbar into the configuration.
+    REMOVE:       Removes a statusbar from the configuration.
+
+    The name of the statusbar; if no argument is given, the list of statusbars
+    will be displayed.
+
+%9Description:%9
+
+    Modified the attributes of the statusbar.
+
+%9Examples:%9
+
+    /STATUSBAR
+    /STATUSBAR window
+    /STATUSBAR window REMOVE time
+    /STATUSBAR window ADD time
+    /STATUSBAR window RESET
+    /STATUSBAR topic DISABLE
+    /STATUSBAR topic ENABLE
+
+%9See also:%9 WINDOW
+

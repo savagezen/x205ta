@@ -1,0 +1,36 @@
+%NAME%
+dnssec-anchors
+
+%VERSION%
+20150403-1
+
+%DESC%
+DNSSEC trust anchors for the root zone
+
+%URL%
+http://data.iana.org/root-anchors/
+
+%ARCH%
+any
+
+%BUILDDATE%
+1429580943
+
+%INSTALLDATE%
+1464799587
+
+%PACKAGER%
+Gaetan Bisson <bisson@archlinux.org>
+
+%SIZE%
+1024
+
+%REASON%
+1
+
+%LICENSE%
+custom:NoCopyright
+
+%VALIDATION%
+pgp
+

@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: lvm2app
+Description: lvm2 application library
+Version: 2.2
+Cflags: -I${includedir} 
+Libs: -L${libdir} -llvm2app
+Requires.private: devmapper blkid

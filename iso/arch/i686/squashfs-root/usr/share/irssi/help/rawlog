@@ -1,0 +1,28 @@
+
+%9Syntax:%9
+
+RAWLOG SAVE %|<file>
+RAWLOG OPEN %|<file>
+RAWLOG CLOSE
+
+%9Parameters:%9
+
+    SAVE:     Saves the raw server buffer into a file.
+    OPEN:     Opens a log file and start logging all raw data.
+    CLOSE:    Closes the log file
+
+    The filename to store the raw data into.
+
+%9Description:%9
+
+    Saves all the raw data that is received from and transmitted to the active
+    server into a log file.
+
+%9Examples:%9
+
+    /RAWLOG SAVE ~/server.log
+    /RAWLOG OPEN ~/debug.log
+    /RAWLOG CLOSE
+
+%9See also:%9 LOG
+

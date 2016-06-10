@@ -1,0 +1,20 @@
+
+%9Syntax:%9
+
+QUOTE %|<data>
+
+%9Parameters:%9
+
+    The text to send to the IRC server.
+
+%9Description:%9
+
+    Sends raw data to the server without any parsing.
+
+%9Examples:%9
+
+    /QUOTE PRIVMSG mike :Hey, this works!
+    /QUOTE OPERWALL :Meow!
+
+%9See also:%9 CONNECT, DISCONNECT, JOIN, MSG, PART
+

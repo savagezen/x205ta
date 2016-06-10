@@ -1,0 +1,88 @@
+#!/bin/bash
+# version 0.3
+set -e
+
+# TODO
+# add suer 
+HADOOP_RUN_USER='hadmin'
+echo '' | drbl-useradd -s $HADOOP_RUN_USER $HADOOP_RUN_USER
+usermod $HADOOP_RUN_USER -s /bin/bash
+
+cp /etc/hosts /etc/hosts.bak.initial
+echo "config drbl live service"
+drbl-live start
+
+# drbl net device and ip, and update hostname
+drbl_interface=$(cat /etc/drbl/drblpush.conf | grep interface | sed s/interface=//)
+drbl_ip=$(ifconfig $drbl_interface | grep 'inet addr' | awk '{print $2}' | sed s/addr://)
+nhostname=$(getent hosts $drbl_ip | awk '{print $2}')
+echo $nhostname > /etc/hostname
+hostname $nhostname
+
+# download something from SF.net here
+if [ ! -f /opt/drbl-live-hadoop_0.3.tar.gz  ]; then
+    wget http://prdownloads.sourceforge.net/drbl-hadoop/drbl-live-hadoop_0.3.tar.gz -O /opt/drbl-live-hadoop_0.3.tar.gz
+fi
+tar -zxvf /opt/drbl-live-hadoop_0.3.tar.gz -C /opt/
+
+# Pre run
+echo "update base drbl image"
+/opt/ezilla-hadoop/ezilla-hadoop-base
+mv /usr/local/hadoop /usr/local/hadoop_server
+cp -r /usr/local/hadoop_server /usr/local/hadoop_client
+mkdir /usr/local/hadoop
+rm /usr/local/hadoop_client/etc/hadoop/slaves
+
+cp /opt/ezilla-hadoop/init.d/hadoop_dn /etc/init.d/
+echo "$drbl_ip" > /etc/namenode
+echo 'service_extra_added="hadoop_dn rc.local"' > /etc/drbl/client-extra-service
+echo "$drbl_ip:/usr/local/hadoop_client    /usr/local/hadoop/    nfs    rw,hard,intr,nfsvers=3,tcp,nolock,defaults 0 0" > /etc/drbl/client-append-fstab
+echo "$drbl_ip:/opt/rssh/    /root/.ssh    nfs    rw,hard,intr,nfsvers=3,tcp,nolock,defaults 0 0" >> /etc/drbl/client-append-fstab
+echo "tmpfs /usr/local/hadoop/logs tmpfs defaults 0 0" >> /etc/drbl/client-append-fstab
+
+cat << EVE > /etc/rc.local
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+# add for hadoop-drbl
+mkdir -p /media/hadoop_data/data/
+chown -R hadmin:hadmin /media/hadoop_data
+mount -t tmpfs none /usr/local/hadoop/logs
+/opt/ezilla-hadoop/ezilla-hadoop-datanode-postrun
+# end
+
+exit 0
+EVE
+
+# root key
+mkdir -p /opt/rssh/
+cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
+cp /root/.ssh/* /opt/rssh/
+
+drblpush -c /etc/drbl/drblpush.conf
+cp /opt/ezilla-hadoop/init.d/hadoop /etc/init.d/
+mount -o bind /usr/local/hadoop_server /usr/local/hadoop/
+chown -R $HADOOP_RUN_USER:$HADOOP_RUN_USER /usr/local/hadoop*
+rm /usr/local/hadoop/etc/hadoop/slaves
+#touch /etc/namenode_status
+#/etc/init.d/hadoop start
+
+## run example
+#echo "run hadoop example"
+#echo "su - $HADOOP_RUN_USER -c $HADOOP_PATH/bin/hadoop jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.3.0.jar pi 1 1"
+#su - $HADOOP_RUN_USER -c "$HADOOP_PATH/bin/hadoop jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.3.0.jar pi 1 1"
+#
+#echo "su - $HADOOP_RUN_USER -c $HADOOP_PATH/bin/hadoop jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.3.0.jar  TestDFSIO -write -nrFiles 2 -size 2MB"
+#su - $HADOOP_RUN_USER -c "$HADOOP_PATH/bin/hadoop jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.3.0.jar  TestDFSIO -write -nrFiles 2 -size 2MB"
+#
+#echo "enjoy hadoop, su to hduser to run all hadoop related commands."

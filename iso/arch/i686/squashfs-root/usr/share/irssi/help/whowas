@@ -1,0 +1,24 @@
+
+%9Syntax:%9
+
+WHOWAS %|[<nicks> [<count> [server]]]
+
+%9Parameters:%9
+
+    The nicknames, the maximum amount of results and the remote server. If no
+    arguments are given, your own nickname will be used. If no remote server is
+    given, the server you are connected to will be used.
+
+%9Description:%9
+
+    Displays historical user information.
+
+%9Examples:%9
+
+    /WHOWAS
+    /WHOWAS mike
+    /WHOWAS bob 10
+    /WHOWAS sarah 5 ircsource.irssi.org
+
+%9See also:%9 CHANNEL, NAMES, WHO, WHOIS
+

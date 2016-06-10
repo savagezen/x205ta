@@ -1,0 +1,26 @@
+
+%9Syntax:%9
+
+JOIN %|[-window] [-invite] [-<server tag>] <channels> [<keys>]
+
+%9Parameters:%9
+
+    -window          Joins a channel in the active window.
+    -invite          Joins the channel you were last invited to.
+    -<server tag>    The server tag on which you want to join the channel.
+
+    The channel names, separated by a comma, to join and the channel key.
+
+%9Description:%9
+
+    Joins the given channels.
+
+%9Examples:%9
+
+    /JOIN #irssi
+    /JOIN #basementcat secret_lair
+    /JOIN -invite
+    /JOIN -freenode #github,#freenode,#irssi
+
+%9See also:%9 KICK, PART
+

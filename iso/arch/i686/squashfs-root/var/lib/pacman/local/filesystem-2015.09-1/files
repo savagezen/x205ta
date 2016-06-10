@@ -1,0 +1,107 @@
+%FILES%
+bin
+boot/
+dev/
+etc/
+etc/arch-release
+etc/crypttab
+etc/fstab
+etc/group
+etc/gshadow
+etc/host.conf
+etc/hosts
+etc/issue
+etc/ld.so.conf
+etc/ld.so.conf.d/
+etc/motd
+etc/mtab
+etc/nsswitch.conf
+etc/passwd
+etc/profile
+etc/profile.d/
+etc/profile.d/locale.sh
+etc/resolv.conf
+etc/securetty
+etc/shadow
+etc/shells
+etc/skel/
+home/
+lib
+mnt/
+opt/
+proc/
+root/
+run/
+sbin
+srv/
+srv/ftp/
+srv/http/
+sys/
+tmp/
+usr/
+usr/bin/
+usr/include/
+usr/lib/
+usr/lib/modprobe.d/
+usr/lib/modprobe.d/usb-load-ehci-first.conf
+usr/lib/os-release
+usr/local/
+usr/local/bin/
+usr/local/etc/
+usr/local/games/
+usr/local/include/
+usr/local/lib/
+usr/local/man/
+usr/local/sbin/
+usr/local/share/
+usr/local/share/man
+usr/local/src/
+usr/sbin
+usr/share/
+usr/share/man/
+usr/share/man/man1/
+usr/share/man/man2/
+usr/share/man/man3/
+usr/share/man/man4/
+usr/share/man/man5/
+usr/share/man/man6/
+usr/share/man/man7/
+usr/share/man/man7/archlinux.7.gz
+usr/share/man/man8/
+usr/share/misc/
+usr/src/
+var/
+var/cache/
+var/empty/
+var/games/
+var/lib/
+var/lib/misc/
+var/local/
+var/lock
+var/log/
+var/log/old/
+var/mail
+var/opt/
+var/run
+var/spool/
+var/spool/mail/
+var/tmp/
+
+%BACKUP%
+etc/fstab	693c97f2c9a519bb97a17008e92c2b74
+etc/crypttab	f0a5071f50d8864d2810c44e23eb00cc
+etc/group	4d7417d2bf8872665c0907f09ae37c34
+etc/hosts	7bc65f234dfb6abf24e7c3b03e86f4ff
+etc/ld.so.conf	6e488ffecc8ba142c0cf7e2d7aeb832e
+etc/passwd	a998d1e6c7cc5791a7f4a2b49b2d10ce
+etc/shadow	1ec1b16e2a71fad63ab8f147069a5d97
+etc/gshadow	69e460404f45bdb7288d1de662e56dd9
+etc/resolv.conf	6f48288b6fcaf0065fcb7b0e525413e0
+etc/motd	d41d8cd98f00b204e9800998ecf8427e
+etc/nsswitch.conf	9e4533df61f0c82d6b2e2371f7376282
+etc/shells	22518e922891f9359f971f4f5b4e793c
+etc/host.conf	f28150d4c0b22a017be51b9f7f9977ed
+etc/securetty	4c4540eeb748bf1f71d631b8c1dcf0b3
+etc/profile	cfa3345c485c59e681ab39a44dc7ece1
+etc/issue	7813c481156f6b280a3ba91fc6236368
+

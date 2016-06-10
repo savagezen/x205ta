@@ -1,0 +1,14 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>3.3. Programming notes</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_ADG.html" title="The Linux-PAM Application Developers' Guide"><link rel="up" href="adg-interface.html" title="Chapter 3.  The public interface to Linux-PAM"><link rel="prev" href="adg-interface-of-app-expected.html" title="3.2. What is expected of an application"><link rel="next" href="adg-security.html" title="Chapter 4.  Security issues of Linux-PAM"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">3.3. Programming notes</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="adg-interface-of-app-expected.html">Prev</a> </td><th width="60%" align="center">Chapter 3. 
+      The public interface to <span class="emphasis"><em>Linux-PAM</em></span>
+    </th><td width="20%" align="right"> <a accesskey="n" href="adg-security.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="adg-interface-programming-notes"></a>3.3. Programming notes</h2></div></div></div><p>
+        Note, all of the authentication service function calls accept the
+        token <span class="emphasis"><em>PAM_SILENT</em></span>, which instructs
+        the modules to not send messages to the application. This token
+        can be logically OR'd with any one of the permitted tokens specific
+        to the individual function calls.
+        <span class="emphasis"><em>PAM_SILENT</em></span> does not override the
+        prompting of the user for passwords etc., it only stops informative
+        messages from being generated.
+      </p></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="adg-interface-of-app-expected.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="adg-interface.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="adg-security.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">3.2. What is expected of an application </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_ADG.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 4. 
+      Security issues of <span class="emphasis"><em>Linux-PAM</em></span>
+    </td></tr></table></div></body></html>

@@ -1,0 +1,75 @@
+# Contributed by: Thomas Bächler <thomas@archlinux.org>
+
+: ${PPPD:=pppd}
+
+quote_word() {
+    set -- "${@//\\/\\\\}"
+    printf '"%s"\n' "${@//\"/\\\"}"
+}
+
+pppoe_up() {
+    local options="$STATE_DIR/pppoe.$Interface.$Profile/options"
+
+    if ! is_interface "$Interface"; then
+        report_error "Interface '$Interface' does not exist"
+        return 1
+    fi
+    if ! bring_interface_up "$Interface"; then
+        report_error "Failed to bring interface '$Interface' up"
+        return 1
+    fi
+
+    mkdir -p "$(dirname "$options")"
+    cat >> "$options" << EOF
+linkname $(quote_word "$Profile")
+${PPPUnit:+unit $(quote_word "$PPPUnit")}
+updetach
+plugin rp-pppoe.so
+nic-$Interface
+
+noauth
+$(is_yes "${DefaultRoute:-yes}" || printf no)defaultroute
+maxfail $(quote_word "${MaxFail:-5}")
+$(is_yes "${UsePeerDNS:-yes}" && printf usepeerdns)
+$(quote_word "${ConnectionMode:-persist}")
+$([[ $ConnectionMode == demand ]] && printf "idle %s" "$(quote_word "$IdleTimeout")")
+${LCPEchoInterval:+lcp-echo-interval $(quote_word "$LCPEchoInterval")}
+${LCPEchoFailure:+lcp-echo-failure $(quote_word "$LCPEchoFailure")}
+${PPPoEService:+rp_pppoe_service $(quote_word "$PPPoEService")}
+${PPPoEAC:+rp_pppoe_ac $(quote_word "$PPPoEAC")}
+${PPPoESession:+rp_pppoe_sess $(quote_word "$PPPoESession")}
+${PPPoEMAC:+pppoe-mac $(quote_word "$PPPoEMAC")}
+$(is_yes "${PPPoEIP6:-no}" && printf +ipv6)
+$(is_yes "${PPPoEIP6:-yes}" || printf noipv6)
+
+user $(quote_word "$User")
+password $(quote_word "$Password")
+${OptionsFile:+file $(quote_word "$OptionsFile")}
+EOF
+
+    if ! $PPPD file "$options"; then
+        rm "$options"
+        rmdir "$(dirname "$options")"
+        report_error "Could not establish a ppp connection for profile '$Profile'."
+        return 1
+    fi
+}
+
+pppoe_down() {
+    local options pidfile pid
+    options="$STATE_DIR/pppoe.$Interface.$Profile/options"
+    pidfile="/var/run/ppp-$Profile.pid"
+
+    if [[ -r $pidfile ]]; then
+        read pid < "$pidfile"
+        (( pid )) && kill "$pid"
+    fi
+
+    rm "$options"
+    rmdir "$(dirname "$options")"
+
+    bring_interface_down "$Interface"
+}
+
+
+# vim: ft=sh ts=4 et sw=4:

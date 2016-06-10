@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: ref_array
+Description: A dynamically-growing, reference-counted array
+Version: 0.1.5
+Libs: -L${libdir} -lref_array
+Cflags: -I${includedir}
+URL: http://fedorahosted.org/sssd/

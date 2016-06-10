@@ -1,0 +1,36 @@
+%NAME%
+lsscsi
+
+%VERSION%
+0.28-1
+
+%DESC%
+A tool that lists devices connected via SCSI and its transports
+
+%URL%
+http://sg.danny.cz/scsi/lsscsi.html
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1417400159
+
+%INSTALLDATE%
+1464799537
+
+%PACKAGER%
+Sébastien Luttringer <seblu@seblu.net>
+
+%SIZE%
+78848
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+sysfsutils
+

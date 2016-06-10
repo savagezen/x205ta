@@ -1,0 +1,30 @@
+# Contributed by: Kyle Fuller <inbox@kylefuller.co.uk>
+
+. "$SUBR_DIR/ip"
+
+# Make sure BindsToInterfaces is set
+BindsToInterfaces=("${BindsToInterfaces[@]}")
+
+tunnel_up() {
+    local family="-4"
+    if is_interface "$Interface"; then
+        report_error "Interface '$Interface' already exists"
+        return 1
+    fi
+
+    [[ $Mode == *ip6* || $Mode == "any" ]] && family="-6"
+    do_debug ip "$family" tunnel add "$Interface" mode "$Mode" \
+        remote "$Remote" ${Local:+local "$Local"} ${Key:+key "$Key"} || return
+
+    bring_interface_up "$Interface"
+    ip_set
+}
+
+tunnel_down() {
+    ip_unset
+    bring_interface_down "$Interface"
+    ip tunnel delete "$Interface"
+}
+
+
+# vim: ft=sh ts=4 et sw=4:

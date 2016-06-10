@@ -1,0 +1,101 @@
+#!/bin/bash
+# The script is borrowed from 
+#============================================================================
+# http://staff.washington.edu/corey/tools.html
+# Author: Corey Satten, corey @ cac.washington.edu, 06/26/03, release 1.8
+#============================================================================
+# Modified by Steven Shiau <steven _at_ nchc org tw> Sep/03/07
+#============================================================================
+# Load DRBL setting and functions
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+
+# Settings
+default_comp="xz"
+
+#
+USAGE() {
+  echo "$ocs - To list the available tarball files"
+  echo "Usage:"
+  echo "To run $ocs:"
+  echo "$ocs [OPTION] PATH"
+  echo "Options:"
+  echo "-f, --comp-format FORMAT  Specify the tarball compression format, i.e. gz, bz2, xz. If not assigned, xz will be used."
+  echo "Ex:"
+  echo "$ocs /mirror/apt/RPMS.drbl-test"
+  echo "$ocs http://free.nchc.org.tw/syslinux/"
+}
+
+####################
+### Main program ###
+####################
+
+ocs_file="$0"
+ocs=`basename $ocs_file`
+#
+while [ $# -gt 0 ]; do
+ case "$1" in
+   -f|--comp-format) 
+           shift; 
+           if [ -z "$(echo $1 |grep ^-.)" ]; then
+             # skip the -xx option, in case 
+             suf="$1"
+             shift;
+           fi
+           [ -z "$ocsroot" ] && USAGE && exit 1
+           ;;
+   -*)     echo "${0}: ${1}: invalid option" >&2
+           USAGE >& 2
+           exit 2 ;;
+   *)      break ;;
+ esac
+done
+
+SRC="$1"
+
+# Try to help people figure out if/when this file has DOS line terminators
+# Chances are the initial #!/bin/sh will fail with a cryptic "not found" msg
+# If someone tries to debug it by feeding it to sh manually, this should help:
+NL=
+case "$NL" in '');; *)                                                    #
+    echo "ERROR: $0 was improperly saved with CR-LF newlines." 1>&2       #
+    echo "Please try again after restoring Unix-style (LF) newlines" 1>&2 #
+    exit 1 ;;                                                             #
+esac                                                                      #
+
+if [ -z "$suf" ]; then
+  suf="$default_comp"
+fi
+if [ -z "$SRC" ]; then
+  echo "You must assign the URL or PATH!" 
+  USAGE 
+  exit 1
+fi
+
+case "$SRC" in */);; *) SRC=$SRC/;; esac	# URL must end in slash
+
+#
+if [ -d $SRC ] ;then	# local directory
+    (cd $SRC && ls -l)
+else			# ftp directory
+    case "$SRC" in
+	ftp://*)
+            ( echo set ftp:passive-mode on
+	      # Steven Shiau modified to use lftp.
+	      echo rels ) | lftp $SRC 2>/dev/null | grep -Ew "\.tar\.${suf}"
+            ;;
+	http://*)
+	    # Steven Shiau modified to use lftp instead of lynx
+	    #lynx -dump $SRC | sed -n 's,^[ 0-9.]*http://.*/,-& ,p';;
+	    echo rels | lftp $SRC 2>/dev/null
+            ;;
+	file://*)
+	    DIR="$(echo $SRC | sed -e "s|file://||g")"
+            (cd $DIR && ls -l)
+            ;;
+    esac
+    # In case dir -L fails, we need to add ^[-l] to strip the junk msg.
+    # Some repo output DOS (CR/LF), 
+    # convert to Unix format: sed 's/[^[:print:]]$//'
+fi | sed 's/[^[:print:]]$//' | sed -r -n "/tar.${suf}$/s/^[-l].* //p" | while read x; do basename $x; done | sort

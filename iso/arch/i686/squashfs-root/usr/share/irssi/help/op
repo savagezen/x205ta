@@ -1,0 +1,23 @@
+
+%9Syntax:%9
+
+OP %|<nicks>
+
+%9Parameters:%9
+
+    A list of nicknames to op.
+
+%9Description:%9
+
+    Grants the channel operator privileges to the given nicknames; you may use
+    the wildcard character '*' in a nickname.
+
+%9Examples:%9
+
+    /OP mike
+    /OP bob sarah
+    /OP jo*n
+    /OP *
+
+%9See also:%9 DEOP, DEVOICE, KICK, MODE, VOICE
+

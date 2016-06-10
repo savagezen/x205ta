@@ -1,0 +1,9 @@
+%FILES%
+boot/
+boot/intel-ucode.img
+usr/
+usr/share/
+usr/share/licenses/
+usr/share/licenses/intel-ucode/
+usr/share/licenses/intel-ucode/LICENSE
+

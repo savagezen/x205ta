@@ -1,0 +1,15 @@
+#!/bin/bash
+
+choice="$(zenity --list --title "Select item from the list" --text "Exit" --radiolist  --column "Pick" --column "Action" TRUE Reboot FALSE Shutdown FALSE Logout)";
+
+case $choice in
+	"Reboot")
+		reboot
+		;;
+	"Shutdown")
+		halt -p
+		;;	
+	"Logout")
+		gl-killx
+		;;
+esac

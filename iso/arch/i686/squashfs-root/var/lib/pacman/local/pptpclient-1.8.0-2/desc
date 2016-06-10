@@ -1,0 +1,37 @@
+%NAME%
+pptpclient
+
+%VERSION%
+1.8.0-2
+
+%DESC%
+Client for the proprietary Microsoft Point-to-Point Tunneling Protocol, PPTP.
+
+%URL%
+http://pptpclient.sourceforge.net/
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1403883451
+
+%INSTALLDATE%
+1464799538
+
+%PACKAGER%
+Daniel Isenmann <daniel@archlinux.org>
+
+%SIZE%
+92160
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+ppp
+iproute2
+

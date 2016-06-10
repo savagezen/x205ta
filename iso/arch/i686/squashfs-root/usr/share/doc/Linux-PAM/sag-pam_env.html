@@ -1,0 +1,151 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.6. pam_env - set/unset environment variables</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_echo.html" title="6.5. pam_echo - print text messages"><link rel="next" href="sag-pam_exec.html" title="6.7. pam_exec - call an external command"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.6. pam_env - set/unset environment variables</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_echo.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_exec.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_env"></a>6.6. pam_env - set/unset environment variables</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_env.so</code>  [
+        debug
+      ] [
+        conffile=<em class="replaceable"><code>conf-file</code></em>
+      ] [
+        envfile=<em class="replaceable"><code>env-file</code></em>
+      ] [
+        readenv=<em class="replaceable"><code>0|1</code></em>
+      ] [
+        user_envfile=<em class="replaceable"><code>env-file</code></em>
+      ] [
+        user_readenv=<em class="replaceable"><code>0|1</code></em>
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_env-description"></a>6.6.1. DESCRIPTION</h3></div></div></div><p>
+      The pam_env PAM module allows the (un)setting of environment
+      variables. Supported is the use of previously set environment
+      variables as well as <span class="emphasis"><em>PAM_ITEM</em></span>s such as
+      <span class="emphasis"><em>PAM_RHOST</em></span>.
+    </p><p>
+      By default rules for (un)setting of variables are taken from the
+      config file <code class="filename">/etc/security/pam_env.conf</code>. An
+      alternate file can be specified with the <span class="emphasis"><em>conffile</em></span>
+      option.
+    </p><p>
+      Second a file (<code class="filename">/etc/environment</code> by default) with simple
+      <span class="emphasis"><em>KEY=VAL</em></span> pairs on separate lines will be read.
+      With the <span class="emphasis"><em>envfile</em></span> option an alternate file can be specified.
+      And with the <span class="emphasis"><em>readenv</em></span> option this can be completly disabled.
+    </p><p>
+      Third it will read a user configuration file
+      (<code class="filename">$HOME/.pam_environment</code> by default).
+      The default file file can be changed with the
+      <span class="emphasis"><em>user_envfile</em></span> option
+      and it can be turned on and off with the <span class="emphasis"><em>user_readenv</em></span> option.
+    </p><p>
+      Since setting of PAM environment variables can have side effects
+      to other modules, this module should be the last one on the stack.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_env.conf-description"></a>6.6.2. DESCRIPTION</h3></div></div></div><p>
+      The <code class="filename">/etc/security/pam_env.conf</code> file specifies
+      the environment variables to be set, unset or modified by
+      <span class="citerefentry"><span class="refentrytitle">pam_env</span>(8)</span>.
+      When someone logs in, this file is read and the environment
+      variables are set according.
+    </p><p>
+      Each line starts with the variable name, there are then two possible
+      options for each variable DEFAULT and OVERRIDE. DEFAULT allows and
+      administrator to set the value of the variable  to some default
+      value, if none is supplied then the empty string is assumed. The
+      OVERRIDE option tells pam_env that it should enter in its value
+      (overriding the default value) if there is one to use. OVERRIDE is
+      not used, "" is assumed and no override will be done.
+    </p><p>
+      <em class="replaceable"><code>VARIABLE</code></em>
+      [<em class="replaceable"><code>DEFAULT=[value]</code></em>]
+      [<em class="replaceable"><code>OVERRIDE=[value]</code></em>]
+    </p><p>
+      (Possibly non-existent) environment variables may be used in values
+      using the ${string} syntax and (possibly non-existent) PAM_ITEMs as well
+      as HOME and SHELL may be used in values using the @{string} syntax. Both
+      the $ and @ characters can be backslash escaped to be used as literal values
+      values can be delimited with "", escaped " not supported.
+      Note that many environment variables that you would like to use
+      may not be set by the time the module is called.
+      For example, ${HOME} is used below several times, but
+      many PAM applications don't make it available by the time you need it.
+      The special variables @{HOME} and @{SHELL} are expanded to the values
+      for the user from his <span class="emphasis"><em>passwd</em></span> entry.
+    </p><p>
+      The "<span class="emphasis"><em>#</em></span>" character at start of line (no space
+      at front) can be used to mark this line as a comment line.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_env-options"></a>6.6.3. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">conffile=<em class="replaceable"><code>/path/to/pam_env.conf</code></em></code>
+        </span></dt><dd><p>
+            Indicate an alternative <code class="filename">pam_env.conf</code>
+            style configuration file to override the default. This can
+            be useful when different services need different environments.
+          </p></dd><dt><span class="term">
+          <code class="option">debug</code>
+        </span></dt><dd><p>
+            A lot of debug information is printed with
+            <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span>.
+          </p></dd><dt><span class="term">
+          <code class="option">envfile=<em class="replaceable"><code>/path/to/environment</code></em></code>
+        </span></dt><dd><p>
+            Indicate an alternative <code class="filename">environment</code>
+            file to override the default. The syntax are simple
+	    <span class="emphasis"><em>KEY=VAL</em></span> pairs on separate lines. The
+	    <span class="emphasis"><em>export</em></span> instruction can be specified for bash
+	    compatibility, but will be ignored.
+	    This can be useful when different  services need different environments.
+          </p></dd><dt><span class="term">
+          <code class="option">readenv=<em class="replaceable"><code>0|1</code></em></code>
+        </span></dt><dd><p>
+            Turns on or off the reading of the file specified by envfile
+            (0 is off, 1 is on). By default this option is on.
+          </p></dd><dt><span class="term">
+          <code class="option">user_envfile=<em class="replaceable"><code>filename</code></em></code>
+        </span></dt><dd><p>
+            Indicate an alternative <code class="filename">.pam_environment</code>
+            file to override the default.The syntax is the same as
+	    for <span class="emphasis"><em>/etc/environment</em></span>.
+	    The filename is relative to the user home directory.
+	    This can be useful when different services need different
+	    environments.
+          </p></dd><dt><span class="term">
+          <code class="option">user_readenv=<em class="replaceable"><code>0|1</code></em></code>
+        </span></dt><dd><p>
+            Turns on or off the reading of the user specific environment
+            file. 0 is off, 1 is on. By default this option is on.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_env-types"></a>6.6.4. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      The <code class="option">auth</code> and <code class="option">session</code> module
+      types are provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_env-return_values"></a>6.6.5. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_ABORT</span></dt><dd><p>
+             Not all relevant data or options could be gotten.
+          </p></dd><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+              Memory buffer error.
+          </p></dd><dt><span class="term">PAM_IGNORE</span></dt><dd><p>
+             No pam_env.conf and environment file was found.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             Environment variables were set.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_env-files"></a>6.6.6. FILES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="filename">/etc/security/pam_env.conf</code></span></dt><dd><p>Default configuration file</p></dd><dt><span class="term"><code class="filename">/etc/environment</code></span></dt><dd><p>Default environment file</p></dd><dt><span class="term"><code class="filename">$HOME/.pam_environment</code></span></dt><dd><p>User specific environment file</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_env.conf-examples"></a>6.6.7. EXAMPLES</h3></div></div></div><p>
+      These are some example lines which might be specified in
+      <code class="filename">/etc/security/pam_env.conf</code>.
+    </p><p>
+      Set the REMOTEHOST variable for any hosts that are remote, default
+      to "localhost" rather than not being set at all
+    </p><pre class="programlisting">
+      REMOTEHOST     DEFAULT=localhost OVERRIDE=@{PAM_RHOST}
+    </pre><p>
+      Set the DISPLAY variable if it seems reasonable
+    </p><pre class="programlisting">
+      DISPLAY        DEFAULT=${REMOTEHOST}:0.0 OVERRIDE=${DISPLAY}
+    </pre><p>
+      Now some simple variables
+    </p><pre class="programlisting">
+      PAGER          DEFAULT=less
+      MANPAGER       DEFAULT=less
+      LESS           DEFAULT="M q e h15 z23 b80"
+      NNTPSERVER     DEFAULT=localhost
+      PATH           DEFAULT=${HOME}/bin:/usr/local/bin:/bin\
+      :/usr/bin:/usr/local/bin/X11:/usr/bin/X11
+      XDG_DATA_HOME  @{HOME}/share/
+    </pre><p>
+      Silly examples of escaped variables, just to show how they work.
+    </p><pre class="programlisting">
+      DOLLAR         DEFAULT=\$
+      DOLLARDOLLAR   DEFAULT=        OVERRIDE=\$${DOLLAR}
+      DOLLARPLUS     DEFAULT=\${REMOTEHOST}${REMOTEHOST}
+      ATSIGN         DEFAULT=""      OVERRIDE=\@
+    </pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_env-authors"></a>6.6.8. AUTHOR</h3></div></div></div><p>
+      pam_env was written by Dave Kinchlea &lt;kinch@kinch.ark.com&gt;.
+    </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_echo.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_exec.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.5. pam_echo - print text messages </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.7. pam_exec - call an external command</td></tr></table></div></body></html>

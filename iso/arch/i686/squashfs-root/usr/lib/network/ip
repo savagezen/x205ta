@@ -1,0 +1,182 @@
+## /usr/lib/network/globals needs to be sourced before this file
+
+
+## Interface a DHCP client
+# $1: DHCP client
+# $2: command
+# $3...: additional arguments
+dhcp_call() {
+    local client="$1" command="$2"
+    shift 2
+
+    if [[ ! -r "$SUBR_DIR/dhcp/$client" ]]; then
+        report_error "DHCP client '$client' is unsupported"
+        return 127
+    fi
+    if ! source "$SUBR_DIR/dhcp/$client"; then
+        report_error "DHCP client '$client' is not installed or not ready"
+        return 127
+    fi
+    "${client}_$command" "$@"
+}
+
+
+## Add resolv.conf entries for an interface
+# $1: interface name
+# $2...: entries, one line per variable
+resolvconf_add() {
+    local interface="$1"
+    shift
+    printf "%s\n" "$@" | do_readable resolvconf -a "$interface"
+}
+
+
+## Set up an IP configuration
+# $Interface: interface name
+# $IP: type of IPv4 configuration
+# $IP6: type of IPv6 configuration
+ip_set() {
+    local addr line route interface_sysctl=${Interface/.//}
+
+    if [[ -z $IP && -z $IP6 ]]; then
+        report_error "Neither IP, nor IP6 was specified"
+        return 1
+    fi
+
+    # Load ipv6 module if necessary
+    case "$IP6" in
+      dhcp|dhcp-noaddr|stateless|static)
+        [[ -d "/proc/sys/net/ipv6" ]] || modprobe ipv6
+        sysctl -q -w "net.ipv6.conf.$interface_sysctl.disable_ipv6=0"
+        [[ $IP6 == "static" ]]
+        sysctl -q -w "net.ipv6.conf.$interface_sysctl.accept_ra=$?"
+      ;;
+      no)
+        [[ -d "/proc/sys/net/ipv6" ]] && sysctl -q -w "net.ipv6.conf.$interface_sysctl.disable_ipv6=1"
+      ;;
+      "")  # undefined IP6 does not prevent RA's from being received -> nop
+      ;;
+      *)
+        report_error "IP6 must be 'dhcp', 'dhcp-noaddr', 'stateless', 'static' or 'no'"
+        return 1
+      ;;
+    esac
+
+    case $IP in
+      dhcp)
+        dhcp_call "${DHCPClient:-dhcpcd}" start 4 || return
+      ;;
+      static)
+        for addr in "${Address[@]}"; do
+            if ! do_debug ip addr add "$addr" brd + dev "$Interface"; then
+                report_error "Could not add address '$addr' to interface '$Interface'"
+                return 1
+            fi
+        done
+      ;;
+      ""|no)
+      ;;
+      *)
+        report_error "IP must be either 'dhcp', 'static' or 'no'"
+        return 1
+      ;;
+    esac
+
+    if [[ $IP != @(|no) ]]; then
+        # Add static IP routes
+        for route in "${Routes[@]}"; do
+            if ! do_debug ip route add $route dev "$Interface"; then
+                report_error "Could not add route '$route' to interface '$Interface'"
+                return 1
+            fi
+        done
+
+        # Set a custom gateway after static routes are added
+        if [[ $IP == "static" && $Gateway ]]; then
+            if ! do_debug ip route add default via "$Gateway" dev "$Interface"; then
+                report_error "Could not set gateway '$Gateway' on interface '$Interface'"
+                return 1
+            fi
+        fi
+    fi
+
+    if [[ $IP6 != @(|no) ]]; then
+        if [[ $IP6 == @(stateless|static) ]]; then
+            for addr in "${Address6[@]}"; do
+                if ! do_debug ip -6 addr add $addr $(is_yes "${SkipDAD:-no}" && printf nodad) dev "$Interface"; then
+                    report_error "Could not add address '$addr' to interface '$Interface'"
+                fi
+            done
+        fi
+
+        if ! is_yes "${SkipDAD:-no}"; then
+            # Wait for Duplicate Address Detection to finish
+            if ! timeout_wait "${TimeoutDAD:-3}" '[[ -z "$(ip -6 addr show dev "$Interface" tentative)" ]]'; then
+                report_error "Duplicate Address Detection is taking too long on interface '$Interface'"
+                return 1
+            fi
+        fi
+
+        # Start a DHCPv6 client after DAD has finished for the link-local address
+        if [[ $IP6 == @(dhcp|dhcp-noaddr) ]]; then
+            dhcp_call "${DHCP6Client:-dhclient}" start 6 ${IP6:5} || return
+        fi
+
+        # Add static IPv6 routes after DAD has finished
+        for route in "${Routes6[@]}"; do
+            if ! do_debug ip -6 route add $route dev "$Interface"; then
+                report_error "Could not add route '$route' to interface '$Interface'"
+                return 1
+            fi
+        done
+
+        # Set a custom gateway after static routes are added
+        if [[ $IP6 == @(stateless|static) && $Gateway6 ]]; then
+            if ! do_debug ip -6 route replace default via "$Gateway6" dev "$Interface"; then
+                report_error "Could not set gateway '$Gateway6' on interface '$Interface'"
+                return 1
+            fi
+        fi
+    fi
+
+    for line in "${IPCustom[@]}"; do
+        if ! do_debug ip $line; then
+            report_error "Could not configure interface ($line)"
+            return 1
+        fi
+    done
+
+    if [[ $Hostname ]]; then
+        if ! do_debug hostnamectl set-hostname "$Hostname"; then
+            report_error "Cannot set the hostname to '$Hostname'"
+            return 1
+        fi
+    fi
+
+    if [[ $DNS ]]; then
+        resolvconf_add "$Interface" \
+                       "${DNSDomain/#/domain }" \
+                       "${DNSSearch/#/search }" \
+                       "${DNS[@]/#/nameserver }" \
+                       "${DNSOptions[@]/#/options }"
+    fi
+}
+
+
+## Clean up the IP configuration
+# $Interface: interface name
+# $IP: type of IPv4 configuration
+# $IP6: type of IPv6 configuration
+ip_unset() {
+    [[ $IP == "dhcp" ]] && dhcp_call "${DHCPClient:-dhcpcd}" stop 4
+    [[ $IP6 == dhcp* ]] && dhcp_call "${DHCP6Client:-dhclient}" stop 6
+    [[ $DNS ]] && resolvconf -d "$Interface"
+    ip route flush dev "$Interface" &>/dev/null
+    ip -6 route flush dev "$Interface" &>/dev/null
+    ip addr flush dev "$Interface" scope host &>/dev/null
+    ip addr flush dev "$Interface" scope site &>/dev/null
+    ip addr flush dev "$Interface" scope global &>/dev/null
+}
+
+
+# vim: ft=sh ts=4 et sw=4:

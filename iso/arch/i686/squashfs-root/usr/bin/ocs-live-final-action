@@ -1,0 +1,111 @@
+#!/bin/bash
+# Author: Steven Shiau <steven _at_ nchc org tw>
+# License: GPL
+# //NOTE// Do not put poweroff/reboot in this program since it's run in jfbterm/bterm. We separate the final action from ocs-live-final-action. Otherwise if the poweroff command run in jfbterm/bterm, the Debian live "Press Enter" message after poweroff/shutdown command is issued might be coverd by jfbterm/bterm and user will not have any idea what's happening after choose poweroff/reboot. 
+
+# We need to know ocsroot.
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+. /etc/drbl/drbl-ocs.conf
+. $DRBL_SCRIPT_PATH/sbin/ocs-functions
+
+# Load the options from config file
+[ -e /etc/ocs/ocs-live.conf ] && . /etc/ocs/ocs-live.conf
+
+# Functions
+USAGE() {
+    echo "$ocs - To choose the final action (poweroff, reboot, command line prompt...) and put the output in a file"
+    echo "Usage:"
+    echo "To run $ocs:"
+    echo "$ocs OUTPUT_FILE"
+    echo "Ex:"
+    echo "To choose the final action and put the output to the file /tmp/my-selection.txt, run"
+    echo "   $ocs /tmp/my-selection.txt"
+} # end of USAGE
+
+####################
+### Main program ###
+####################
+
+ocs=`basename $0`
+#
+while [ $# -gt 0 ]; do
+ case "$1" in
+   -*)     echo "${0}: ${1}: invalid option" >&2
+           USAGE >& 2
+           exit 2 ;;
+   *)      break ;;
+ esac
+done
+
+#
+output_f="$1"
+#
+ask_and_load_lang_set $ocs_lang
+
+#
+if [ -z "$output_f" ]; then
+  [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+  echo "Output file was not assigned in $0!"
+  [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+  USAGE
+  echo "$msg_program_stop!"
+  exit 1
+fi	
+
+# check DIA
+check_DIA_set_ESC $DIA
+
+##############
+#### main ####
+
+# ocs_postmode_prompt is loaded from ocs-live.conf.
+if [ "$ocs_postmode_prompt" = "cmd" ]; then
+  echo "$msg_clone_finished_choose_to:"
+  echo "(0) $msg_poweroff"
+  echo "(1) $msg_reboot"
+  echo "(2) $msg_enter_cml"
+  echo "(3) $msg_run_clonezilla_live_again"
+  if mountpoint $ocsroot &>/dev/null; then
+    echo "(4) $msg_run_clonezilla_live_again_but_keep_mounted_repository"
+  fi
+  echo -n "[2] "
+  read final_action_no
+  case "$final_action_no" in
+    0) final_action="poweroff";;
+    1) final_action="reboot";;
+    3) final_action="rerun1";;
+    4) final_action="rerun2";;
+    *) final_action="cmd";;
+  esac
+else
+  # Default to use TUI mode
+  TMP="$(mktemp /tmp/ocs_final_act.XXXXXX)"
+  
+  if mountpoint $ocsroot &>/dev/null; then
+    rerun2_ocs_with_repo_mounted_1="rerun2"
+    rerun2_ocs_with_repo_mounted_2="$(rep_whspc_w_udrsc "$msg_run_clonezilla_live_again_but_keep_mounted_repository")"
+  fi
+  
+  final_action_flag=1
+  while [ "$final_action_flag" -ne 0 ]; do
+    $DIA --default-item "cmd" --nocancel --backtitle "Free Software Labs, NCHC, Taiwan" --title  \
+    "Choose mode" --menu "$msg_clone_finished_choose_to:" \
+    0 0 0 \
+    poweroff "$msg_poweroff" \
+    reboot "$msg_reboot" \
+    cmd "$msg_enter_cml" \
+    rerun1 "$msg_run_clonezilla_live_again" \
+    $rerun2_ocs_with_repo_mounted_1 $rerun2_ocs_with_repo_mounted_2 \
+    2> $TMP
+    final_action="$(cat $TMP)"
+    if [ -z "$lang" ]; then
+      final_action_flag=1
+    else
+      final_action_flag=0
+    fi
+  done
+  [ -f "$TMP" ] && rm -f $TMP
+fi
+echo "$final_action" > $output_f

@@ -1,0 +1,36 @@
+%NAME%
+zd1211-firmware
+
+%VERSION%
+1.5-1
+
+%DESC%
+Firmware for the in-kernel26 zd1211rw wireless driver
+
+%URL%
+http://zd1211.wiki.sourceforge.net/
+
+%ARCH%
+any
+
+%BUILDDATE%
+1399387014
+
+%INSTALLDATE%
+1464799539
+
+%PACKAGER%
+Dan McGee <dan@archlinux.org>
+
+%SIZE%
+47104
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%PROVIDES%
+zd1211
+

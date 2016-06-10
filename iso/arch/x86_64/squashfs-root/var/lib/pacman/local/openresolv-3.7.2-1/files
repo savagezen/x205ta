@@ -1,0 +1,26 @@
+%FILES%
+etc/
+etc/resolvconf.conf
+usr/
+usr/bin/
+usr/bin/resolvconf
+usr/lib/
+usr/lib/resolvconf/
+usr/lib/resolvconf/dnsmasq
+usr/lib/resolvconf/libc
+usr/lib/resolvconf/named
+usr/lib/resolvconf/pdnsd
+usr/lib/resolvconf/unbound
+usr/share/
+usr/share/licenses/
+usr/share/licenses/openresolv/
+usr/share/licenses/openresolv/LICENSE
+usr/share/man/
+usr/share/man/man5/
+usr/share/man/man5/resolvconf.conf.5.gz
+usr/share/man/man8/
+usr/share/man/man8/resolvconf.8.gz
+
+%BACKUP%
+etc/resolvconf.conf	59cbfd876d48f031077ebcbc649b0932
+

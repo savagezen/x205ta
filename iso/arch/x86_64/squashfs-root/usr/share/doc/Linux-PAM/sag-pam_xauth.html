@@ -1,0 +1,97 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.41. pam_xauth - forward xauth keys between users</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_wheel.html" title="6.40. pam_wheel - only permit root access to members of group wheel"><link rel="next" href="sag-see-also.html" title="Chapter 7. See also"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.41. pam_xauth - forward xauth keys between users</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_wheel.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-see-also.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_xauth"></a>6.41. pam_xauth - forward xauth keys between users</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_xauth.so</code>  [
+	debug
+      ] [
+        xauthpath=<em class="replaceable"><code>/path/to/xauth</code></em>
+      ] [
+        systemuser=<em class="replaceable"><code>UID</code></em>
+      ] [
+        targetuser=<em class="replaceable"><code>UID</code></em>
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_xauth-description"></a>6.41.1. DESCRIPTION</h3></div></div></div><p>
+      The pam_xauth PAM module is designed to forward xauth keys
+      (sometimes referred to as "cookies") between users.
+    </p><p>
+      Without pam_xauth, when xauth is enabled and a user uses the
+       <span class="citerefentry"><span class="refentrytitle">su</span>(1)</span> command to assume another user's privileges,
+      that user is no longer able to access the original user's X display
+      because the new user does not have the key needed to access the
+      display. pam_xauth solves the problem by forwarding the key from
+      the user running su (the source user) to the user whose identity the
+      source user is assuming (the target user) when the session is created,
+      and destroying the key when the session is torn down.
+    </p><p>
+      This means, for example, that when you run
+       <span class="citerefentry"><span class="refentrytitle">su</span>(1)</span> from an xterm session, you will be able to run
+      X programs without explicitly dealing with the
+      <span class="citerefentry"><span class="refentrytitle">xauth</span>(1)</span> xauth command or ~/.Xauthority files.
+    </p><p>
+      pam_xauth will only forward keys if xauth can list a key connected
+      to the $DISPLAY environment variable.
+    </p><p>
+      Primitive access control is provided by
+      <code class="filename">~/.xauth/export</code> in the invoking user's home
+      directory and <code class="filename">~/.xauth/import</code> in the target
+      user's home directory.
+    </p><p>
+      If a user has a <code class="filename">~/.xauth/import</code> file, the user
+      will only receive cookies from users listed in the file. If there is
+      no <code class="filename">~/.xauth/import</code> file, the user will accept
+      cookies from any other user.
+    </p><p>
+      If a user has a <code class="filename">.xauth/export</code> file, the user will
+      only forward cookies to users listed in the file. If there is no
+      <code class="filename">~/.xauth/export</code> file, and the invoking user is
+      not <span class="emphasis"><em>root</em></span>, the user will forward cookies
+      to any other user. If there is no <code class="filename">~/.xauth/export</code>
+      file, and the invoking user is <span class="emphasis"><em>root</em></span>,
+      the user will <span class="emphasis"><em>not</em></span> forward cookies to
+      other users.
+    </p><p>
+      Both the import and export files support wildcards (such as
+      <span class="emphasis"><em>*</em></span>). Both the import and export files
+      can be empty, signifying that no users are allowed.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_xauth-options"></a>6.41.2. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">debug</code>
+        </span></dt><dd><p>
+	    Print debug information.
+          </p></dd><dt><span class="term">
+          <code class="option">xauthpath=<em class="replaceable"><code>/path/to/xauth</code></em></code>
+        </span></dt><dd><p>
+            Specify the path the xauth program (it is expected in
+            <code class="filename">/usr/X11R6/bin/xauth</code>,
+            <code class="filename">/usr/bin/xauth</code>, or
+            <code class="filename">/usr/bin/X11/xauth</code> by default).
+          </p></dd><dt><span class="term">
+          <code class="option">systemuser=<em class="replaceable"><code>UID</code></em></code>
+        </span></dt><dd><p>
+            Specify the highest UID which will be assumed to belong to a
+            "system" user. pam_xauth will refuse to forward credentials to
+            users with UID less than or equal to this number, except for
+            root and the "targetuser", if specified.
+          </p></dd><dt><span class="term">
+          <code class="option">targetuser=<em class="replaceable"><code>UID</code></em></code>
+        </span></dt><dd><p>
+            Specify  a single target UID which is exempt from the
+            systemuser check.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_xauth-types"></a>6.41.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      Only the <span class="emphasis"><em>session</em></span> type is provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_xauth-return_values"></a>6.41.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+             Memory buffer error.
+          </p></dd><dt><span class="term">PAM_PERM_DENIED</span></dt><dd><p>
+            Permission denied by import/export file.
+          </p></dd><dt><span class="term">PAM_SESSION_ERR</span></dt><dd><p>
+	    Cannot determine user name, UID or access users home directory.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+            Success.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+            User not known.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_xauth-examples"></a>6.41.5. EXAMPLES</h3></div></div></div><p>
+      Add the following line to <code class="filename">/etc/pam.d/su</code> to
+      forward xauth keys between users when calling su:
+      </p><pre class="programlisting">
+session  optional  pam_xauth.so
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_xauth-author"></a>6.41.6. AUTHOR</h3></div></div></div><p>
+        pam_xauth was written by Nalin Dahyabhai &lt;nalin@redhat.com&gt;,
+        based on original version by
+        Michael K. Johnson &lt;johnsonm@redhat.com&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_wheel.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-see-also.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.40. pam_wheel - only permit root access to members of group wheel </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 7. See also</td></tr></table></div></body></html>

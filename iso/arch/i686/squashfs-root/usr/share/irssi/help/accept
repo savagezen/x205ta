@@ -1,0 +1,30 @@
+
+%9Syntax:%9
+
+ACCEPT %|[[-]nick,...]
+
+%9Parameters:%9
+
+    A comma-separated list of nicknames to add or remove; if no argument is
+    given, your accept list will be displayed.
+
+%9Description:%9
+
+    Allows you to specify who you want to receive private messages and notices
+    from while you have callerid enabled.
+
+    When you have callerid enabled, messages from other users are blocked and
+    the sender is notified.
+
+    Users are automatically removed from the accept list if they quit, split
+    or change nickname; the accept list is lost when you disconnect.
+
+    This command only works on IRC servers that support the callerid user mode.
+
+%9Examples:%9
+
+    /ACCEPT mike,bob,-john,-sarah
+    /ACCEPT sarah,-bob
+
+%9See also:%9 IGNORE, SILENCE
+

@@ -1,0 +1,24 @@
+
+%9Syntax:%9
+
+KICK %|[<channel>] <nicks> [<reason>]
+
+%9Parameters:%9
+
+    The channel and the nicknames, separated by a comma, to kick from the
+    channel and the reason thereof; if no channel is given, the active channel
+    will be used.
+
+%9Description:%9
+
+    Removes the given nicknames from the specified channel; this command is
+    typically used to remove troublemakers, flooders or people otherwise making
+    a nuisance of themselves.
+
+%9Examples:%9
+
+    /KICK mike Please... chill down!
+    /KICK #irssi bob,sarah Stop flooding!
+
+%9See also:%9 BAN, KICKBAN, KNOCKOUT
+

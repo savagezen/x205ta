@@ -1,0 +1,20 @@
+
+%9Syntax:%9
+
+WALLOPS %|<message>
+
+%9Parameters:%9
+
+    The message to broadcast.
+
+%9Description:%9
+
+    Sends a network wide message to all the users which have the usermode 'w'
+    enabled; this command is restricted to IRC operators.
+
+%9Examples:%9
+
+    /WALLOPS Hi everybody!
+
+%9See also:%9 OPER, STATS
+

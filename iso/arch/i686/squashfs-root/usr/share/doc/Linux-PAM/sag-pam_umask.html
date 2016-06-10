@@ -1,0 +1,72 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.36. pam_umask - set the file mode creation mask</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_timestamp.html" title="6.35. pam_timestamp - authenticate using cached successful authentication attempts"><link rel="next" href="sag-pam_unix.html" title="6.37. pam_unix - traditional password authentication"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.36. pam_umask - set the file mode creation mask</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_timestamp.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_unix.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_umask"></a>6.36. pam_umask - set the file mode creation mask</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_umask.so</code>  [
+	debug
+      ] [
+        silent
+      ] [
+        usergroups
+      ] [
+        umask=<em class="replaceable"><code>mask</code></em>
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_umask-description"></a>6.36.1. DESCRIPTION</h3></div></div></div><p>
+      pam_umask is a PAM module to set the file mode creation mask
+      of the current environment. The umask affects the default
+      permissions assigned to newly created files.
+    </p><p>
+      The PAM module tries to get the umask value from the
+      following places in the following order:
+      </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+            umask= argument
+          </p></li><li class="listitem"><p>
+            umask= entry in the user's GECOS field
+          </p></li><li class="listitem"><p>
+            UMASK= entry from /etc/default/login
+          </p></li><li class="listitem"><p>
+            UMASK entry from /etc/login.defs
+          </p></li></ul></div><p>
+    </p><p>
+      The GECOS field is split on comma ',' characters. The module
+      also in addition to the umask= entry recognizes pri= entry,
+      which sets the nice priority value for the session, and
+      ulimit= entry, which sets the maximum size of files the processes
+      in the session can create.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_umask-options"></a>6.36.2. OPTIONS</h3></div></div></div><p>
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+            <code class="option">debug</code>
+          </span></dt><dd><p>
+	      Print debug information.
+            </p></dd><dt><span class="term">
+            <code class="option">silent</code>
+          </span></dt><dd><p>
+              Don't print informative messages.
+            </p></dd><dt><span class="term">
+            <code class="option">usergroups</code>
+          </span></dt><dd><p>
+              If the user is not root and the username is the same as
+              primary group name, the umask group bits are set to be the
+              same as owner bits (examples: 022 -&gt; 002, 077 -&gt; 007).
+            </p></dd><dt><span class="term">
+            <code class="option">umask=<em class="replaceable"><code>mask</code></em></code>
+          </span></dt><dd><p>
+               Sets the calling process's file mode creation mask (umask)
+               to <code class="option">mask</code> &amp; 0777. The value is interpreted
+               as Octal.
+            </p></dd></dl></div><p>
+
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_umask-types"></a>6.36.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      Only the <code class="option">session</code> type is provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_umask-return_values"></a>6.36.4. RETURN VALUES</h3></div></div></div><p>
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+              The new umask was set successfully.
+            </p></dd><dt><span class="term">PAM_SERVICE_ERR</span></dt><dd><p>
+	      No username was given.
+            </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+	      User not known.
+            </p></dd></dl></div><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_umask-examples"></a>6.36.5. EXAMPLES</h3></div></div></div><p>
+      Add the following line to <code class="filename">/etc/pam.d/login</code> to
+      set the user specific umask at login:
+      </p><pre class="programlisting">
+        session optional pam_umask.so umask=0022
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_umask-author"></a>6.36.6. AUTHOR</h3></div></div></div><p>
+        pam_umask was written by Thorsten Kukuk &lt;kukuk@thkukuk.de&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_timestamp.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_unix.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.35. pam_timestamp - authenticate using cached successful authentication attempts </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.37. pam_unix - traditional password authentication</td></tr></table></div></body></html>

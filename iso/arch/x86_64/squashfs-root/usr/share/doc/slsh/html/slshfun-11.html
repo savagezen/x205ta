@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.66">
+ <TITLE> SLSH Library Reference (version 2.3.0): Set Functions</TITLE>
+ <LINK HREF="slshfun-12.html" REL=next>
+ <LINK HREF="slshfun-10.html" REL=previous>
+ <LINK HREF="slshfun.html#toc11" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="slshfun-12.html">Next</A>
+<A HREF="slshfun-10.html">Previous</A>
+<A HREF="slshfun.html#toc11">Contents</A>
+<HR>
+<H2><A NAME="s11">11.</A> <A HREF="slshfun.html#toc11">Set Functions</A></H2>
+
+<P>These functions manipulate arrays and lists as sets.</P>
+
+
+<H2><A NAME="complement"></A> <A NAME="ss11.1">11.1</A> <A HREF="slshfun.html#toc11.1"><B>complement</B></A>
+</H2>
+
+<P>
+<DL>
+<DT><B> Synopsis </B><DD>
+<P>Extract the elements of a set that are not contained in other sets.</P>
+<DT><B> Usage </B><DD>
+<P><CODE>indices = complement (a, b, ..., c)</CODE></P>
+<DT><B> Description </B><DD>
+<P>This function computes the elements of the first argument (<CODE>a</CODE>)
+that are not contained in the sets given by the other arguments
+(<CODE>b,...,c</CODE>) and returns them in the form of indices into the
+first argument.</P>
+<DT><B> Example </B><DD>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+   a = {"foo", PI, 7};
+   b = [1,2,3,PI];
+   indices = complement (a, b);
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Upon return, <CODE>indices</CODE> will have the value <CODE>[0, 2]</CODE> since
+<CODE>a[0]</CODE> and <CODE>a[2]</CODE> are not contained in <CODE>b</CODE>.</P>
+<DT><B> Notes </B><DD>
+<P>A set may either be an Array_Type or a List_Type object.
+For a homogeneous collection of objects, it is better to
+use an Array_Type. i.e., <CODE>[1,2,3]</CODE> instead of <CODE>{1,2,3}</CODE>.</P>
+<DT><B> See Also </B><DD>
+<P><CODE>intersection, ismember, union, unique</CODE></P>
+</DL>
+</P>
+
+
+<H2><A NAME="intersection"></A> <A NAME="ss11.2">11.2</A> <A HREF="slshfun.html#toc11.2"><B>intersection</B></A>
+</H2>
+
+<P>
+<DL>
+<DT><B> Synopsis </B><DD>
+<P>Extract the common elements of two or more sets</P>
+<DT><B> Usage </B><DD>
+<P><CODE>indices = complement (a, b, ..., c)</CODE></P>
+<DT><B> Description </B><DD>
+<P>This function computes the common elements of two or more sets and
+returns them in the form of indices into the first argument.</P>
+<DT><B> Example </B><DD>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+   a = {"foo", 7, PI};
+   b = {PI, "bar", "foo"};
+   indices = intersection (a, b);
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Upon return, <CODE>indices</CODE> will have the value <CODE>[0, 2]</CODE> since
+<CODE>a[0]</CODE> and <CODE>a[2]</CODE> are the common elements of the sets.</P>
+<DT><B> Notes </B><DD>
+<P>A set may either be an Array_Type or a List_Type object.
+For a homogeneous collection of objects, it is better to
+use an Array_Type. i.e., <CODE>[1,2,3]</CODE> instead of <CODE>{1,2,3}</CODE>.</P>
+<DT><B> See Also </B><DD>
+<P><CODE>complement, ismember, union, unique</CODE></P>
+</DL>
+</P>
+
+
+<H2><A NAME="ismember"></A> <A NAME="ss11.3">11.3</A> <A HREF="slshfun.html#toc11.3"><B>ismember</B></A>
+</H2>
+
+<P>
+<DL>
+<DT><B> Synopsis </B><DD>
+<P>test to see if the elements of one set are members of another</P>
+<DT><B> Usage </B><DD>
+<P><CODE>val = ismember (a, b)</CODE></P>
+<DT><B> Description </B><DD>
+<P>This function may be used to see which of the elements of the set
+<CODE>a</CODE> are members of the set <CODE>b</CODE>.  It returns a boolean
+array indicating whether or not the corresponding element of
+<CODE>a</CODE> is a member of <CODE>b</CODE>.</P>
+<DT><B> Notes </B><DD>
+<P>A set may either be an Array_Type or a List_Type object.
+For a homogeneous collection of objects, it is better to
+use an Array_Type. i.e., <CODE>[1,2,3]</CODE> instead of <CODE>{1,2,3}</CODE>.</P>
+<DT><B> See Also </B><DD>
+<P><CODE>complement, intersection, union, unique</CODE></P>
+</DL>
+</P>
+
+
+<H2><A NAME="union"></A> <A NAME="ss11.4">11.4</A> <A HREF="slshfun.html#toc11.4"><B>union</B></A>
+</H2>
+
+<P>
+<DL>
+<DT><B> Synopsis </B><DD>
+<P>Form a set of the unique elements of one ore more subsets</P>
+<DT><B> Usage </B><DD>
+<P><CODE>abc = union (a, b,..., c)</CODE></P>
+<DT><B> Description </B><DD>
+<P>This function interprets each of its arguments as a set, then merges
+them together and returns only the unique elements.  The returned
+value may either be an <CODE>Array_Type</CODE> or a <CODE>List_Type</CODE>
+object.</P>
+<DT><B> Notes </B><DD>
+<P>A set may either be an Array_Type or a List_Type object.
+For a homogeneous collection of objects, it is better to
+use an Array_Type. i.e., <CODE>[1,2,3]</CODE> instead of <CODE>{1,2,3}</CODE>.</P>
+<DT><B> See Also </B><DD>
+<P><CODE>complement, intersection, ismember, unique</CODE></P>
+</DL>
+</P>
+
+
+<H2><A NAME="unique"></A> <A NAME="ss11.5">11.5</A> <A HREF="slshfun.html#toc11.5"><B>unique</B></A>
+</H2>
+
+<P>
+<DL>
+<DT><B> Synopsis </B><DD>
+<P>Get the indices of the unique elements of a set</P>
+<DT><B> Usage </B><DD>
+<P><CODE>indices = unique (A)</CODE></P>
+<DT><B> Description </B><DD>
+<P>This function returns an array of the indices of the unique elements
+of a set.</P>
+<DT><B> Notes </B><DD>
+<P>A set may either be an Array_Type or a List_Type object.
+For a homogeneous collection of objects, it is better to
+use an Array_Type. i.e., <CODE>[1,2,3]</CODE> instead of <CODE>{1,2,3}</CODE>.</P>
+<DT><B> See Also </B><DD>
+<P><CODE>complement, intersection, ismember, union</CODE></P>
+</DL>
+</P>
+
+
+<HR>
+<A HREF="slshfun-12.html">Next</A>
+<A HREF="slshfun-10.html">Previous</A>
+<A HREF="slshfun.html#toc11">Contents</A>
+</BODY>
+</HTML>

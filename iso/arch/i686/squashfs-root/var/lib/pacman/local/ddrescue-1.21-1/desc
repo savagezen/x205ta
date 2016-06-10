@@ -1,0 +1,36 @@
+%NAME%
+ddrescue
+
+%VERSION%
+1.21-1
+
+%DESC%
+GNU data recovery tool
+
+%URL%
+http://www.gnu.org/software/ddrescue/ddrescue.html
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1462881049
+
+%INSTALLDATE%
+1464799536
+
+%PACKAGER%
+Rashif Rahman (Ray) <schiv@archlinux.org>
+
+%SIZE%
+215040
+
+%LICENSE%
+GPL3
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+gcc-libs
+

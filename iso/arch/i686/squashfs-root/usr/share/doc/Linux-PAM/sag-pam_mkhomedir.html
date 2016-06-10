@@ -1,0 +1,63 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.20. pam_mkhomedir - create users home directory</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_mail.html" title="6.19. pam_mail - inform about available mail"><link rel="next" href="sag-pam_motd.html" title="6.21. pam_motd - display the motd file"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.20. pam_mkhomedir - create users home directory</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_mail.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_motd.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_mkhomedir"></a>6.20. pam_mkhomedir - create users home directory</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_mkhomedir.so</code>  [
+        silent
+      ] [
+        umask=<em class="replaceable"><code>mode</code></em>
+      ] [
+        skel=<em class="replaceable"><code>skeldir</code></em>
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_mkhomedir-description"></a>6.20.1. DESCRIPTION</h3></div></div></div><p>
+      The pam_mkhomedir PAM module will create a users home directory
+      if it does not exist when the session begins. This allows users
+      to be present in central database (such as NIS, kerberos or LDAP)
+      without using a distributed file system or pre-creating a large
+      number of directories. The skeleton directory (usually
+      <code class="filename">/etc/skel/</code>) is used to copy default files
+      and also sets a umask for the creation.
+    </p><p>
+      The new users home directory will not be removed after logout
+      of the user.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_mkhomedir-options"></a>6.20.2. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">silent</code>
+        </span></dt><dd><p>
+            Don't print informative messages.
+          </p></dd><dt><span class="term">
+          <code class="option">umask=<em class="replaceable"><code>mask</code></em></code>
+        </span></dt><dd><p>
+            The user file-creation mask is set to
+            <em class="replaceable"><code>mask</code></em>. The default value of mask is
+            0022.
+          </p></dd><dt><span class="term">
+          <code class="option">skel=<em class="replaceable"><code>/path/to/skel/directory</code></em></code>
+        </span></dt><dd><p>
+            Indicate an alternative <code class="filename">skel</code> directory
+            to override the default <code class="filename">/etc/skel</code>.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_mkhomedir-types"></a>6.20.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      Only the <code class="option">session</code> module type is provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_mkhomedir-return_values"></a>6.20.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+             Memory buffer error.
+          </p></dd><dt><span class="term">PAM_CRED_INSUFFICIENT</span></dt><dd><p>
+             Insufficient credentials to access authentication data.
+          </p></dd><dt><span class="term">PAM_PERM_DENIED</span></dt><dd><p>
+             Not enough permissions to create the new directory
+             or read the skel directory.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+             User not known to the underlying authentication module.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             Environment variables were set.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_mkhomedir-examples"></a>6.20.5. EXAMPLES</h3></div></div></div><p>
+      A sample /etc/pam.d/login file:
+      </p><pre class="programlisting">
+  auth       requisite   pam_securetty.so
+  auth       sufficient  pam_ldap.so
+  auth       required    pam_unix.so
+  auth       required    pam_nologin.so
+  account    sufficient  pam_ldap.so
+  account    required    pam_unix.so
+  password   required    pam_unix.so
+  session    required    pam_mkhomedir.so skel=/etc/skel/ umask=0022
+  session    required    pam_unix.so
+  session    optional    pam_lastlog.so
+  session    optional    pam_mail.so standard
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_mkhomedir-author"></a>6.20.6. AUTHOR</h3></div></div></div><p>
+      pam_mkhomedir was written by Jason Gunthorpe &lt;jgg@debian.org&gt;.
+    </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_mail.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_motd.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.19. pam_mail - inform about available mail </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.21. pam_motd - display the motd file</td></tr></table></div></body></html>

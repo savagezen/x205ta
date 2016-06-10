@@ -1,0 +1,16 @@
+%FILES%
+usr/
+usr/bin/
+usr/bin/pigz
+usr/bin/unpigz
+usr/share/
+usr/share/doc/
+usr/share/doc/pigz/
+usr/share/doc/pigz/pigz.pdf
+usr/share/licenses/
+usr/share/licenses/pigz/
+usr/share/licenses/pigz/README
+usr/share/man/
+usr/share/man/man1/
+usr/share/man/man1/pigz.1.gz
+

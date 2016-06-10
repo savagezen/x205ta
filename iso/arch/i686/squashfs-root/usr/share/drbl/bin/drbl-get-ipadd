@@ -1,0 +1,44 @@
+#!/bin/bash
+# Authors: Steven Shiau <steven _at_ nchc org tw>, Ceasar Sun <ceasar _at_ nchc org tw>
+# License: GPL
+# Description: Get the IP address of network card interface
+
+# Load DRBL setting and functions
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+
+ethx=$1
+export LC_ALL=C
+
+Usage() {
+  echo "Get the IP address of network card interface" 
+  echo "Usage:"
+  echo "$(basename $0) INTERFACE"
+  echo "Ex: $(basename $0) eth0"
+}
+
+# For physical NIC, the output of "ifconfig -a" (Debian, Ubuntu and Fedora <=14) is like:
+# eth0      Link encap:Ethernet  HWaddr 00:11:aa:bb:cc:dd  
+# For ppp0 NIC, it's like:
+# ppp0 Link encap:Point-to-Point Protocol
+# Ref: http://sourceforge.net/projects/drbl/forums/forum/394008/topic/3855959
+# For Fedora 17, the output of "ifconfig -a" is like (//Note// An extra ":"):
+# eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+#       inet 192.168.120.192  netmask 255.255.255.0  broadcast 192.168.120.255
+#       inet6 fe80::20c:29ff:fe97:5d0f  prefixlen 64  scopeid 0x20<link>
+#       ether 00:0c:29:97:5d:0f  txqueuelen 1000  (Ethernet)
+#       RX packets 1998  bytes 179313 (175.1 KiB)
+#       RX errors 0  dropped 0  overruns 0  frame 0
+#       TX packets 1305  bytes 198243 (193.5 KiB)
+#       TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+[ -z "$ethx" ] && Usage && exit 1
+if ! LC_ALL=C ifconfig -a 2>/dev/null | grep -i -q "\<$ethx\>"; then
+   exit 1
+fi
+# //NOTE// Here we have to use grep "-w" to grep the IPv4 address, avoding getting IPv6 address. E.g.:
+# eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+#        inet 192.168.77.254  netmask 255.255.255.0  broadcast 192.168.77.255
+#        inet6 fe80::20c:29ff:fee9:f24e  prefixlen 64  scopeid 0x20<link>
+LC_ALL=C ifconfig $ethx | grep -w -A1 $ethx | grep -w -v $ethx | grep -w "inet" |sed -e 's/addr://'|  sed -e 's/^.*inet \([0-9\.]\+\).*$/\1/'
+exit 0

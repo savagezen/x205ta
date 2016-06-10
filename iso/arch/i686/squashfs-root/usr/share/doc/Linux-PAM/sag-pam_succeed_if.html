@@ -1,0 +1,66 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.31. pam_succeed_if - test account characteristics</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_shells.html" title="6.30. pam_shells - check for valid login shell"><link rel="next" href="sag-pam_tally.html" title="6.32. pam_tally - login counter (tallying) module"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.31. pam_succeed_if - test account characteristics</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_shells.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_tally.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_succeed_if"></a>6.31. pam_succeed_if - test account characteristics</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_succeed_if.so</code>  [<em class="replaceable"><code>flag</code></em>...] [<em class="replaceable"><code>condition</code></em>...]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_succeed_if-description"></a>6.31.1. DESCRIPTION</h3></div></div></div><p>
+      pam_succeed_if.so is designed to succeed or fail authentication
+      based on characteristics of the account belonging to the user being
+      authenticated or values of other PAM items. One use is to select whether
+      to load other modules based on this test.
+    </p><p>
+      The module should be given one or more conditions as module arguments,
+      and authentication will succeed only if all of the conditions are met.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_succeed_if-options"></a>6.31.2. OPTIONS</h3></div></div></div><p>
+      The following <span class="emphasis"><em>flag</em></span>s are supported:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="option">debug</code></span></dt><dd><p>Turns on debugging messages sent to syslog.</p></dd><dt><span class="term"><code class="option">use_uid</code></span></dt><dd><p>
+            Evaluate conditions using the account of the user whose UID
+            the application is running under instead of the user being
+            authenticated.
+          </p></dd><dt><span class="term"><code class="option">quiet</code></span></dt><dd><p>Don't log failure or success to the system log.</p></dd><dt><span class="term"><code class="option">quiet_fail</code></span></dt><dd><p>
+            Don't log failure to the system log.
+          </p></dd><dt><span class="term"><code class="option">quiet_success</code></span></dt><dd><p>
+            Don't log success to the system log.
+          </p></dd><dt><span class="term"><code class="option">audit</code></span></dt><dd><p>
+            Log unknown users to the system log.
+          </p></dd></dl></div><p>
+      <span class="emphasis"><em>Condition</em></span>s are three words: a field, a test,
+      and a value to test for.
+    </p><p>
+      Available fields are <span class="emphasis"><em>user</em></span>,
+      <span class="emphasis"><em>uid</em></span>, <span class="emphasis"><em>gid</em></span>,
+      <span class="emphasis"><em>shell</em></span>, <span class="emphasis"><em>home</em></span>,
+      <span class="emphasis"><em>ruser</em></span>, <span class="emphasis"><em>rhost</em></span>,
+      <span class="emphasis"><em>tty</em></span> and <span class="emphasis"><em>service</em></span>:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="option">field &lt; number</code></span></dt><dd><p>Field has a value numerically less than number.</p></dd><dt><span class="term"><code class="option">field &lt;= number</code></span></dt><dd><p>
+            Field has a value numerically less than or equal to number.
+          </p></dd><dt><span class="term"><code class="option">field eq number</code></span></dt><dd><p>
+            Field has a value numerically equal to number.
+          </p></dd><dt><span class="term"><code class="option">field &gt;= number</code></span></dt><dd><p>
+            Field has a value numerically greater than or equal to number.
+          </p></dd><dt><span class="term"><code class="option">field &gt; number</code></span></dt><dd><p>
+            Field has a value numerically greater than number.
+          </p></dd><dt><span class="term"><code class="option">field ne number</code></span></dt><dd><p>
+            Field has a value numerically different from number.
+          </p></dd><dt><span class="term"><code class="option">field = string</code></span></dt><dd><p>
+            Field exactly matches the given string.
+          </p></dd><dt><span class="term"><code class="option">field != string</code></span></dt><dd><p>
+            Field does not match the given string.
+          </p></dd><dt><span class="term"><code class="option">field =~ glob</code></span></dt><dd><p>Field matches the given glob.</p></dd><dt><span class="term"><code class="option">field !~ glob</code></span></dt><dd><p>Field does not match the given glob.</p></dd><dt><span class="term"><code class="option">field in item:item:...</code></span></dt><dd><p>Field is contained in the list of items separated by colons.</p></dd><dt><span class="term"><code class="option">field notin item:item:...</code></span></dt><dd><p>Field is not contained in the list of items separated by colons.</p></dd><dt><span class="term"><code class="option">user ingroup group</code></span></dt><dd><p>User is in given group.</p></dd><dt><span class="term"><code class="option">user notingroup group</code></span></dt><dd><p>User is not in given group.</p></dd><dt><span class="term"><code class="option">user innetgr netgroup</code></span></dt><dd><p>(user,host) is in given netgroup.</p></dd><dt><span class="term"><code class="option">user notinnetgr group</code></span></dt><dd><p>(user,host) is not in given netgroup.</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_succeed_if-types"></a>6.31.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      All module types (<code class="option">account</code>, <code class="option">auth</code>,
+      <code class="option">password</code> and <code class="option">session</code>) are provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_succeed_if-return_values"></a>6.31.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+              The condition was true.
+            </p></dd><dt><span class="term">PAM_AUTH_ERR</span></dt><dd><p>
+              The condition was false.
+            </p></dd><dt><span class="term">PAM_SERVICE_ERR</span></dt><dd><p>
+              A service error occurred or the arguments can't be
+              parsed correctly.
+            </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_succeed_if-examples"></a>6.31.5. EXAMPLES</h3></div></div></div><p>
+      To emulate the behaviour of <span class="emphasis"><em>pam_wheel</em></span>, except
+      there is no fallback to group 0:
+    </p><pre class="programlisting">
+auth required pam_succeed_if.so quiet user ingroup wheel
+    </pre><p>
+      Given that the type matches, only loads the othermodule rule if
+      the UID is over 500. Adjust the number after default to skip
+      several rules.
+    </p><pre class="programlisting">
+type [default=1 success=ignore] pam_succeed_if.so quiet uid &gt; 500
+type required othermodule.so arguments...
+    </pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_succeed_if-author"></a>6.31.6. AUTHOR</h3></div></div></div><p>Nalin Dahyabhai &lt;nalin@redhat.com&gt;</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_shells.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_tally.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.30. pam_shells - check for valid login shell </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.32. pam_tally - login counter (tallying) module</td></tr></table></div></body></html>

@@ -1,0 +1,87 @@
+#!/bin/bash
+# Author: Steven Shiau <steven _at_ nchc org tw>
+# License: GPL
+#
+
+# Load DRBL setting and functions
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+
+# Basic settings
+drblpush_conf="/etc/drbl/drblpush.conf"
+HOSTS_OUT="/etc/hosts"
+
+# Functions
+get_general_param_in_drblpush_conf() {
+  local index="$1"
+  param="$(grep -E "^$index=" $drblpush_conf | sed -e "s/$index=//g")"
+  echo $param
+}
+
+DEV_INT="$(grep "^interface=" $drblpush_conf | sed -e "s/interface=//g")"
+# use echo to convert them into one line instead of many lines.
+DEV_INT="$(echo $DEV_INT)"
+
+# get_general_param_in_drblpush_conf domain
+hostname_prefix="$(get_general_param_in_drblpush_conf hostname)"
+
+if [ -f /etc/hosts ]; then
+  echo -n "Backup the original /etc/hosts as /etc/hosts.drblsave... "
+  cp -f /etc/hosts /etc/hosts.drblsave
+  echo "done!"
+fi
+
+#
+if ! grep -q -E "^127.0.0.1[[:space:]]+" $HOSTS_OUT; then
+  cat <<-EOF >> $HOSTS_OUT
+127.0.0.1 localhost localhost.localdomain
+EOF
+fi
+#
+# Part I: for server
+echo "Generate the $HOSTS_OUT... "
+for interface in $DEV_INT; do
+  srv_ip="$(drbl-get-ipadd $interface)"
+  netmask_sys="$(drbl-get-netmask $interface)"
+  if grep -q -E "^$srv_ip[[:space:]]+" $HOSTS_OUT; then
+    # found the old one, replace that	  
+    perl -pi -e "s|^$srv_ip\s.*|$srv_ip ${hostname_prefix}${interface}|g" $HOSTS_OUT
+  else
+    # old one does not exist, create one
+    cat <<-EOF >> $HOSTS_OUT
+$srv_ip ${hostname_prefix}${interface}
+EOF
+  fi
+done
+
+# II: for clients
+ALL_IP="$(get-client-ip-list)"
+for ip in $ALL_IP; do
+  # get the hostname from $IP_HOST_TABLE
+  label="$(LC_ALL=C grep -iEw "^[[:space:]]*${ip}" $IP_HOST_TABLE | awk -F" " '{print $2}')"
+  if [ -z "$label" ]; then
+    # Same rules as that in drblpush. i.e. if label is empty, we will use the calculated name based on hostname prefix and IP address.
+    label_default="${hostname_prefix}""${ip//./-}"
+    label_assigned="$(get-assigned-hn-by-ip $ip)"
+    if [ -n "$label_assigned" ]; then
+      label=$label_assigned;
+    else
+      label=$label_default;
+    fi
+  fi
+  
+  if grep -q -E "^$ip$" $HOSTS_OUT; then
+    # found the old one (only IP with new line ending), replace that
+    perl -pi -e "s|^$ip$|$ip $label|g" $HOSTS_OUT
+  elif grep -q -E "^$ip[[:space:]]+" $HOSTS_OUT; then
+    # found the old one, replace that	  
+    perl -pi -e "s|^$ip\s.*|$ip $label|g" $HOSTS_OUT
+  else
+    # old one does not exist, create one
+    cat <<-EOF >> $HOSTS_OUT
+$ip $label
+EOF
+  fi
+done
+echo "done!"

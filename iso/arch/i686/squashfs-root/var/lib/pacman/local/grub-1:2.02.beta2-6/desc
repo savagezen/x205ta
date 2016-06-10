@@ -1,0 +1,67 @@
+%NAME%
+grub
+
+%VERSION%
+1:2.02.beta2-6
+
+%DESC%
+GNU GRand Unified Bootloader (2)
+
+%URL%
+https://www.gnu.org/software/grub/
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1450194712
+
+%INSTALLDATE%
+1464799537
+
+%PACKAGER%
+Evangelos Foutras <evangelos@foutrelis.com>
+
+%SIZE%
+26497024
+
+%LICENSE%
+GPL3
+
+%VALIDATION%
+pgp
+
+%REPLACES%
+grub-common
+grub-bios
+grub-emu
+grub-efi-i386
+
+%DEPENDS%
+sh
+xz
+gettext
+device-mapper
+
+%OPTDEPENDS%
+freetype2: For grub-mkfont usage
+fuse: For grub-mount usage
+dosfstools: For grub-mkrescue FAT FS and EFI support
+efibootmgr: For grub-install EFI support
+libisoburn: Provides xorriso for generating grub rescue iso using grub-mkrescue
+os-prober: To detect other OSes when generating grub.cfg in BIOS systems
+mtools: For grub-mkrescue FAT FS support
+
+%CONFLICTS%
+grub-common
+grub-bios
+grub-emu
+grub-efi-i386
+grub-legacy
+
+%PROVIDES%
+grub-common
+grub-bios
+grub-emu
+grub-efi-i386
+

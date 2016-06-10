@@ -1,0 +1,110 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.11. pam_group - module to modify group access</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_ftp.html" title="6.10. pam_ftp - module for anonymous access"><link rel="next" href="sag-pam_issue.html" title="6.12. pam_issue - add issue file to user prompt"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.11. pam_group - module to modify group access</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_ftp.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_issue.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_group"></a>6.11. pam_group - module to modify group access</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_group.so</code> </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_group-description"></a>6.11.1. DESCRIPTION</h3></div></div></div><p>
+      The pam_group PAM module does not authenticate the user, but instead
+      it grants group memberships (in the credential setting phase of the
+      authentication module) to the user. Such memberships are based on the
+      service they are applying for.
+    </p><p>
+      By default rules for group memberships are taken from config file
+      <code class="filename">/etc/security/group.conf</code>.
+    </p><p>
+      This module's usefulness relies on the file-systems
+      accessible to the user. The point being that once granted the
+      membership of a group, the user may attempt to create a
+      <code class="function">setgid</code> binary with a restricted group ownership.
+      Later, when the user is not given membership to this group, they can
+      recover group membership with the precompiled binary. The reason that
+      the file-systems that the user has access to are so significant, is the
+      fact that when a system is mounted <span class="emphasis"><em>nosuid</em></span> the user
+      is unable to create or execute such a binary file. For this module to
+      provide any level of security, all file-systems that the user has write
+      access to should be mounted <span class="emphasis"><em>nosuid</em></span>.
+    </p><p>
+      The pam_group module functions in parallel with the
+      <code class="filename">/etc/group</code> file. If the user is granted any groups
+      based on the behavior of this module, they are granted
+      <span class="emphasis"><em>in addition</em></span> to those entries
+      <code class="filename">/etc/group</code> (or equivalent).
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-group.conf-description"></a>6.11.2. DESCRIPTION</h3></div></div></div><p>
+      The pam_group PAM module does not authenticate the user, but instead
+      it grants group memberships (in the credential setting phase of the
+      authentication module) to the user. Such memberships are based on the
+      service they are applying for.
+    </p><p>
+      For this module to function correctly there must be a correctly
+      formatted <code class="filename">/etc/security/group.conf</code> file present.
+      White spaces are ignored and lines maybe extended with '\' (escaped
+      newlines). Text following a '#' is ignored to the end of the line.
+   </p><p>
+      The syntax of the lines is as follows:
+    </p><p>
+      <em class="replaceable"><code>services</code></em>;<em class="replaceable"><code>ttys</code></em>;<em class="replaceable"><code>users</code></em>;<em class="replaceable"><code>times</code></em>;<em class="replaceable"><code>groups</code></em>
+    </p><p>
+      The first field, the <em class="replaceable"><code>services</code></em> field, is a logic list
+      of PAM service names that the rule applies to.
+    </p><p>
+      The second field, the <em class="replaceable"><code>tty</code></em>
+      field, is a logic list of terminal names that this rule applies to.
+    </p><p>
+      The third field, the <em class="replaceable"><code>users</code></em>
+      field, is a logic list of users, or a UNIX group, or a netgroup of
+      users to whom this rule applies. Group names are preceded by a '%'
+      symbol, while netgroup names are preceded by a '@' symbol.
+    </p><p>
+      For these items the simple wildcard '*' may be used only once.
+      With UNIX groups or netgroups no wildcards or logic operators
+      are allowed.
+    </p><p>
+      The <em class="replaceable"><code>times</code></em> field is used to indicate "when"
+      these groups are to be given to the user. The format here is a logic
+      list of day/time-range entries. The days are specified by a sequence of
+      two character entries, MoTuSa for example is Monday Tuesday and Saturday.
+      Note that repeated days are unset MoMo = no day, and MoWk = all weekdays
+      bar Monday. The two character combinations accepted are Mo Tu We Th Fr Sa
+      Su Wk Wd Al, the last two being week-end days and all 7 days of the week
+      respectively. As a final example, AlFr means all days except Friday.
+    </p><p>
+      Each day/time-range can be prefixed with a '!' to indicate "anything but".
+      The time-range part is two 24-hour times HHMM, separated by a hyphen,
+      indicating the start and finish time (if the finish time is smaller
+      than the start time it is deemed to apply on the following day).
+    </p><p>
+      The <em class="replaceable"><code>groups</code></em> field is a comma or space
+      separated list of groups that the user inherits membership of. These
+      groups are added if the previous fields are satisfied by the user's request.
+    </p><p>
+      For a rule to be active, ALL of service+ttys+users must be satisfied
+      by the applying process.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_group-options"></a>6.11.3. OPTIONS</h3></div></div></div><p>This module does not recognise any options.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_group-types"></a>6.11.4. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      Only the <code class="option">auth</code> module type is provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_group-return_values"></a>6.11.5. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             group membership was granted.
+          </p></dd><dt><span class="term">PAM_ABORT</span></dt><dd><p>
+             Not all relevant data could be gotten.
+          </p></dd><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+            Memory buffer error.
+          </p></dd><dt><span class="term">PAM_CRED_ERR</span></dt><dd><p>
+            Group membership was not granted.
+          </p></dd><dt><span class="term">PAM_IGNORE</span></dt><dd><p>
+             <code class="function">pam_sm_authenticate</code> was called which does nothing.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+             The user is not known to the system.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_group-files"></a>6.11.6. FILES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="filename">/etc/security/group.conf</code></span></dt><dd><p>Default configuration file</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-group.conf-examples"></a>6.11.7. EXAMPLES</h3></div></div></div><p>
+      These are some example lines which might be specified in
+      <code class="filename">/etc/security/group.conf</code>.
+    </p><p>
+      Running 'xsh' on tty* (any ttyXXX device), the user 'us' is given access
+      to the floppy (through membership of the floppy group)
+    </p><pre class="programlisting">xsh;tty*&amp;!ttyp*;us;Al0000-2400;floppy</pre><p>
+      Running 'xsh' on tty* (any ttyXXX device), the users 'sword', 'pike' and
+      'shield' are given access to games (through membership of the floppy group) after work hours.
+    </p><pre class="programlisting">
+xsh; tty* ;sword|pike|shield;!Wk0900-1800;games, sound
+xsh; tty* ;*;Al0900-1800;floppy
+    </pre><p>
+      Any member of the group 'admin' running 'xsh' on tty*,
+      is granted access (at any time) to the group 'plugdev'
+    </p><pre class="programlisting">
+xsh; tty* ;%admin;Al0000-2400;plugdev
+     </pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_group-authors"></a>6.11.8. AUTHORS</h3></div></div></div><p>
+      pam_group was written by Andrew G. Morgan &lt;morgan@kernel.org&gt;.
+    </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_ftp.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_issue.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.10. pam_ftp - module for anonymous access </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.12. pam_issue - add issue file to user prompt</td></tr></table></div></body></html>

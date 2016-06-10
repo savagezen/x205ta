@@ -1,0 +1,45 @@
+%NAME%
+nmap
+
+%VERSION%
+7.12-1
+
+%DESC%
+Utility for network discovery and security auditing
+
+%URL%
+http://nmap.org/
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1459357891
+
+%INSTALLDATE%
+1464799589
+
+%PACKAGER%
+Gaetan Bisson <bisson@archlinux.org>
+
+%SIZE%
+25841664
+
+%LICENSE%
+GPL2
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+pcre
+openssl
+lua52
+
+%OPTDEPENDS%
+pygtk: zenmap
+sudo: privilege escalation for zenmap
+xterm: privilege escalation for zenmap
+kdebase-runtime: privilege escalation for zenmap
+gksu: privilege escalation for zenmap
+

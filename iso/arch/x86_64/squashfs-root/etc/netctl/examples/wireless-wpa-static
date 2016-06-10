@@ -1,0 +1,12 @@
+Description='A simple WPA encrypted wireless connection using a static IP'
+Interface=wlan0
+Connection=wireless
+Security=wpa
+ESSID='MyNetwork'
+Key='WirelessKey'
+IP=static
+Address='192.168.1.23/24'
+Gateway='192.168.1.1'
+DNS=('192.168.1.1')
+# Uncomment this if your ssid is hidden
+#Hidden=yes

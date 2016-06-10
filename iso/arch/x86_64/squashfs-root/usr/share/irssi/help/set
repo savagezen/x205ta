@@ -1,0 +1,33 @@
+
+%9Syntax:%9
+
+SET %|[-clear | -default] [<key> [<value>]]
+
+%9Parameters:%9
+
+    -clear:      Removes the setting's value from the configuration.
+    -default:    Restore the setting to its default value.
+
+    The setting and the value; if no value is given, the list of settings that
+    matched will be returned. If no arguments are given, all the settings will
+    be displayed.
+
+%9Description:%9
+
+    Modifies the value of a setting; boolean settings accept only ON, OFF and
+    TOGGLE.
+
+    Please remember that you need to use the SAVE command to store the changes
+    into your configuration.
+
+%9Examples:%9
+
+    /SET
+    /SET nick mike
+    /SET -clear nick
+    /SET log_timestamp %%H:%%H:%%S
+    /SET -default log_timestamp
+    /SET close
+
+%9See also:%9 SAVE, TOGGLE
+

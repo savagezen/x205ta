@@ -1,0 +1,9 @@
+%FILES%
+etc/
+etc/trusted-key.key
+usr/
+usr/share/
+usr/share/licenses/
+usr/share/licenses/dnssec-anchors/
+usr/share/licenses/dnssec-anchors/LICENSE
+

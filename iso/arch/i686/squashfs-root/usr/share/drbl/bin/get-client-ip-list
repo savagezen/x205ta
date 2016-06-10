@@ -1,0 +1,105 @@
+#!/bin/bash
+# Steven Shiau <steven@nchc.org.tw>
+# License: GPL
+# Description: To get the IP address lists from dhcpd.conf
+
+# Loading setting.
+# Load DRBL setting and functions
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+
+# Settings
+sort_output="yes"
+dhcpd_conf_def="$DHCPDCONF_DIR/dhcpd.conf"
+
+#
+USAGE() {
+    echo "$ocs - To get the DRBL clients' IP addresses list from dhcpd.conf"
+    echo "Usage:"
+    echo "To run $ocs:"
+    echo "$ocs [OPTION]"
+    echo "Options:"
+    echo "-w, --without-sorting    List the clients' IP addresses list without sorting"
+    echo "-c, --dhcpd-config FILE  Assign the DHCPD config file. By default $dhcpd_conf_def is used"
+    echo "-v, --verbose            Run in verbose mode"
+    echo
+} # end of USAGE
+
+####################
+### Main program ###
+####################
+
+ocs_file="$0"
+ocs=`basename $ocs_file`
+# Parse command-line options
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -w|--without-sorting)
+            shift; sort_output="no"
+            ;;
+    -c|--dhcpd-config)
+           shift; 
+           if [ -z "$(echo $1 |grep ^-.)" ]; then
+             # skip the -xx option, in case 
+             dhcpd_conf="$1"
+             shift;
+           fi
+           [ -z "$dhcpd_conf" ] && USAGE && exit 1
+           ;;
+    -v|--verbose)
+            shift; VERBOSE="on"
+            ;;
+    -*)     echo "${0}: ${1}: invalid option" >&2
+            USAGE >& 2
+            exit 2 ;;
+    *)      break ;;
+  esac
+done
+
+#
+if [ -z "$dhcpd_conf" ]; then
+  dhcpd_conf="$dhcpd_conf_def"
+fi
+#
+IPLIST="$(mktemp /tmp/iplist.XXXXXX)"
+hn_ip_mac="$(mktemp /tmp/hn_ip_mac.XXXXXX)"
+ip_range_nm="$(mktemp /tmp/ip_range_nm.XXXXXX)"
+
+# (1) for MAC address part
+parse_dhcpd_conf $hn_ip_mac
+LC_ALL=C grep -E "^[[:space:]]*[^#]" $hn_ip_mac | awk -F" " '{print $2}' | cat > $IPLIST
+
+# (2) For range part
+LC_ALL=C grep -iEo "^(^subnet[[:space:]]+[([:digit:]|\.]+[[:space:]]+netmask.*\{|[[:space:]]*range.*;)" $dhcpd_conf > $ip_range_nm
+
+# The results in $ip_range_nm might like this (range in the subnet 192.168.27.0, and MAC addresses used in the subnet 172.16.0.0):
+# subnet 192.168.27.0 netmask 255.255.255.0 {
+#       range 192.168.27.1 192.168.27.206;
+# subnet 172.16.0.0 netmask 255.255.0.0 {
+
+range_lines="$(LC_ALL=C grep -n -iEo "^[[:space:]]*range.*;" $ip_range_nm | awk -F":" '{print $1}')"
+for i in $range_lines; do
+  pl="$((i-1))"
+  netmask="$(LC_ALL=C perl -ne "$pl..$i and print" $ip_range_nm | grep -Eo "netmask[[:space:]]+[([:digit:]|\.]+" | awk -F" " '{print $2}')"
+  range="$(LC_ALL=C perl -ne "$pl..$i and print" $ip_range_nm | grep -Eo "^[[:space:]]*range.*;" | sed -r -e "s/range //g" -e "s/;//g" -e "s/^[[:space:]]*//g")"
+  drbl-ipcalc-list -r $range $netmask >> $IPLIST
+done
+# We need to remove the DRBL server's IP address if they are in $IPLIST. In the dhcpd.conf, the range option contains a range, but any IP address of DRBL server might contain that, and we should not show that as the IP addresses of DRBL clients.
+srv_IPs="$(LC_ALL=C get-all-nic-ip -b)"
+for i in $srv_IPs; do
+  LC_ALL=C perl -pi -e "s/\b$i\b\n//g" $IPLIST
+done
+
+#
+case "$sort_output" in
+  yes) LC_ALL=C cat $IPLIST | sort -V | uniq ;;
+  no) LC_ALL=C cat $IPLIST ;;
+esac
+
+# clean
+[ -f "$IPLIST" ] && rm -f $IPLIST
+[ -f "$hn_ip_mac" ] && rm -f $hn_ip_mac
+[ -f "$ip_range_nm" ] && rm -f $ip_range_nm
+
+exit 0

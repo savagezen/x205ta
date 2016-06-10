@@ -1,0 +1,24 @@
+
+%9Syntax:%9
+
+QUERY %|[-window] [-<server tag>] <nick> [<message>]
+
+%9Parameters:%9
+
+    -window:          Uses the active window instead of opening a new one.
+    -<server tag>:    The server tag the target nickname is on.
+
+    The nickname to query and the message.
+
+%9Description:%9
+
+    Starts a private conversation with a nickname.
+
+%9Examples:%9
+
+    /QUERY mike
+    /QUERY -freenode bob
+    /QUERY -freenode -window sarah
+
+%9See also:%9 MSG, UNQUERY, WINDOW
+

@@ -1,0 +1,230 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>4.1. Configuration file syntax</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-configuration.html" title="Chapter 4. The Linux-PAM configuration file"><link rel="prev" href="sag-configuration.html" title="Chapter 4. The Linux-PAM configuration file"><link rel="next" href="sag-configuration-directory.html" title="4.2. Directory based configuration"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">4.1. Configuration file syntax</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-configuration.html">Prev</a> </td><th width="60%" align="center">Chapter 4. The Linux-PAM configuration file</th><td width="20%" align="right"> <a accesskey="n" href="sag-configuration-directory.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-configuration-file"></a>4.1. Configuration file syntax</h2></div></div></div><p>
+    The syntax of the <code class="filename">/etc/pam.conf</code>
+    configuration file is as follows. The file is made up of a list
+    of rules, each rule is typically placed on a single line,
+    but may be extended with an escaped end of line: `\&lt;LF&gt;'.
+    Comments are preceded with `#' marks and extend to the next end of
+    line.
+  </p><p>
+      The format of each rule is a space separated collection of tokens,
+      the first three being case-insensitive:
+    </p><p>
+      <span class="emphasis"><em> service  type  control  module-path  module-arguments</em></span>
+    </p><p>
+      The syntax of files contained in the <code class="filename">/etc/pam.d/</code>
+      directory, are identical except for the absence of any
+      <span class="emphasis"><em>service</em></span> field. In this case, the
+      <span class="emphasis"><em>service</em></span> is the name of the file in the
+      <code class="filename">/etc/pam.d/</code> directory. This filename must be
+      in lower case.
+    </p><p>
+      An important feature of <span class="emphasis"><em>PAM</em></span>, is that a
+      number of rules may be <span class="emphasis"><em>stacked</em></span> to combine
+      the services of a number of PAMs for a given authentication task.
+    </p><p>
+      The <span class="emphasis"><em>service</em></span> is typically the familiar name of
+      the corresponding application: <span class="emphasis"><em>login</em></span> and
+      <span class="emphasis"><em>su</em></span> are good examples. The
+      <span class="emphasis"><em>service</em></span>-name, <span class="emphasis"><em>other</em></span>,
+      is reserved for giving <span class="emphasis"><em>default</em></span> rules.
+      Only lines that mention the current service (or in the absence
+      of such, the <span class="emphasis"><em>other</em></span> entries) will be associated
+      with the given service-application.
+    </p><p>
+      The <span class="emphasis"><em>type</em></span> is the management group that the rule
+      corresponds to. It is used to specify which of the management groups
+      the subsequent module is to be associated with. Valid entries are:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">account</span></dt><dd><p>
+            this module type performs non-authentication based account
+            management. It is typically used to restrict/permit access
+            to a service based on the time of day, currently available
+            system resources (maximum number of users) or perhaps the
+            location of  the applicant user -- 'root' login only on the
+            console.
+          </p></dd><dt><span class="term">auth</span></dt><dd><p>
+            this module type provides two aspects of authenticating
+            the user. Firstly, it establishes that the user is who they
+            claim to be, by instructing the application to prompt the user
+            for a password or other means of identification. Secondly, the
+            module can grant group membership or other privileges through
+            its credential granting properties.
+          </p></dd><dt><span class="term">password</span></dt><dd><p>
+            this module type is required for updating the authentication
+            token associated with the user. Typically, there is one module
+            for each 'challenge/response' based authentication (auth) type.
+          </p></dd><dt><span class="term">session</span></dt><dd><p>
+            this module type is associated with doing things that need to
+            be done for the user before/after they can be given service.
+            Such things include the logging of information concerning the
+            opening/closing of some data exchange with a user, mounting
+            directories, etc.
+          </p></dd></dl></div><p>
+      If the <span class="emphasis"><em>type</em></span> value from the list above is prepended
+      with a <span class="emphasis"><em>-</em></span> character the PAM library will not log to
+      the system log if it is not possible to load the module because it is
+      missing in the system. This can be useful especially for modules which
+      are not always installed on the system and are not required for correct
+      authentication and authorization of the login session.
+    </p><p>
+      The third field, <span class="emphasis"><em>control</em></span>, indicates the
+      behavior of the PAM-API should the module fail to succeed in its
+      authentication task. There are two types of syntax for this control
+      field: the simple one has a single simple keyword; the more
+      complicated one involves a square-bracketed selection of
+      <span class="emphasis"><em>value=action</em></span> pairs.
+    </p><p>
+      For the simple (historical) syntax valid <span class="emphasis"><em>control</em></span>
+      values are:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">required</span></dt><dd><p>
+            failure of such a PAM will ultimately lead to the PAM-API
+            returning failure but only after the remaining
+            <span class="emphasis"><em>stacked</em></span> modules (for this
+            <span class="emphasis"><em>service</em></span> and <span class="emphasis"><em>type</em></span>)
+            have been invoked.
+          </p></dd><dt><span class="term">requisite</span></dt><dd><p>
+            like <span class="emphasis"><em>required</em></span>, however, in the case that
+            such a module returns a failure, control is directly returned
+            to the application or to the superior PAM stack.
+            The return value is that associated with
+            the first required or requisite module to fail. Note, this flag
+            can be used to protect against the possibility of a user getting
+            the opportunity to enter a password over an unsafe medium. It is
+            conceivable that such behavior might inform an attacker of valid
+            accounts on a system. This possibility should be weighed against
+            the not insignificant concerns of exposing a sensitive password
+            in a hostile environment.
+          </p></dd><dt><span class="term">sufficient</span></dt><dd><p>
+            if such a module succeeds and no prior <span class="emphasis"><em>required</em></span>
+            module has failed the PAM framework returns success to
+            the application or to the superior PAM stack immediately without
+            calling any further modules in the stack. A failure of a
+            <span class="emphasis"><em>sufficient</em></span> module is ignored and processing
+            of the PAM module stack continues unaffected.
+          </p></dd><dt><span class="term">optional</span></dt><dd><p>
+            the success or failure of this module is only important if
+            it is the only module in the stack associated with this
+            <span class="emphasis"><em>service</em></span>+<span class="emphasis"><em>type</em></span>.
+          </p></dd><dt><span class="term">include</span></dt><dd><p>
+            include all lines of given type from the configuration
+            file specified as an argument to this control.
+          </p></dd><dt><span class="term">substack</span></dt><dd><p>
+            include all lines of given type from the configuration
+            file specified as an argument to this control. This differs from
+            <span class="emphasis"><em>include</em></span> in that evaluation of the
+            <span class="emphasis"><em>done</em></span> and <span class="emphasis"><em>die</em></span> actions
+            in a substack does not cause skipping the rest of the complete
+            module stack, but only of the substack. Jumps in a substack
+            also can not make evaluation jump out of it, and the whole substack
+            is counted as one module when the jump is done in a parent stack.
+            The <span class="emphasis"><em>reset</em></span> action will reset the state of a
+            module stack to the state it was in as of beginning of the substack
+            evaluation.
+          </p></dd></dl></div><p>
+      For the more complicated syntax valid <span class="emphasis"><em>control</em></span>
+      values have the following form:
+    </p><pre class="programlisting">
+      [value1=action1 value2=action2 ...]
+    </pre><p>
+      Where <span class="emphasis"><em>valueN</em></span> corresponds to the return code
+      from the function invoked in the module for which the line is
+      defined. It is selected from one of these:
+      <span class="emphasis"><em>success</em></span>, <span class="emphasis"><em>open_err</em></span>,
+      <span class="emphasis"><em>symbol_err</em></span>, <span class="emphasis"><em>service_err</em></span>,
+      <span class="emphasis"><em>system_err</em></span>, <span class="emphasis"><em>buf_err</em></span>,
+      <span class="emphasis"><em>perm_denied</em></span>, <span class="emphasis"><em>auth_err</em></span>,
+      <span class="emphasis"><em>cred_insufficient</em></span>,
+      <span class="emphasis"><em>authinfo_unavail</em></span>,
+      <span class="emphasis"><em>user_unknown</em></span>, <span class="emphasis"><em>maxtries</em></span>,
+      <span class="emphasis"><em>new_authtok_reqd</em></span>,
+      <span class="emphasis"><em>acct_expired</em></span>, <span class="emphasis"><em>session_err</em></span>,
+      <span class="emphasis"><em>cred_unavail</em></span>, <span class="emphasis"><em>cred_expired</em></span>,
+      <span class="emphasis"><em>cred_err</em></span>, <span class="emphasis"><em>no_module_data</em></span>,
+      <span class="emphasis"><em>conv_err</em></span>, <span class="emphasis"><em>authtok_err</em></span>,
+      <span class="emphasis"><em>authtok_recover_err</em></span>,
+      <span class="emphasis"><em>authtok_lock_busy</em></span>,
+      <span class="emphasis"><em>authtok_disable_aging</em></span>,
+      <span class="emphasis"><em>try_again</em></span>, <span class="emphasis"><em>ignore</em></span>,
+      <span class="emphasis"><em>abort</em></span>, <span class="emphasis"><em>authtok_expired</em></span>,
+      <span class="emphasis"><em>module_unknown</em></span>, <span class="emphasis"><em>bad_item</em></span>,
+      <span class="emphasis"><em>conv_again</em></span>, <span class="emphasis"><em>incomplete</em></span>,
+      and <span class="emphasis"><em>default</em></span>.
+    </p><p>
+      The last of these, <span class="emphasis"><em>default</em></span>, implies 'all
+      <span class="emphasis"><em>valueN</em></span>'s not mentioned explicitly. Note, the
+      full list of PAM errors is available in
+      <code class="filename">/usr/include/security/_pam_types.h</code>. The
+      <span class="emphasis"><em>actionN</em></span> can take one of the following forms:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">ignore</span></dt><dd><p>
+             when used with a stack of modules, the module's return
+             status will not contribute to the return code the application
+             obtains.
+          </p></dd><dt><span class="term">bad</span></dt><dd><p>
+             this action indicates that the return code should be thought
+             of as indicative of the module failing. If this module is the
+             first in the stack to fail, its status value will be used for
+             that of the whole stack.
+          </p></dd><dt><span class="term">die</span></dt><dd><p>
+             equivalent to bad with the side effect of terminating the
+             module stack and PAM immediately returning to the application.
+          </p></dd><dt><span class="term">ok</span></dt><dd><p>
+             this tells PAM that the administrator thinks this return code
+             should contribute directly to the return code of the full
+             stack of modules. In other words, if the former state of the
+             stack would lead to a return of <span class="emphasis"><em>PAM_SUCCESS</em></span>,
+             the module's return code will override this value. Note, if
+             the former state of the stack holds some value that is
+             indicative of a modules failure, this 'ok' value will not be
+             used to override that value.
+          </p></dd><dt><span class="term">done</span></dt><dd><p>
+             equivalent to ok with the side effect of terminating the module
+             stack and PAM immediately returning to the application.
+          </p></dd><dt><span class="term">N (an unsigned integer)</span></dt><dd><p>
+	     equivalent to ok with the side effect of jumping over the
+	     next N modules in the stack. Note that N equal to 0 is not
+	     allowed (and it would be identical to ok in such case).
+          </p></dd><dt><span class="term">reset</span></dt><dd><p>
+             clear all memory of the state of the module stack and
+             start again with the next stacked module.
+          </p></dd></dl></div><p>
+      Each of the four keywords: required; requisite; sufficient; and
+      optional, have an equivalent expression in terms of the [...]
+      syntax. They are as follows:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">required</span></dt><dd><p>
+             [success=ok new_authtok_reqd=ok ignore=ignore default=bad]
+          </p></dd><dt><span class="term">requisite</span></dt><dd><p>
+             [success=ok new_authtok_reqd=ok ignore=ignore default=die]
+          </p></dd><dt><span class="term">sufficient</span></dt><dd><p>
+             [success=done new_authtok_reqd=done default=ignore]
+          </p></dd><dt><span class="term">optional</span></dt><dd><p>
+             [success=ok new_authtok_reqd=ok default=ignore]
+          </p></dd></dl></div><p>
+      <span class="emphasis"><em>module-path</em></span> is either the full filename
+      of the PAM to be used by the application (it begins with a '/'),
+      or a relative pathname from the default module location:
+      <code class="filename">/lib/security/</code> or
+      <code class="filename">/lib64/security/</code>, depending on the architecture.
+    </p><p>
+      <span class="emphasis"><em>module-arguments</em></span> are a space separated list
+      of tokens that can be used to modify the specific behavior of the
+      given PAM. Such arguments will be documented for each individual
+      module. Note, if you wish to include spaces in an argument, you
+      should surround that argument with square brackets.
+    </p><pre class="programlisting">
+    squid auth required pam_mysql.so user=passwd_query passwd=mada \
+          db=eminence [query=select user_name from internet_service \
+          where user_name='%u' and password=PASSWORD('%p') and \
+        service='web_proxy']
+    </pre><p>
+      When using this convention, you can include `[' characters
+      inside the string, and if you wish to include a `]' character
+      inside the string that will survive the argument parsing, you
+      should use `\]'. In other words:
+    </p><pre class="programlisting">
+    [..[..\]..]    --&gt;   ..[..]..
+    </pre><p>
+      Any line in (one of) the configuration file(s), that is not formatted
+      correctly, will generally tend (erring on the side of caution) to make
+      the authentication process fail.  A corresponding error is written to
+      the system log files with a call to
+      <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span>.
+    </p></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-configuration.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-configuration.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-configuration-directory.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 4. The Linux-PAM configuration file </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 4.2. Directory based configuration</td></tr></table></div></body></html>

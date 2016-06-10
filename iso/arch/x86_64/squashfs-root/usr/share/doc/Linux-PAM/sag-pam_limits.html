@@ -1,0 +1,190 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.15. pam_limits - limit resources</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_lastlog.html" title="6.14. pam_lastlog - display date of last login"><link rel="next" href="sag-pam_listfile.html" title="6.16. pam_listfile - deny or allow services based on an arbitrary file"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.15. pam_limits - limit resources</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_lastlog.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_listfile.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_limits"></a>6.15. pam_limits - limit resources</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_limits.so</code>  [
+        conf=<em class="replaceable"><code>/path/to/limits.conf</code></em>
+      ] [
+        debug
+      ] [
+        set_all
+      ] [
+        utmp_early
+      ] [
+        noaudit
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_limits-description"></a>6.15.1. DESCRIPTION</h3></div></div></div><p>
+      The pam_limits PAM module sets limits on the system resources that can be
+      obtained in a user-session. Users of <span class="emphasis"><em>uid=0</em></span> are affected
+      by this limits, too.
+    </p><p>
+      By default limits are taken from the <code class="filename">/etc/security/limits.conf</code>
+      config file. Then individual *.conf files from the <code class="filename">/etc/security/limits.d/</code>
+      directory are read. The files are parsed one after another in the order of "C" locale.
+      The effect of the individual files is the same as if all the files were
+      concatenated together in the order of parsing.
+      If a config file is explicitly specified with a module option then the
+      files in the above directory are not parsed.
+    </p><p>
+      The module must not be called by a multithreaded application.
+    </p><p>
+      If Linux PAM is compiled with audit support the module will report
+      when it denies access based on limit of maximum number of concurrent
+      login sessions.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-limits.conf-description"></a>6.15.2. DESCRIPTION</h3></div></div></div><p>
+      The <span class="emphasis"><em>pam_limits.so</em></span> module applies ulimit limits,
+      nice priority and number of simultaneous login sessions limit to user
+      login sessions. This description of the configuration file syntax
+      applies to the <code class="filename">/etc/security/limits.conf</code> file and
+      <code class="filename">*.conf</code> files in the
+      <code class="filename">/etc/security/limits.d</code> directory.
+    </p><p>
+      The syntax of the lines is as follows:
+    </p><p>
+      <em class="replaceable"><code>&lt;domain&gt;</code></em> <em class="replaceable"><code>&lt;type&gt;</code></em>
+      <em class="replaceable"><code>&lt;item&gt;</code></em> <em class="replaceable"><code>&lt;value&gt;</code></em>
+    </p><p>
+      The fields listed above should be filled as follows:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">&lt;domain&gt;</code>
+        </span></dt><dd><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+                a username
+              </p></li><li class="listitem"><p>
+                a groupname, with <span class="emphasis"><em>@group</em></span> syntax.
+                This should not be confused with netgroups.
+              </p></li><li class="listitem"><p>
+                the wildcard <span class="emphasis"><em>*</em></span>, for default entry.
+              </p></li><li class="listitem"><p>
+                the wildcard <span class="emphasis"><em>%</em></span>, for maxlogins limit only,
+                can also be used with <span class="emphasis"><em>%group</em></span> syntax. If the
+                <span class="emphasis"><em>%</em></span> wildcard is used alone it is identical
+                to using <span class="emphasis"><em>*</em></span> with maxsyslogins limit. With
+                a group specified after <span class="emphasis"><em>%</em></span> it limits the total
+                number of logins of all users that are member of the group.
+              </p></li><li class="listitem"><p>
+                an uid range specified as <em class="replaceable"><code>&lt;min_uid&gt;</code></em><span class="emphasis"><em>:</em></span><em class="replaceable"><code>&lt;max_uid&gt;</code></em>. If min_uid
+                is omitted, the match is exact for the max_uid. If max_uid is omitted, all
+                uids greater than or equal min_uid match.
+              </p></li><li class="listitem"><p>
+                a gid range specified as <span class="emphasis"><em>@</em></span><em class="replaceable"><code>&lt;min_gid&gt;</code></em><span class="emphasis"><em>:</em></span><em class="replaceable"><code>&lt;max_gid&gt;</code></em>. If min_gid
+                is omitted, the match is exact for the max_gid. If max_gid is omitted, all
+                gids greater than or equal min_gid match. For the exact match all groups including
+                the user's supplementary groups are examined. For the range matches only
+                the user's primary group is examined.
+              </p></li><li class="listitem"><p>
+                a gid specified as <span class="emphasis"><em>%:</em></span><em class="replaceable"><code>&lt;gid&gt;</code></em> applicable
+                to maxlogins limit only. It limits the total number of logins of all users
+                that are member of the group with the specified gid.
+              </p></li></ul></div></dd><dt><span class="term">
+          <code class="option">&lt;type&gt;</code>
+        </span></dt><dd><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="option">hard</code></span></dt><dd><p>
+                  for enforcing <span class="emphasis"><em>hard</em></span> resource limits.
+                  These limits are set by the superuser and enforced by the Kernel.
+                  The user cannot raise his requirement of system resources above such values.
+                </p></dd><dt><span class="term"><code class="option">soft</code></span></dt><dd><p>
+                  for enforcing <span class="emphasis"><em>soft</em></span> resource limits.
+                  These limits are ones that the user can move up or down within the
+                  permitted range by any pre-existing <span class="emphasis"><em>hard</em></span>
+                  limits. The values specified with this token can be thought of as
+                  <span class="emphasis"><em>default</em></span> values, for normal system usage.
+                </p></dd><dt><span class="term"><code class="option">-</code></span></dt><dd><p>
+                  for enforcing both <span class="emphasis"><em>soft</em></span> and
+                  <span class="emphasis"><em>hard</em></span> resource limits together.
+                </p><p>
+                  Note, if you specify a type of '-' but neglect to supply the
+                  item and value fields then the module will never enforce any
+                  limits on the specified user/group etc. .
+                </p></dd></dl></div></dd><dt><span class="term">
+          <code class="option">&lt;item&gt;</code>
+        </span></dt><dd><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="option">core</code></span></dt><dd><p>limits the core file size (KB)</p></dd><dt><span class="term"><code class="option">data</code></span></dt><dd><p>maximum data size (KB)</p></dd><dt><span class="term"><code class="option">fsize</code></span></dt><dd><p>maximum filesize (KB)</p></dd><dt><span class="term"><code class="option">memlock</code></span></dt><dd><p>maximum locked-in-memory address space (KB)</p></dd><dt><span class="term"><code class="option">nofile</code></span></dt><dd><p>maximum number of open file descriptors</p></dd><dt><span class="term"><code class="option">rss</code></span></dt><dd><p>maximum resident set size (KB) (Ignored in Linux 2.4.30 and higher)</p></dd><dt><span class="term"><code class="option">stack</code></span></dt><dd><p>maximum stack size (KB)</p></dd><dt><span class="term"><code class="option">cpu</code></span></dt><dd><p>maximum CPU time (minutes)</p></dd><dt><span class="term"><code class="option">nproc</code></span></dt><dd><p>maximum number of processes</p></dd><dt><span class="term"><code class="option">as</code></span></dt><dd><p>address space limit (KB)</p></dd><dt><span class="term"><code class="option">maxlogins</code></span></dt><dd><p>maximum number of logins for this user (this limit does
+                  not apply to user with <span class="emphasis"><em>uid=0</em></span>)</p></dd><dt><span class="term"><code class="option">maxsyslogins</code></span></dt><dd><p>maximum number of all logins on system; user is not
+                  allowed to log-in if total number of all user logins is
+                  greater than specified number (this limit does not apply to
+                  user with <span class="emphasis"><em>uid=0</em></span>)</p></dd><dt><span class="term"><code class="option">priority</code></span></dt><dd><p>the priority to run user process with (negative
+                  values boost process priority)</p></dd><dt><span class="term"><code class="option">locks</code></span></dt><dd><p>maximum locked files (Linux 2.4 and higher)</p></dd><dt><span class="term"><code class="option">sigpending</code></span></dt><dd><p>maximum number of pending signals (Linux 2.6 and higher)</p></dd><dt><span class="term"><code class="option">msgqueue</code></span></dt><dd><p>maximum memory used by POSIX message queues (bytes)
+                  (Linux 2.6 and higher)</p></dd><dt><span class="term"><code class="option">nice</code></span></dt><dd><p>maximum nice priority allowed to raise to (Linux 2.6.12 and higher) values: [-20,19]</p></dd><dt><span class="term"><code class="option">rtprio</code></span></dt><dd><p>maximum realtime priority allowed for non-privileged processes
+                  (Linux 2.6.12 and higher)</p></dd></dl></div></dd></dl></div><p>
+      All items support the values <span class="emphasis"><em>-1</em></span>,
+      <span class="emphasis"><em>unlimited</em></span> or <span class="emphasis"><em>infinity</em></span> indicating no limit,
+      except for <span class="emphasis"><em>priority</em></span> and <span class="emphasis"><em>nice</em></span>.
+    </p><p>
+      If a hard limit or soft limit of a resource is set to a valid value,
+      but outside of the supported range of the local system, the system
+      may reject the new limit or unexpected behavior may occur. If the
+      control value <span class="emphasis"><em>required</em></span>  is used, the module will
+      reject the login if a limit could not be set.
+    </p><p>
+      In general, individual limits have priority over group limits, so if
+      you impose no limits for <span class="emphasis"><em>admin</em></span> group, but one of
+      the members in this group have a limits line, the user will have its
+      limits set according to this line.
+    </p><p>
+      Also, please note that all limit settings are set
+      <span class="emphasis"><em>per login</em></span>. They are not global, nor are they
+      permanent; existing only for the duration of the session.
+      One exception is the <span class="emphasis"><em>maxlogin</em></span> option, this one
+      is system wide. But there is a race, concurrent logins at the same
+      time will not always be detect as such but only counted as one.
+    </p><p>
+      In the <span class="emphasis"><em>limits</em></span> configuration file, the
+      '<span class="emphasis"><em>#</em></span>' character introduces a comment
+      - after which the rest of the line is ignored.
+    </p><p>
+      The pam_limits module does report configuration problems
+      found in its configuration file and errors via <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_limits-options"></a>6.15.3. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">conf=<em class="replaceable"><code>/path/to/limits.conf</code></em></code>
+        </span></dt><dd><p>
+            Indicate an alternative limits.conf style configuration file to
+            override the default.
+          </p></dd><dt><span class="term">
+          <code class="option">debug</code>
+        </span></dt><dd><p>
+            Print debug information.
+          </p></dd><dt><span class="term">
+          <code class="option">set_all</code>
+        </span></dt><dd><p>
+            Set the limits for which no value is specified in the
+            configuration file to the one from the process with the
+            PID 1.
+          </p></dd><dt><span class="term">
+          <code class="option">utmp_early</code>
+        </span></dt><dd><p>
+            Some broken applications actually allocate a utmp entry for
+            the user before the user is admitted to the system. If some
+            of the services you are configuring PAM for do this, you can
+            selectively use this module argument to compensate for this
+            behavior and at the same time maintain system-wide consistency
+            with a single limits.conf file.
+          </p></dd><dt><span class="term">
+          <code class="option">noaudit</code>
+        </span></dt><dd><p>
+            Do not report exceeded maximum logins count to the audit subsystem.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_limits-types"></a>6.15.4. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      Only the <code class="option">session</code> module type is provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_limits-return_values"></a>6.15.5. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_ABORT</span></dt><dd><p>
+             Cannot get current limits.
+          </p></dd><dt><span class="term">PAM_IGNORE</span></dt><dd><p>
+             No limits found for this user.
+          </p></dd><dt><span class="term">PAM_PERM_DENIED</span></dt><dd><p>
+            New limits could not be set.
+          </p></dd><dt><span class="term">PAM_SERVICE_ERR</span></dt><dd><p>
+             Cannot read config file.
+          </p></dd><dt><span class="term">PAM_SESSION_ERR</span></dt><dd><p>
+             Error recovering account name.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             Limits were changed.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+             The user is not known to the system.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_limits-files"></a>6.15.6. FILES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="filename">/etc/security/limits.conf</code></span></dt><dd><p>Default configuration file</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-limits.conf-examples"></a>6.15.7. EXAMPLES</h3></div></div></div><p>
+      These are some example lines which might be specified in
+      <code class="filename">/etc/security/limits.conf</code>.
+    </p><pre class="programlisting">
+*               soft    core            0
+*               hard    nofile          512
+@student        hard    nproc           20
+@faculty        soft    nproc           20
+@faculty        hard    nproc           50
+ftp             hard    nproc           0
+@student        -       maxlogins       4
+:123            hard    cpu             5000
+@500:           soft    cpu             10000
+600:700         hard    locks           10
+    </pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_limits-authors"></a>6.15.8. AUTHORS</h3></div></div></div><p>
+      pam_limits was initially written by Cristian Gafton &lt;gafton@redhat.com&gt;
+    </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_lastlog.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_listfile.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.14. pam_lastlog - display date of last login </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.16. pam_listfile - deny or allow services based on an arbitrary file</td></tr></table></div></body></html>

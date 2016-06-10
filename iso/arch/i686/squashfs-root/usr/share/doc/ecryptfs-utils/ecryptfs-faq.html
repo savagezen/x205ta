@@ -1,0 +1,748 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>
+eCryptfs
+</title>
+</head>
+<body>
+
+<h1>eCryptfs</h1>
+<h3>FAQ</h3>
+
+<hr>
+
+<a href="http://ecryptfs.org">Main Page</a>
+
+<hr>
+
+<table width="640">
+<tr>
+<td>
+
+<p>
+
+<h3>Index</h3>
+
+<ul>
+
+<li><a href="#novelty">What is novel about eCryptfs?</a></li>
+
+<li><a href="#versions">What versions of the kernel have eCryptfs
+support?</a></li>
+
+<li><a href="#deployment">Will eCryptfs by itself protect all my
+data?</a></li>
+
+<li><a href="#access_lower">Can I access the lower files while
+eCryptfs is mounted?</a></li>
+
+<li><a href="#options">What kernel options do I need to enable to
+build eCryptfs?</a></li>
+
+<li><a href="#compatibility">On what filesystems can I expect eCryptfs
+to function?</a></li>
+
+<li><a href="#stack">Why is the kernel stack such an issue with
+eCryptfs?</a></li>
+
+<li><a href="#ecryptfsd">What is <code>ecryptfsd</code>?</a></li>
+
+<li><a href="#ecryptfs-manager">What is
+<code>ecryptfs-manager</code>?</a></li>
+
+<li><a href="#nonroot">Do I have to be root to mount
+eCryptfs?</a></li>
+
+<li><a href="#xattr">How do I store the metadata in the extended
+attribute region of the lower file?</a></li>
+
+<li><a href="#encryptedview">I am using the <code>-o xattr</code>
+option, but my backup tools do not preserve extended attributes. How
+can I back up the lower files?</a></li>
+
+<li><a href="#sparse">What about sparse files?</a></li>
+
+<li><a href="#passphrase">How should I select my passphrase?</a></li>
+
+<li><a href="#protectkey">How can I protect my key?</a></li>
+
+<li><a href="#lostkey">I forgot my password/lost my key! What can I do
+to recover my data?</a></li>
+
+<li><a href="#compare">How does eCryptfs compare with other Linux disk
+encryption solutions?</a></li>
+
+<li><a href="#no-ecryptfsac">Once one user can access an eCryptfs
+file, any users with permission can also access the file. Should not
+eCryptfs require all users to have the key in order to access the
+files?</a></li>
+
+<li><a href="#initcipher">&quot;<code>Unable to allocate crypto cipher
+with name [---]; rc = [-2]</code>&quot;</a></li>
+
+<li><a href="#baddir">&quot;<code>Error mounting eCryptfs; rc = [-2];
+strerr = [No such file or directory]</code>&quot;</a></li>
+
+<li><a href="#einval">&quot;<code>Error mounting eCryptfs; rc = [-22];
+strerr = [Invalid argument]</code>&quot;</a></li>
+
+<li><a href="#keyproblem">&quot;<code>ecryptfs_parse_options: Could
+not find key with description: [deadbeaf...]&quot;</code></a></li>
+
+<li><a href="#sigsize">&quot;<code>ecryptfs_parse_packet_set: Expected
+signature of size [8]; read size [7]&quot;</code></a></li>
+
+<li><a href="#nothere">My question isn't answered here.</a></li>
+
+</ul>
+</p>
+
+</p>
+
+<a name="novelty">
+
+<p><h3>Q. What is novel about eCryptfs?</h3></p>
+
+<p>
+Well, nothing, to be honest. All of the techniques used in eCryptfs
+are directly based on cryptographic technology that was widely known
+and in practical use in the 1970's.
+</p>
+
+<p>
+Security problems often arise when software tries to ``invent its own
+crypto'' by deviating from what has been in common practical use for a
+lengthy period of time. eCryptfs sticks to tried-and-true encryption
+technology.
+</p>
+
+<p>
+In terms of per-file key management, eCryptfs simply uses the methods
+of PGP (created by Philip Zimmermann in 1991 and formally specified as
+a public standard in RFC2440 in 1998) and takes the obvious and
+conceptually trivial step of applying those methods within a
+filesystem service in the kernel. eCryptfs employs the well-weathered
+encryption techniques that have been in common use in the community
+for over two decades. Other cryptographic filesystems published and
+widely used in the 1990's use the same basic approach to encrypting
+files. eCryptfs just happens to be the first such filesystem to make
+it upstream in the Linux kernel.
+</p>
+
+<a name="versions">
+
+<p><h3>Q. What versions of the kernel have eCryptfs support?</h3></p>
+
+<p>
+Linux kernel versions 2.6.19 and later have eCryptfs support. The
+official mainline kernel is supported and is in active development.
+</p>
+
+<a name="deployment">
+
+<p><h3>Q. Will eCryptfs by itself protect all my data?</h3></p>
+
+<p>
+eCryptfs is just one component in a comprehensive set of mechanisms to
+protect the confidentiality of your data. Simply mounting eCryptfs
+over a directory in your home directory will probably not provide
+sufficient coverage for everything your applications will write to
+disk. For instance, applications that produce and store thumbnails of
+your images may write the thumbnails to an unprotected location.
+</p>
+
+<p>
+Sensitive application data will typically wind up in the following
+locations, although some applications will write data to other
+locations not listed here:
+</p>
+
+<ul>
+<li>Anywhere in your home directory</li>
+<li>The /tmp directory</li>
+<li>The /var directory</li>
+<li>The swap device</li>
+</ul>
+
+<p>
+The /tmp directory and the swap device can be easily protected with
+dm-crypt using a key randomly generated when the system is booted,
+since the information in those locations does not need to persist
+between reboots. eCryptfs must mount the /var directory prior to any
+daemons or other system applications reading from or writing to that
+location (including the syslog utility). eCryptfs must also mount over
+the user's home directory prior to the user logging into the system.
+</p>
+
+<p>
+You will need to consider other applications that diverge from
+traditional paths for storing data on a case-by-case basis. Analyzing
+application behavior with the kernel auditing system is one way to
+profile the behavior of an application, and explicit SE Linux rules
+that only allow applications to write to encrypted mountpoints helps
+prevent inadvertent information leakage. We recommend always using
+eCryptfs together with appropriate Mandatory Access Control (MAC)
+mechanisms to ensure that your sensitive data is always encrypted.
+</p>
+
+<p>
+Proper deployment of a comprehensive per-file encryption mechanism is
+a task best tackled by the entire Linux distribution. The eCryptfs
+team is working closely with various major Linux distributions to help
+ensure that eCryptfs is properly used as one component of a
+comprehensive data protection strategy.
+</p>
+
+<a name="access_lower">
+
+<p><h3>Q. Can I access the lower files while eCryptfs is mounted?</h3></p>
+
+<p>
+Accessing the lower files during an active eCryptfs mount is somewhat
+like accessing a block device on which ext3 is mounted. The kernel
+allows it, and it may work (depending on what you do with the data),
+but it is not a good idea.
+</p>
+
+<a name="options">
+
+<p><h3>Q. What kernel options do I need to enable to build
+eCryptfs?</h3></p>
+
+<p>
+<code>
+Code maturity level options  ---><br>
+&nbsp;&nbsp;[*] Prompt for development and/or incomplete code/drivers<br>
+<br>
+Security options  ---><br>
+&nbsp;&nbsp;&lt;M&gt; Enable access key retention support<br>
+<br>
+Cryptographic options  ---><br>
+&nbsp;&nbsp;&lt;M&gt;   MD5 digest algorithm<br>
+&nbsp;&nbsp;&lt;M&gt;   AES cipher algorithms<br>
+<br>
+File systems  ---><br>
+&nbsp;&nbsp;Miscellaneous filesystems  ---><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;M&gt; eCrypt filesystem layer support (EXPERIMENTAL)<br>
+<br>
+Recommended .config options (some options not available in older kernels):<br>
+CONFIG_EXPERIMENTAL=y<br>
+CONFIG_KEYS=y<br>
+CONFIG_CRYPTO=y<br>
+CONFIG_CRYPTO_ALGAPI=y<br>
+CONFIG_CRYPTO_BLKCIPHER=y<br>
+CONFIG_CRYPTO_HASH=y<br>
+CONFIG_CRYPTO_MANAGER=y<br>
+CONFIG_CRYPTO_MD5=y<br>
+CONFIG_CRYPTO_ECB=y<br>
+CONFIG_CRYPTO_CBC=y<br>
+CONFIG_CRYPTO_AES=y<br>
+CONFIG_ECRYPT_FS=m
+</code>
+</p>
+
+<p>
+Newer versions of the Linux kernel now have a ``Layered filesystems''
+submenu under the ``File systems'' menu, where eCryptfs and Unionfs
+reside.
+</p>
+
+<p>
+Make certain that you have loaded all of the crypto modules that you
+need to run eCryptfs. This includes <code>ecb</code>,
+<code>cbc</code>, <code>md5</code>, and at least one popular symmetric
+cipher, like <code>aes</code>.
+</p>
+
+<a name="compatibility">
+
+<p><h3>Q. On what filesystems can I expect eCryptfs to function?</h3></p>
+
+<p>
+eCryptfs has been well tested on EXT3, EXT4, XFS and it should work well on
+other popular local filesystems such as JFS,  ReiserFS, and so
+forth. Changes in the 2.6.24 kernel make eCryptfs more functional on
+NFS and CIFS, although there is still a little more work to do in
+order to make eCryptfs function as well on networked filesystems as it
+currently works on local filesystems. This <a
+href="https://bugs.launchpad.net/ecryptfs/+bug/277578">bug</a>
+tracks the issues around making eCryptfs work on top of NFS, CIFS, Samba
+and WebDAV.
+</p>
+
+<a name="stack">
+
+<p><h3>Q. Why is the kernel stack such an issue with eCryptfs?</h3></p>
+
+<p>
+eCryptfs is a stacked filesystem. This implies that eCryptfs adds on
+top of whatever call stack exists with current filesystems. Each
+process in the Linux kernel has a fixed maximum stack size (4k+4k or
+8k). Some filesystems (such as XFS) push the limit of the stack by
+themselves; adding eCryptfs on top may cause a stack overflow on these
+filesystems. If you wish to use eCryptfs on XFS, I recommend that you
+first perform stress tests to help determine whether your specific
+configuration will lead to a kernel process stack overflow.
+</p>
+
+<a name="nonroot">
+
+<p><h3>Q. Do I have to be root to mount eCryptfs?</h3></p>
+
+<p>
+eCryptfs mounts can be set up to be done by non-root users, using
+the <code>ecryptfs-setup-private</code> utility.  The root user
+can also setup mount points in <code>/etc/fstab</code>, but the
+non-root users will need to manually load their keys into the
+kernel keyring.
+</p>
+
+<a name="xattr">
+
+<p><h3>Q. How do I store the metadata in the extended attribute region
+of the lower file?</h3></p>
+
+<p>
+If your kernel has support for it, mount with the <code>-o
+xattr</code> option. Be sure to preserve the extended attributes in
+the lower files, or you will lose your data. Bear in mind that many
+userspace utilities such as <code>tar</code> lack extended attribute
+support, and so you need to use utilities like <code>star</code> with
+the proper options instead.
+</p>
+
+<a name="encryptedview">
+
+<p><h3>Q. I am using the <code>-o xattr</code> option, but my backup
+tools do not preserve extended attributes. How can I back up the lower
+files?</h3></p>
+
+<p>
+Mount with the <code>-o encrypted_view</code> flag and read the files
+from under the eCryptfs mount point. The files read will be encrypted,
+and the cryptographic metadata will be in the headers of the encrypted
+files that are passed through, even if this metadata is actually
+stored in the extended attribute regions of the lower files.
+</p>
+
+<a name="sparse">
+
+<p><h3>Q. What about sparse files?</h3></p>
+
+<p>
+eCryptfs does not currently support sparse files. Sequences of
+encrypted extents with all 0's could be interpreted as sparse regions
+in eCryptfs without too much implementation complexity. However, this
+would open up a possible attack vector, since the fact that certain
+segments of data are all 0's could betray strategic information that
+the user does not necessarily want to reveal to an attacker. For
+instance, if the attacker knows that a certain database file with
+patient medical data keeps information about viral infections in one
+region of the file and information about diabetes in another section
+of the file, then the very fact that the segment for viral infection
+data is populated with data at all would reveal that the patient has a
+viral infection.
+</p>
+
+<a name="passphrase">
+
+<p><h3>Q. How should I select my passphrase?</h3></p>
+
+<p>
+There are plenty of good guides out there to help you choose a strong
+passphrase. Here is one, for instance: <a
+href="http://www.iusmentis.com/security/passphrasefaq/">http://www.iusmentis.com/security/passphrasefaq/</a>.
+</p>
+
+<a name="protectkey">
+
+<p><h3>Q. How can I protect my key?</h3></p>
+
+<p>
+Make a copy and store it in a physically secure location. For
+instance, copy your public/private keypair to a USB flash drive or
+write your passphrase onto a sheet of paper. Then, lock the drive and
+paper in your desk drawer or put them in a safe deposit box (depending
+on the sensitivity of the data that the keys protect). Future versions
+of eCryptfs userspace utilities may implement key splitting functions
+to provide even more paranoid levels of key protection.
+</p>
+
+<p>
+Do not store your keys under the same physical security context in
+which you are storing your media. It should be much harder for an
+attacker to get to your keys than it is for him to get to your media.
+</p>
+
+<p>
+When you use public key mode and generate a new key using
+<code>ecryptfs-manager</code>, the generated key file is the one that
+you must back up in order to access your files.
+</p>
+
+<p>
+When mounting with a new key, I recommend performing a full mount,
+creating a new file, unmounting, clearing the user session keyring
+(<code>keyctl clear @u</code>), mounting again, and then trying to
+access the newly created file. This minimizes the likelihood that you
+will mistype a passphrase and create files that you will not be able
+to later recover. When mounting in passphrase mode, make sure that the
+ecryptfs_sig value matches between mounts. To help avoid the pitfall
+of mistyping a passphrase on mount, eCryptfs stores a cache of
+previous ecryptfs_sig values and warns the user if a mount passphrase
+does not match any passphrases used for previous mounts.
+</p>
+
+<a name="lostkey">
+
+<p><h3>Q. I forgot my password/lost my key! What can I do to recover
+my data?</h3></p>
+
+<p>
+Nothing; you're screwed. (<a
+href="http://www.cskk.ezoshosting.com/cs/goodstuff/bs-spc.html">Apologies</a>
+to Bruce Schneier).
+</p>
+
+<p>
+If you have forgotten your passphrase, your only hope is that you
+chose a weak passphrase in the first place. There is an outside chance
+that you might be able to perform a successful dictionary attack to
+recover your passphrase. If you manage to recover your passphrase that
+way, then you may as well have not been bothering to encrypt your data
+in the first place, since a malicious attacker could have done the
+exact same thing to recover your passphrase.
+</p>
+
+<p>
+If you selected a strong passphrase or lost your key file, you are
+completely out of luck. Nobody can help you recover your data.
+</p>
+
+<a name="compare">
+
+<p><h3>Q. How does eCryptfs compare with other Linux disk encryption
+solutions?</h3></p>
+
+<p>
+eCryptfs is an actual filesystem. Some other popular disk encryption
+technologies are not filesystems; they are block device encryption
+layers (they provide what appears to be a physical block device to
+some actual filesystem). There is no filesystem logic in these
+layers. A few of the more well-known block device encryption layers
+include dm-crypt, Truecrypt, and Loop-AES. Perhaps the best thing
+about block device-layer encryption is that it is an order of
+magnitude simpler to implement than filesystem-layer
+encryption. Another advantage of block device-layer encryption is that
+it will encrypt the entire filesystem, including all of the filesystem
+metadata. However, for many use cases, this can turn out to be more of
+a disadvantage than an advantage.
+</p>
+
+<p>
+While eCryptfs uses a powerful and flexible approach to protecting
+filesystem content, block device-layer encryption technology is still
+required to protect swap space and certain databases that use their
+own block device partition. The table below provides a
+compare-and-constrast of the two technologies. I anticipate that block
+device encryption will be the best solution for some people, while
+stacked filesystem encryption will be the best solution for
+others. Sometimes it even makes sense to use them both together, to
+combine the comprehensive full-disk encryption of a block device layer
+encryption technology with the transparent per-file encryption
+provided by eCryptfs (this will result in double-encryption of the
+file contents).
+</p>
+
+<br>
+
+<table border=1 cellspacing=5 cellpadding=4>
+
+<tr>
+ <td width="50%"><center><b>Block Device Encryption</b></center></td>
+ <td width="50%"><center><b>Stacked Filesystem Encryption</b></center></td>
+</tr>
+
+<tr>
+ <td>Simple in concept and implementation; just transform blocks as
+ they pass through.</td>
+ <td>High level of design complexity; meticulous handling of internal
+ filesystem primitives required.</td>
+</tr>
+
+<tr>
+ <td>Must allocate a block device to dedicate for the entire
+ filesystem.</td>
+ <td>Stacks on top of existing mounted filesystems; requires no special
+ on-disk storage allocation effort.</td>
+</tr>
+
+<tr>
+ <td>Everything in the filesystem incurs the cost of encryption and
+ decryption, regardless of the confidentiality requirements for the
+ data.</td>
+ <td>Selective encryption of the contents of only the sensitive
+ files.</td>
+</tr>
+
+<tr>
+ <td>Fully protects the confidentiality of the directory structures,
+ superblocks, file sizes, file permissions, and so forth.</td>
+ <td>Cannot keep all filesystem metadata confidential. Since stacked
+ filesystems encrypt on a per-file basis, attackers will know the
+ approximate file sizes, for instance.</td>
+</tr>
+
+<tr>
+ <td>Coarse granularity; only fixed per-mountpoint encryption policies
+ are possible.</td>
+ <td>Fine granularity; flexible per-file encryption policies are
+ possible.</td>
+</tr>
+
+<tr>
+ <td>No notion of ``encrypted files.'' Individual files must be
+ re-encrypted via a userspace application before written to backups,
+ sent via email, etc.</td>
+ <td>Individual encrypted files can be accessed transparently by
+ applications; no additional work needed on the part of applications
+ before moving the files to another location.</td>
+</tr>
+
+<tr>
+ <td>Clients cannot use directly on networked filesystems; encryption
+ must be set up and managed on the server, or the client must encase
+ all of his files in a loopback mount, losing the per-file granularity
+ from the perspective of other clients.</td>
+ <td>Clients can stack on locally mounted networked filesystems;
+ individual files are sent to the server and stored in encrypted
+ form.</td> </tr>
+<tr>
+ <td>Can protect databases that use their own dedicated block device.</td>
+ <td>Can only protect databases that write their tables to regular
+ files in an existing filesystem.</td>
+</tr>
+
+<tr>
+ <td>Used to protect swap space.</td>
+ <td>Not designed to protect swap space; we recommend using block
+ device encryption to protect swap space while using eCryptfs on the
+ filesystem.</td>
+</tr>
+
+<tr>
+ <td>Possible to hide the fact that the partition is encrypted.</td>
+ <td>The fact that encrypted data exists on the device is obvious to an
+ observer.</td>
+</tr>
+
+<tr>
+ <td>Filesystem-agnostic; any filesystem will work on an encrypted
+ block device.</td>
+ <td>Can only be expected to work with existing filesystems that are
+ upstream in the official Linux kernel.</td>
+</tr>
+
+</table>
+
+<p>
+EncFS is another popular cryptographic filesystem that behaves much
+like a stacked filesystem. EncFS is a userspace filesystem, and so
+individual page reads and writes require additional context switches
+between kernel and userspace. One advantage a userspace cryptographic
+filesystem is that it is possible to use symmetric ciphers implemented
+in userspace libraries, but the frequent context switching impacts
+performance.
+</p>
+
+<a name="no-ecryptfsac">
+
+<p><h3>Once one user can access an eCryptfs file, any users with
+permission can also access the file. Should not eCryptfs require all
+users to have the key in order to access the files?</h3></p>
+
+<p>
+eCryptfs deliberately makes no attempt to re-implement the
+discretionary and mandatory access control mechanisms already present
+in the Linux kernel. eCryptfs will simply require that a File
+Encryption Key (FEK) be associated with any given inode in order to
+decrypt the contents of the file on disk. This prevents an attacker
+from accessing the file contents outside the context of the trusted
+host environment; for instance, by removing the storage device or by
+booting a live CD. This is the only type of unauthorized access that
+eCryptfs is intended to prevent.
+</p>
+
+<p>
+Once eCryptfs has associated that FEK with the inode, it does not
+impose any additional restrictions on who or what can access the
+files, deferring to the standard user/group/other permissions,
+capabilities, SE Linux type enforcement, and so forth to regulate
+access to the files. eCryptfs maintains no pedigree regarding how the
+FEK found its way to the inode, so it has no way of knowing that any
+particular UID should or should not be able to open the file, nor
+should eCryptfs do such a thing.
+</p>
+
+<p>
+Having eCryptfs impose additional access control onto the decrypted
+file contents in a trusted host environment would provide no
+additional security while introducing unintended usability issues. For
+instance, a user may wish to share his decrypted files with certain
+other users on the system without having to share his key with them or
+add their keys to a set of keys wrapping the inode's FEK. Users expect
+to be able to accomplish such a task via users, groups, capabilities,
+and types, and eCryptfs defers access control decisions on trusted
+host environments to these existing access control mechanisms.
+</p>
+
+<a name="initcipher">
+
+<p><h3>Q. &quot;<code>Unable to allocate crypto cipher with name
+[---]; rc = [-2]</code>&quot;</h3></p>
+
+<p>
+Make sure that you have enabled the kernel crypto API and that you
+have built the ciphers, hashes, and chaining modes that you wish to
+use. This will usually be md5, aes, cbc, and ecb. Also, make sure that
+the requested key size is valid for your cipher.
+</p>
+
+<a name="baddir">
+
+<p><h3>Q. &quot;<code>Error mounting eCryptfs; rc = [-2]; strerr = [No
+such file or directory]</code>&quot;</h3></p>
+
+<p>
+Make sure that both the source and destination directories that you
+provide to the mount command exist.
+</p>
+
+<a name="einval">
+
+<p><h3>Q. &quot;<code>Error mounting eCryptfs; rc = [-22]; strerr =
+[Invalid argument]</code>&quot;</a></h3></p>
+
+<p>
+Check your system log for the real problem.
+</p>
+
+<a name="keyproblem">
+
+<p><h3>Q. &quot;<code>ecryptfs_parse_options: Could not find key with
+description: [deadbeaf...]&quot;</code></h3></p>
+
+<p>
+If the mount fails and the message &quot;<code>ecryptfs_parse_options:
+Could not find key with description: [deadbeaf...]&quot;</code> is in
+your system logs, then there was a problem inserting your mount key
+into your kernel <i>user session</i> keyring.
+</p>
+
+<p>
+After a mount attempt, run <code>keyctl_show</code>. You should see
+something like this:
+</p>
+
+<pre>
+# keyctl show
+Session Keyring
+       -3 lswrv----------     0     0  keyring: _uid_ses.0
+        2 lswrv----------     0     0   \_ keyring: _uid.0
+892244932 lswrv----------     0     0       \_ user: deadbeef...
+</pre>
+
+<p>
+Where <code>deadbeef</code> is the signature that corresponds with
+your key. If you don't see this, then there is a problem with your
+keyring setup.
+</p>
+
+<p>
+If you su to root, be sure to initiate the session by using the -
+flag.
+</p>
+
+<p>
+Finally, try linking your user keyring into your active session
+keyring:
+</p>
+
+<pre>
+# keyctl link @u @s
+</pre>
+
+<a name="sigsize">
+
+<p><h3>Q. &quot;<code>ecryptfs_parse_packet_set: Expected
+signature of size [8]; read size [7]</code>&quot;</h3></p>
+
+<p>
+Older versions of eCryptfs shipping in older kernels had a minor bug
+where eCryptfs would only write out and read in 7 of the 8 key
+signature characters to the metadata of the lower file. This violates
+the eCryptfs spec, so newer versions of eCryptfs correct this bug and
+refuse to read files that do not conform to the spec.
+</p>
+
+<p>
+The current correctly implemented version of eCryptfs cannot read
+files created with the early nonconformant and buggy release. If you
+have any files created with the earlier version, you will need to boot
+with the earlier version of eCryptfs and copy the decrypted files to
+secure location (e.g., a loopback mount image protected with
+dm-crypt). You will then need to copy the data from the secure
+location into an eCryptfs mount using the most recent kernel release.
+</p>
+
+<p>
+Note that the Versions of eCryptfs from 2.6.24 and on will be able to
+read files created by earlier versions, back through to 2.6.24, as
+indicated in the ecryptfs-utils package README file:
+</p>
+
+<p>
+<i>
+eCryptfs is still in a developmental stage. When you upgrade the
+eCryptfs kernel module, it is possible that the eCryptfs file format
+has been updated. For this reason you should copy your files to an
+unencrypted location and then copy the files back into the new
+eCryptfs mount point to migrate the files.  File format version 3 and
+beyond (in kernel version 2.6.24) is expected to remain readable,
+however.
+</i>
+</p>
+
+<a name="nothere">
+
+<p><h3>Q. My question isn't answered here.</h3></p>
+
+<p>
+Ask a question on <a
+href="http://stackexchange.com/search?q=ecryptfs">StackExchange</a>.
+File a bug on <a
+href="https://bugs.launchpad.net/ecryptfs">Launchpad</a>.
+Discuss an issue on the <a
+href="http://vger.kernel.org/vger-lists.html#ecryptfs">mailing list</a>.
+</p>
+
+<!--
+<p><h3>Q. </h3></p>
+
+<p>
+
+</p>
+-->
+
+</td>
+</tr>
+</table>
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+</body>
+</html>

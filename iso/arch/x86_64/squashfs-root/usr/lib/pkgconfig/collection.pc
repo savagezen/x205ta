@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: collection
+Description: A data-type to collect data in a heirarchical structure for easy iteration and serialization
+Version: 0.7.0
+Libs: -L${libdir} -lcollection
+Cflags: -I${includedir}
+URL: http://fedorahosted.org/sssd/

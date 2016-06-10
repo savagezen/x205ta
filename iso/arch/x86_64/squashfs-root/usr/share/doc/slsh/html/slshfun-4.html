@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.66">
+ <TITLE> SLSH Library Reference (version 2.3.0): Filename Globbing and Related Functions</TITLE>
+ <LINK HREF="slshfun-5.html" REL=next>
+ <LINK HREF="slshfun-3.html" REL=previous>
+ <LINK HREF="slshfun.html#toc4" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="slshfun-5.html">Next</A>
+<A HREF="slshfun-3.html">Previous</A>
+<A HREF="slshfun.html#toc4">Contents</A>
+<HR>
+<H2><A NAME="s4">4.</A> <A HREF="slshfun.html#toc4">Filename Globbing and Related Functions</A></H2>
+
+<P>The <CODE>glob</CODE> function is defined <CODE>glob.sl</CODE>.  The
+<CODE>fswalk_new</CODE> may be used for more generic filesystem processing.
+It is defined in <CODE>fswalk.sl</CODE>.</P>
+<H2><A NAME="glob"></A> <A NAME="ss4.1">4.1</A> <A HREF="slshfun.html#toc4.1"><B>glob</B></A>
+</H2>
+
+<P>
+<DL>
+<DT><B> Synopsis </B><DD>
+<P>Find files using wildcards</P>
+<DT><B> Usage </B><DD>
+<P><CODE>files = glob (pattern1, ..., patternN)</CODE>;</P>
+<DT><B> Description </B><DD>
+<P>This function returns a list of files whose names match the specified
+globbing patterns.  A globbing pattern is one in which '?' matches a
+single character, and '*' matches 0 or more characters.</P>
+<DT><B> Example </B><DD>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+   files = glob ("*.c", "*.h");
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<DT><B> See Also </B><DD>
+<P><CODE>glob_to_regexp, fswalk_new</CODE></P>
+</DL>
+</P>
+
+<H2><A NAME="fswalk_new"></A> <A NAME="ss4.2">4.2</A> <A HREF="slshfun.html#toc4.2"><B>fswalk_new</B></A>
+</H2>
+
+<P>
+<DL>
+<DT><B> Synopsis </B><DD>
+<P>Create an object to walk the filesystem tree</P>
+<DT><B> Usage </B><DD>
+<P><CODE>obj = fswalk_new (Ref_Type dirfunc, Ref_Type filefunc; qualifiers)</CODE></P>
+<DT><B> Description </B><DD>
+<P>The <CODE>fswalk_new</CODE> function creates an object that is useful
+for exploring a filesystem tree.  It requires two arguments that
+are references to functions to be called when a directory or file is
+encountered.  Each of these functions is passed at least two
+arguments: the name of the file or directory (including leading path
+elements relative to the directory where processing started), and
+the stat structure of the of the file or directory.  Qualifiers may
+be used to specify additional arguments.</P>
+<P>The object's <CODE>walk</CODE> method is the one that actually walks the
+filesystem.</P>
+<P>The directory callback function must return an integer value that
+indicates how it should be processed.  If the function returns 0,
+then the directory will be skipped (pruned).  A positive value
+indicates that the directory will processed.  If the function
+returns a negative value, then no further processing by the walk
+function will take place and control will pass to the user.</P>
+<P>The file callback function must also return an integer that
+indicates how processing should continue.  If it returns a positive
+value, then additional files in the corresponding directory will be
+processed.  If it returns 0, then no further files or subdirectories
+of the directory will be processed, and processing will continue to
+take place in the parent directory.  Otherwise, the return value is
+negative, which indicates that processing should be stopped and
+control will pass back to the caller.</P>
+
+<DT><B> Qualifiers </B><DD>
+<P>The following qualifiers are supported:
+<BLOCKQUOTE><CODE>
+<PRE>
+   dargs={args...}
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<CODE>dargs</CODE> is a list of additional arguments that will be added when
+calling the directory callback function.
+<BLOCKQUOTE><CODE>
+<PRE>
+   fargs={args...}
+</PRE>
+</CODE></BLOCKQUOTE>
+
+<CODE>fargs</CODE> is a list of additional arguments that will be added when
+calling the file callback function.
+<BLOCKQUOTE><CODE>
+<PRE>
+   followlinks[=val]
+</PRE>
+</CODE></BLOCKQUOTE>
+
+The <CODE>followlinks</CODE> qualifier may be used to indicate whether
+or not directories that are symbolic links are to be followed.  By
+default, they are not.  If <CODE>followlinks</CODE> is present with no
+value, or has a non-zero value, then symbolic links will be
+followed.  Otherwise, if <CODE>followlinks</CODE> is not present, or is
+set to 0, then directories that are symbolic links will be skipped.</P>
+
+<DT><B> Methods </B><DD>
+<P><CODE></CODE>
+<BLOCKQUOTE><CODE>
+<PRE>
+   .walk (String_Type top_dir)
+</PRE>
+</CODE></BLOCKQUOTE>
+
+The <CODE>.walk</CODE> function walks the filesystem starting at the
+specified top-level directory calling the directory and file
+callback functions as it goes.</P>
+
+<DT><B> Example </B><DD>
+<P>Print a list of all files containing a <CODE>.png</CODE> extension under
+the current directory:
+<BLOCKQUOTE><CODE>
+<PRE>
+     private define file_callback (name, st)
+     {
+        if (".png" == path_extname (name))
+          message (name);
+        return 1;
+     }
+     variable w = fswalk_new (NULL, &amp;file_callback);
+     w.walk (".");
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Get a list of all directories that are symbolic links under /usr.
+<BLOCKQUOTE><CODE>
+<PRE>
+     private define dir_callback (name, st, list)
+     {
+        st = lstat_file (name);
+        if (stat_is ("lnk", st.st_mode))
+          {
+            list_append (list, name);
+            return 0;
+          }
+        return 1;
+     }
+
+     define get_symdir_list (top)
+     {
+        variable list = {};
+        variable w = fswalk_new (&amp;dir_callback, NULL
+                                 ;dargs={list}, followlinks);
+        w.walk (top);
+        return list;
+     }
+     symdirlist = get_symdir_list ("/usr");
+</PRE>
+</CODE></BLOCKQUOTE>
+
+Note that in this example, the dir_callback function returns 0 if
+the directory corresponds to a symbolic link.  This causes the link
+to not be followed.</P>
+<P>Get a list of dangling symbolic links:
+<BLOCKQUOTE><CODE>
+<PRE>
+     private define file_callback (name, st, list)
+     {
+        if (stat_is ("lnk", st.st_mode))
+          {
+             if ((NULL == stat_file (name))
+                 &amp;&amp; (errno == ENOENT))
+               list_append (list, name);
+          }
+        return 1;
+     }
+
+     define get_badlinks (top)
+     {
+        variable list = {};
+        variable w = fswalk_new (NULL, &amp;file_callback ;fargs={list});
+        w.walk (top);
+        return list;
+     }
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<DT><B> See Also </B><DD>
+<P><CODE>glob, stat_file, lstat_file, listdir</CODE>;</P>
+</DL>
+</P>
+
+
+
+<HR>
+<A HREF="slshfun-5.html">Next</A>
+<A HREF="slshfun-3.html">Previous</A>
+<A HREF="slshfun.html#toc4">Contents</A>
+</BODY>
+</HTML>

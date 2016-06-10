@@ -1,0 +1,22 @@
+
+%9Syntax:%9
+
+KICKBAN %|[<channel>] <nicks> <reason>
+
+%9Parameters:%9
+
+    The channel and the nicknames, separated by a comma, to kick and ban from
+    the channel and the reason thereof; if no channel is given, the active
+    channel will be used.
+
+%9Description:%9
+
+    Removes and then bans the given nicknames from the specified channel.
+
+%9Examples:%9
+
+    /KICKBAN mike Please... chill down!
+    /KICKBAN #irssi bob,sarah You guys broke the rules for the last time.
+
+%9See also:%9 BAN, KICK, KNOCKOUT
+

@@ -1,0 +1,34 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.4. pam_deny - locking-out PAM module</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_debug.html" title="6.3. pam_debug - debug the PAM stack"><link rel="next" href="sag-pam_echo.html" title="6.5. pam_echo - print text messages"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.4. pam_deny - locking-out PAM module</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_debug.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_echo.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_deny"></a>6.4. pam_deny - locking-out PAM module</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_deny.so</code> </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_deny-description"></a>6.4.1. DESCRIPTION</h3></div></div></div><p>
+      This module can be used to deny access. It always indicates a failure
+      to the application through the PAM framework. It might be suitable
+      for using for default (the <span class="emphasis"><em>OTHER</em></span>) entries.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_deny-options"></a>6.4.2. OPTIONS</h3></div></div></div><p>This module does not recognise any options.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_deny-types"></a>6.4.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      All module types (<code class="option">account</code>, <code class="option">auth</code>,
+      <code class="option">password</code> and <code class="option">session</code>) are provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_deny-return_values"></a>6.4.4. RETURN VALUES</h3></div></div></div><p>
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_AUTH_ERR</span></dt><dd><p>
+              This is returned by the account and auth services.
+            </p></dd><dt><span class="term">PAM_CRED_ERR</span></dt><dd><p>
+              This is returned by the setcred function.
+            </p></dd><dt><span class="term">PAM_AUTHTOK_ERR</span></dt><dd><p>
+              This is returned by the password service.
+            </p></dd><dt><span class="term">PAM_SESSION_ERR</span></dt><dd><p>
+              This is returned by the session service.
+            </p></dd></dl></div><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_deny-examples"></a>6.4.5. EXAMPLES</h3></div></div></div><pre class="programlisting">
+#%PAM-1.0
+#
+# If we don't have config entries for a service, the
+# OTHER entries are used. To be secure, warn and deny
+# access to everything.
+other auth     required       pam_warn.so
+other auth     required       pam_deny.so
+other account  required       pam_warn.so
+other account  required       pam_deny.so
+other password required       pam_warn.so
+other password required       pam_deny.so
+other session  required       pam_warn.so
+other session  required       pam_deny.so
+    </pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_deny-author"></a>6.4.6. AUTHOR</h3></div></div></div><p>
+        pam_deny was written by Andrew G. Morgan &lt;morgan@kernel.org&gt;
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_debug.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_echo.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.3. pam_debug - debug the PAM stack </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.5. pam_echo - print text messages</td></tr></table></div></body></html>

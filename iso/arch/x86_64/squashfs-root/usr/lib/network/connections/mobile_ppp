@@ -1,0 +1,94 @@
+# Contributed by Robbie Smith <zoqaeski@gmail.com>
+# Based on Thomas Bächler’s <thomas@archlinux.org> pppoe script
+# Also see <https://wiki.archlinux.org/index.php/3G_and_GPRS_modems_with_pppd> for more information.
+
+: ${PPPD:=pppd}
+: ${InterfaceRoot=dev/}
+
+quote_word() {
+    set -- "${@//\\/\\\\}"
+    printf '"%s"\n' "${@//\"/\\\"}"
+}
+
+mobile_ppp_up() {
+    local options_dir="$STATE_DIR/mobile_ppp.$Interface.$Profile"
+    mkdir -p "$options_dir"
+    if [[ -z $ChatScript ]]; then
+        ChatScript="$options_dir/modem.chat"
+        cat >> "$ChatScript" << EOF
+ECHO ON
+ABORT 'BUSY'
+ABORT 'NO CARRIER'
+ABORT 'VOICE'
+ABORT 'NO DIALTONE'
+ABORT 'NO DIAL TONE'
+ABORT 'NO ANSWER'
+ABORT 'DELAYED'
+ABORT   '\nRINGING\r\n\r\nRINGING\r'
+REPORT CONNECT
+TIMEOUT 6
+'' 'ATQ0'
+'OK-AT-OK' 'ATZ'
+TIMEOUT 3
+'OK' 'AT+CFUN=1'
+'OK' 'AT${Pin:++CPIN=$(quote_word "$Pin")}'
+'OK\d-AT-OK' 'ATI'
+'OK' 'ATZ'
+'OK' '${Init:-ATQ0 V1 E1 S0=0 &C1 &D2 +FCLASS=0}'
+'OK' 'AT$(case $Mode in
+  3Gonly) printf "\^SYSCFG=14,2,3fffffff,0,1";;
+  3Gpref) printf "\^SYSCFG=2,2,3fffffff,0,1";;
+  GPRSonly) printf "\^SYSCFG=13,1,3fffffff,0,0";;
+  GPRSpref) printf "\^SYSCFG=2,1,3fffffff,0,0";;
+esac)'
+${AccessPointName:+'OK-AT-OK' 'AT+CGDCONT=1,$(quote_word "IP"),$(quote_word "$AccessPointName")'}
+'OK' 'ATDT${PhoneNumber:-*99#}'
+TIMEOUT 30
+CONNECT ''
+EOF
+    fi
+
+    cat >> "$options_dir/options" << EOF
+linkname $(quote_word "$Profile")
+$(quote_word "$Interface")
+921600
+lock
+crtscts
+modem
+passive
+novj
+holdoff 10
+
+noauth
+$(is_yes "${DefaultRoute:-yes}" || printf no)defaultroute
+maxfail $(quote_word "${MaxFail:-5}")
+$(is_yes "${UsePeerDNS:-yes}" && printf usepeerdns)
+hide-password
+${User:+user $(quote_word "$User")}
+${Password:+password $(quote_word "$Password")}
+connect $(quote_word "/usr/sbin/chat -v -t15 -f $(quote_word "$ChatScript")")
+${OptionsFile:+file $(quote_word "$OptionsFile")}
+EOF
+
+    if ! $PPPD file "$options_dir/options"; then
+        rm -r "$options_dir"
+        report_error "Could not establish a ppp connection for profile '$Profile'."
+        return 1
+    fi
+}
+
+mobile_ppp_down() {
+    local options_dir pidfile pid
+    options_dir="$STATE_DIR/mobile_ppp.$Interface.$Profile"
+    pidfile="/var/run/ppp-$Profile.pid"
+
+    if [[ -r $pidfile ]]; then
+        read pid < "$pidfile"
+        (( pid )) && kill "$pid"
+    fi
+
+    rm -r "$options_dir"
+}
+
+
+# vim: ft=sh ts=4 et sw=4:

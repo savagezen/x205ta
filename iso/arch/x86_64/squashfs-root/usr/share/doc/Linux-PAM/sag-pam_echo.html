@@ -1,0 +1,35 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.5. pam_echo - print text messages</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_deny.html" title="6.4. pam_deny - locking-out PAM module"><link rel="next" href="sag-pam_env.html" title="6.6. pam_env - set/unset environment variables"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.5. pam_echo - print text messages</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_deny.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_env.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_echo"></a>6.5. pam_echo - print text messages</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_echo.so</code>  [
+        file=<em class="replaceable"><code>/path/message</code></em>
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_echo-description"></a>6.5.1. DESCRIPTION</h3></div></div></div><p>
+      The <span class="emphasis"><em>pam_echo</em></span> PAM module is for printing
+      text messages to inform user about special things. Sequences
+      starting with the <span class="emphasis"><em>%</em></span> character are
+      interpreted in the following way:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="emphasis"><em>%H</em></span></span></dt><dd><p>The name of the remote host (PAM_RHOST).</p></dd><dt><span class="term"><span class="emphasis"><em>%h</em></span></span></dt><dd><p>The name of the local host.</p></dd><dt><span class="term"><span class="emphasis"><em>%s</em></span></span></dt><dd><p>The service name (PAM_SERVICE).</p></dd><dt><span class="term"><span class="emphasis"><em>%t</em></span></span></dt><dd><p>The name of the controlling terminal (PAM_TTY).</p></dd><dt><span class="term"><span class="emphasis"><em>%U</em></span></span></dt><dd><p>The remote user name (PAM_RUSER).</p></dd><dt><span class="term"><span class="emphasis"><em>%u</em></span></span></dt><dd><p>The local user name (PAM_USER).</p></dd></dl></div><p>
+      All other sequences beginning with <span class="emphasis"><em>%</em></span>
+      expands to the characters following the <span class="emphasis"><em>%</em></span>
+      character.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_echo-options"></a>6.5.2. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">file=<em class="replaceable"><code>/path/message</code></em></code>
+        </span></dt><dd><p>
+            The content of the file <code class="filename">/path/message</code>
+            will be printed with the PAM conversion function as PAM_TEXT_INFO.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_echo-types"></a>6.5.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      All module types (<code class="option">auth</code>, <code class="option">account</code>,
+      <code class="option">password</code> and <code class="option">session</code>) are provided.
+
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_echo-return_values"></a>6.5.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+             Memory buffer error.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             Message was successful printed.
+          </p></dd><dt><span class="term">PAM_IGNORE</span></dt><dd><p>
+             PAM_SILENT flag was given or message file does not
+             exist, no message printed.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_echo-examples"></a>6.5.5. EXAMPLES</h3></div></div></div><p>
+      For an example of the use of this module, we show how it may be
+      used to print information about good passwords:
+      </p><pre class="programlisting">
+password optional pam_echo.so file=/usr/share/doc/good-password.txt
+password required pam_unix.so
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_echo-author"></a>6.5.6. AUTHOR</h3></div></div></div><p>Thorsten Kukuk &lt;kukuk@thkukuk.de&gt;</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_deny.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_env.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.4. pam_deny - locking-out PAM module </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.6. pam_env - set/unset environment variables</td></tr></table></div></body></html>

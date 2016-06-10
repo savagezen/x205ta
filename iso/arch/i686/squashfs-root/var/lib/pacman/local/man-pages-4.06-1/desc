@@ -1,0 +1,37 @@
+%NAME%
+man-pages
+
+%VERSION%
+4.06-1
+
+%DESC%
+Linux man pages
+
+%URL%
+http://man7.org/linux/man-pages/index.html
+
+%ARCH%
+any
+
+%BUILDDATE%
+1462901449
+
+%INSTALLDATE%
+1464799512
+
+%PACKAGER%
+Andreas Radke <andyrtr@archlinux.org>
+
+%SIZE%
+5800960
+
+%GROUPS%
+base
+
+%LICENSE%
+GPL
+custom
+
+%VALIDATION%
+pgp
+

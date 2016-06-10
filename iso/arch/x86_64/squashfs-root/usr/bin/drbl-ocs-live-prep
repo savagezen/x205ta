@@ -1,0 +1,184 @@
+#!/bin/bash
+# Author: Steven Shiau <steven _at_ nchc org tw>
+# License: GPL
+# Description: Download the Clonezilla live iso for Clonezilla SE environment.
+
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+. /etc/drbl/drbl-ocs.conf
+. $DRBL_SCRIPT_PATH/sbin/ocs-functions
+
+# Settings
+# By default the mode is to install.
+mode="install"
+client_arch=""
+# The method for netboot's root file system. "fetch" means the client will download the filesystem.squashfs from tftpd server, "nfsroot" means client will mount the nfs server. By default we use "nfsroot" in Clonezilla SE.
+rootfs_location="nfsroot"
+clonezilla_iso_branch_def="stable"
+
+# Functions
+USAGE() {
+  echo "Prepare the Clonezilla SE (Server Edtion) to use Clonezilla live as the OS of client."
+  echo "Usage: $0 [OPTION]"
+  echo "OPTION:"
+  echo "-a, --client-arch ARCH:  Force to use the CPU arch for the client. E.g. if i686-pae is assigned, the i686-pae version of Clonezilla live will be downloaded and use for the clients. Available arch are: i386, amd64 for Ubuntu-based (alternative) branch, and i686, i686-pae, amd64 for Debian-based (regular) release. //NOTE// By using this, the original file name assigned in the option '-i' will be changed as appropriate file name."
+  echo "-b, --branch NAME: Force to use the Clonezilla live from branch NAME (stable, testing, alternative, alternative_testing). If not assigned, stable will be used."
+  echo "-s, --server-ip IP_ADDR:  Assign the tftp or NFS server's IP address to be used."
+  echo "-t, --use-fetch      By default the boot parameter to load the root file system (e.g. filesystem.squashfs) is nfsroot. With this option, fetch is used. //NOTE// This function only works for live-initramfs based system. E.g. Clonezilla live or GParted live."
+  echo "-i, --iso-url ISO_URL:  Use the ISO_URL (e.g. http://downloads.sourceforge.net/clonezilla/clonezilla-live-2.1.2-35-i686-pae.iso or file:///usr/share/iso/clonezilla-live-2.1.2-35-amd64.iso) instead of the one assigned in drbl-ocs.conf. $0 will download clonezilla-live iso file from ISO_URL then use the as the OS of client when running Clonezilla job. //NOTE// Use iso file name only, not the zip one. This conflicts with \"-p\" option."
+  echo "-p, --live-path  PATH:  Assign the mounted or unzipped live system as PATH. This conflicts with \"-i\" option."  
+  echo "-u, --uninstall:  Uninstall the Clonezilla-live based mode."
+  echo "Ex: To use http://downloads.sourceforge.net/clonezilla/clonezilla-live-2.1.2-35-i686-pae.iso as the OS of client when running Clonezilla job, run:"
+  echo "    $0 -i http://downloads.sourceforge.net/clonezilla/clonezilla-live-2.1.2-35-i686-pae.iso"
+}
+#  
+put_clonezilla_live() {
+  if [ -e "$iso_url_for_pxe_ocs_live" ]; then
+    # local file
+    echo "Try to use the local Clonezilla live iso file..."
+    ocs_live_iso_file="$iso_url_for_pxe_ocs_live"
+  elif [ -e "$LIVE_PATH" ]; then
+    # local file mounted or unzipped in the path
+    echo "Use the local DRBL/Clonezilla live dir..."
+    ocs_live_expand_path="$LIVE_PATH"
+  else
+    echo "Try to download Clonezilla live iso file from network..."
+    # Try to download the file. The download file will be in $ocs_live_iso_file
+    download_clonezilla_live $client_arch $clonezilla_iso_branch $iso_url_for_pxe_ocs_live
+  fi
+  # (1) Run drbl-sl to put it on the system.
+  # For drbl-sl, fetch is the default option due to the legacy reason.
+  case "$rootfs_location" in
+    "fetch") rootfs_location_opt="" ;;
+    "nfsroot") rootfs_location_opt="-f" ;;
+  esac
+  [ -n "$server_IP" ] && server_IP_opt="-s $server_IP"
+  echo "Put Clonezilla live in this DRBL server..."
+  if [ -n "$ocs_live_iso_file" ]; then
+    drbl-sl $rootfs_location_opt $server_IP_opt -b -n -o -i $ocs_live_iso_file
+  elif [ -n "$ocs_live_expand_path" ]; then
+    drbl-sl $rootfs_location_opt $server_IP_opt -b -n -o -p $ocs_live_expand_path
+    (
+      # Linking kernel and initrd to avoid confusion
+      cd $pxecfg_pd
+      ln -fs Clonezilla-live-vmlinuz DRBL-live-vmlinuz
+      ln -fs Clonezilla-live-initrd.img DRBL-live-initrd.img
+    )
+  fi
+  #
+  [ -d "$ocslive_tmp" -a -n "$(echo "$ocslive_tmp" | grep "ocslive")" ] && rm -rf $ocslive_tmp
+  # (2) Change drbl-ocs.conf as clonezilla-live based Clonezilla SE
+  echo "Modifying option diskless_client_os in drbl-ocs.conf..."
+  LC_ALL=C perl -pi -e 's/^[[:space:]]*diskless_client_os=.*/diskless_client_os="clonezilla-live"/gi' /etc/drbl/drbl-ocs.conf
+} # end of put_clonezilla_live
+
+#
+remove_clonezilla_live() {
+  local lines begin_line end_line
+  # (1a) Turn off the menu in pxelinux config only.
+  lines="$(get_pxecfg_image_block Clonezilla-live $pxecfg_pd/pxelinux.cfg/default)"
+  begin_line="$(echo $lines | awk -F" " '{print $1}')"
+  end_line="$(echo $lines | awk -F" " '{print $2}')"
+  if [ -n "$begin_line" -a -n "$end_line" ]; then
+    echo "Removing the PXE Clonezilla live menu in this DRBL server..."
+    delete_label_block_pxe_img Clonezilla-live $pxecfg_pd/pxelinux.cfg/default
+  fi
+  # (1b) Delete the menu in grub config
+  if [ -e "$GRUB_EFINB_DIR/grub.cfg" ]; then
+    lines="$(get_grub_efi_image_block "--id clonezilla-live-client" $GRUB_EFINB_DIR/grub.cfg)"
+    begin_line="$(echo $lines | awk -F" " '{print $1}')"
+    end_line="$(echo $lines | awk -F" " '{print $2}')"
+    if [ -n "$begin_line" -a -n "$end_line" ]; then
+      echo "Removing the GRUB Clonezilla live menu in this DRBL server..."
+      delete_menuentry_block_grub_img "clonezilla-live-client" $GRUB_EFINB_DIR/grub.cfg
+    fi
+  fi
+  #
+  # (2) Change drbl-ocs.conf as clonezilla-live based Clonezilla SE
+  echo "Modifying option diskless_client_os in drbl-ocs.conf..."
+  LC_ALL=C perl -pi -e 's/^[[:space:]]*diskless_client_os=.*/diskless_client_os="nfsroot"/gi' /etc/drbl/drbl-ocs.conf
+} # end of remove_clonezilla_live
+
+#############
+###  MAIN ###
+#############
+#
+check_if_root
+
+#
+ask_and_load_lang_set
+
+# Parse command-line options
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -a|--client-arch)
+        shift;
+        if [ -z "$(echo $1 |grep ^-.)" ]; then
+          # skip the -xx option, in case 
+          client_arch="$1"
+          [ -z "$client_arch" ] && USAGE && exit 1
+	  shift
+        fi
+	;;
+    -b|--branch)
+        shift;
+        if [ -z "$(echo $1 |grep ^-.)" ]; then
+          # skip the -xx option, in case 
+          clonezilla_iso_branch="$1"
+          [ -z "$clonezilla_iso_branch" ] && USAGE && exit 1
+	  shift
+        fi
+	;;
+    -s|--server-ip)
+        shift;
+        if [ -z "$(echo $1 |grep ^-.)" ]; then
+          # skip the -xx option, in case 
+          server_IP="$1"
+          [ -z "$server_IP" ] && USAGE && exit 1
+	  shift
+        fi
+	;;
+    -t|--use-fetch) shift; rootfs_location="fetch" ;;
+    -i|--iso-url)
+        shift; mode="install"
+        if [ -z "$(echo $1 |grep ^-.)" ]; then
+          # skip the -xx option, in case 
+          iso_url_for_pxe_ocs_live="$1"
+          [ -z "$iso_url_for_pxe_ocs_live" ] && USAGE && exit 1
+	  shift
+        fi
+	;;
+    -p|--live-path)
+        shift; mode="install"
+        if [ -z "$(echo $1 |grep ^-.)" ]; then
+          # skip the -xx option, in case 
+          LIVE_PATH="$1"
+          [ -z "$LIVE_PATH" ] && USAGE && exit 1
+	  shift
+        fi
+	;;
+    -u|--uninstall) shift; mode="uninstall" ;;
+    -*)     echo "${0}: ${1}: invalid option" >&2
+            USAGE >& 2
+            exit 2 ;;
+    *)      break ;;
+  esac
+done
+
+# For Ubuntu-based (alternative) Clonezilla live, default is i386, while for Debian-based, it's i386.
+case "$clonezilla_iso_branch" in
+  alternative*) client_arch_def="i386";;
+  *)            client_arch_def="i686";;
+esac
+
+# Use the default settings if not assigned.
+[ -z "$client_arch" ] && client_arch="$client_arch_def"
+[ -z "$clonezilla_iso_branch" ] && clonezilla_iso_branch="$clonezilla_iso_branch_def"
+
+#
+case "$mode" in 
+  install) put_clonezilla_live ;;
+  uninstall) remove_clonezilla_live;;
+  *) USAGE; exit 1;;
+esac

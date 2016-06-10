@@ -1,0 +1,41 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.23. pam_nologin - prevent non-root users from login</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_namespace.html" title="6.22. pam_namespace - setup a private namespace"><link rel="next" href="sag-pam_permit.html" title="6.24. pam_permit - the promiscuous module"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.23. pam_nologin - prevent non-root users from login</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_namespace.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_permit.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_nologin"></a>6.23. pam_nologin - prevent non-root users from login</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_nologin.so</code>  [
+        file=<em class="replaceable"><code>/path/nologin</code></em>
+      ] [
+        successok
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_nologin-description"></a>6.23.1. DESCRIPTION</h3></div></div></div><p>
+      pam_nologin is a PAM module that prevents users from logging into
+      the system when <code class="filename">/var/run/nologin</code> or
+      <code class="filename">/etc/nologin</code> exists. The contents
+      of the file are displayed to the user. The pam_nologin module
+      has no effect on the root user's ability to log in.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_nologin-options"></a>6.23.2. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">file=<em class="replaceable"><code>/path/nologin</code></em></code>
+        </span></dt><dd><p>
+            Use this file instead the default
+            <code class="filename">/var/run/nologin</code> or
+            <code class="filename">/etc/nologin</code>.
+          </p></dd><dt><span class="term">
+          <code class="option">successok</code>
+        </span></dt><dd><p>
+            Return PAM_SUCCESS if no file exists, the default is PAM_IGNORE.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_nologin-types"></a>6.23.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      The <code class="option">auth</code> and <code class="option">acct</code> module
+      types are provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_nologin-return_values"></a>6.23.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_AUTH_ERR</span></dt><dd><p>
+            The user is not root and <code class="filename">/etc/nologin</code>
+            exists, so the user is not permitted to log in.
+          </p></dd><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>Memory buffer error.</p></dd><dt><span class="term">PAM_IGNORE</span></dt><dd><p>
+            This is the default return value.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+            Success:  either  the user is root or the
+            nologin file does not exist.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+            User not known to the underlying authentication module.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_nologin-examples"></a>6.23.5. EXAMPLES</h3></div></div></div><p>
+      The suggested usage for <code class="filename">/etc/pam.d/login</code> is:
+      </p><pre class="programlisting">
+auth  required  pam_nologin.so
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_nologin-author"></a>6.23.6. AUTHOR</h3></div></div></div><p>
+        pam_nologin was written by Michael K. Johnson &lt;johnsonm@redhat.com&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_namespace.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_permit.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.22. pam_namespace - setup a private namespace </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.24. pam_permit - the promiscuous module</td></tr></table></div></body></html>

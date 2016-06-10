@@ -1,0 +1,45 @@
+                                 Partition Image                        
+                             -------------------                                         
+    begin                : ven avr 23 18:58:17 CEST 1999                                          
+    copyright            : (C) 1999 by François Dupoux                         
+               
+AUTHOR: Francois Dupoux
+WEB:    http://www.partimage.org/
+                       
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation; either version 2 of the License, or
+at your option) any later version.
+
+Partition Image is a partition imaging utility which has support for the following file systems:
+ * Ext2/3, the Linux standard
+ * ReiserFS, a journalised and powerful file system
+ * FAT16/32, DOS and Windows file systems
+ * HPFS, IBM OS/2 file system
+ * JFS, journalised file system, from IBM, used on AIX
+ * XFS, another journalised and efficient file system, from SGI, used on Irix
+ * UFS (beta), Unix file system
+ * HFS (beta), MacOS file system
+ * NTFS (experimental), Windows NT, 2000 and XP
+Only used blocks are copied to save the space and to increase the speed.
+The image file can be compressed, in gzip, or bzip2 formats, and can be splitted into
+small files to be copied on floppies (1,44 MB, ZIP, ...).
+Then, the partition can be restored if there is a problem on the partition (file system error,
+virus, error in data, ...), from the image file. It can also be used to install many identical PCs with
+the same hardware. You just have to install an only PC, and you can copy the linux
+partitions to all others. 
+
+Be carreful, this is an alpha version. Then, there can be bugs, and changes in the
+data format between differents versions. Don't backup important data with it, and
+use the same version to save and to restore the same image file. Please, report
+all bugs to the author.
+
+To compile it, run these commands in a terminal:
+./configure && make && make install
+type "rm config.cache" before if you have problems
+
+Welcome to everybody who want to help the Partition Image project. There are many
+ways to do it: writing translations in english or the text used inside the source code,
+writing C++ code with new features, writing documentation (in SGML format),
+Please e-mail the author to do it.
+   

@@ -1,0 +1,36 @@
+%NAME%
+f2fs-tools
+
+%VERSION%
+1.6.1-1
+
+%DESC%
+Tools for Flash-Friendly File System (F2FS)
+
+%URL%
+http://sourceforge.net/projects/f2fs-tools/
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1461050976
+
+%INSTALLDATE%
+1464799587
+
+%PACKAGER%
+Tobias Powalowski <tpowa@archlinux.org>
+
+%SIZE%
+182272
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+util-linux
+

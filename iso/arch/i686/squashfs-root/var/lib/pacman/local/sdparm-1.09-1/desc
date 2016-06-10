@@ -1,0 +1,37 @@
+%NAME%
+sdparm
+
+%VERSION%
+1.09-1
+
+%DESC%
+An utility similar to hdparm but for SCSI devices
+
+%URL%
+http://sg.danny.cz/sg/sdparm.html
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1420057123
+
+%INSTALLDATE%
+1464799538
+
+%PACKAGER%
+Eric Belanger <eric@archlinux.org>
+
+%SIZE%
+319488
+
+%LICENSE%
+BSD
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+glibc
+bash
+

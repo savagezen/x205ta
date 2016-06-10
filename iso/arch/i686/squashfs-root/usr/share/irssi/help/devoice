@@ -1,0 +1,26 @@
+
+%9Syntax:%9
+
+DEVOICE %|<nicks>
+
+%9Parameters:%9
+
+    A list of nicknames to devoice.
+
+%9Description:%9
+
+    Removes the channel voice privileges from the given nicknames; you may use
+    the wildcard character '*' in a nickname.
+
+    If a channel is moderated, the users will require a voice or op in order to
+    be able to send messages to the channel.
+
+%9Examples:%9
+
+    /DEVOICE mike
+    /DEVOICE bob sarah
+    /DEVOICE jo*n
+    /DEVOICE *
+
+%9See also:%9 DEOP, MODE, OP, VOICE
+

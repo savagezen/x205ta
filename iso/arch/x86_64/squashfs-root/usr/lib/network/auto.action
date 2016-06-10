@@ -1,0 +1,43 @@
+#! /bin/bash
+
+. /usr/lib/network/globals
+. "$SUBR_DIR/ip"
+
+export INTERFACE="$1"
+export SSID="$2"
+# Expose the profile name similar to ordinary netctl usage
+Profile="$3"
+export ACTION="$4"
+
+load_profile "$Profile"
+
+case $ACTION in
+  CONNECT)
+    DhcpcdOptions+=" -K"
+    ip_set || exit 1
+    # JP: sandbox the eval
+    if ! ( eval $ExecUpPost ); then
+        # Failing ExecUpPost will take the connection down
+        netctl-auto stop "$INTERFACE"
+        exit 1
+    fi
+  ;;
+  DISCONNECT)
+    # JP: sandbox the eval
+    if ! ( eval $ExecDownPre ); then
+        exit 1
+    fi
+    ip_unset
+  ;;
+  LOST|REESTABLISHED)
+    # Not handled.
+    exit 0
+  ;;
+  *)
+    # ???
+    exit 1
+  ;;
+esac
+
+
+# vim: ft=sh ts=4 et sw=4:

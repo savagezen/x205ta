@@ -1,0 +1,47 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.17. pam_localuser - require users to be listed in /etc/passwd</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_listfile.html" title="6.16. pam_listfile - deny or allow services based on an arbitrary file"><link rel="next" href="sag-pam_loginuid.html" title="6.18. pam_loginuid - record user's login uid to the process attribute"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.17. pam_localuser - require users to be listed in /etc/passwd</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_listfile.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_loginuid.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_localuser"></a>6.17. pam_localuser - require users to be listed in /etc/passwd</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_localuser.so</code>  [
+	debug
+      ] [
+        file=<em class="replaceable"><code>/path/passwd</code></em>
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_localuser-description"></a>6.17.1. DESCRIPTION</h3></div></div></div><p>
+      pam_localuser is a PAM module to help implementing site-wide login
+      policies, where they typically include a subset of the network's
+      users and a few accounts that are local to a particular workstation.
+      Using pam_localuser and pam_wheel or pam_listfile is an effective
+      way to restrict access to either local users and/or a subset of the
+      network's users.
+    </p><p>
+      This could also be implemented using pam_listfile.so and a very
+      short awk script invoked by cron, but it's common enough to have
+      been separated out.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_localuser-options"></a>6.17.2. OPTIONS</h3></div></div></div><p>
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+            <code class="option">debug</code>
+          </span></dt><dd><p>
+	      Print debug information.
+            </p></dd><dt><span class="term">
+            <code class="option">file=<em class="replaceable"><code>/path/passwd</code></em></code>
+          </span></dt><dd><p>
+              Use a file other than <code class="filename">/etc/passwd</code>.
+            </p></dd></dl></div><p>
+
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_localuser-types"></a>6.17.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      All module types (<code class="option">account</code>, <code class="option">auth</code>,
+      <code class="option">password</code> and <code class="option">session</code>) are provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_localuser-return_values"></a>6.17.4. RETURN VALUES</h3></div></div></div><p>
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+              The new localuser was set successfully.
+            </p></dd><dt><span class="term">PAM_SERVICE_ERR</span></dt><dd><p>
+	      No username was given.
+            </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+	      User not known.
+            </p></dd></dl></div><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_localuser-examples"></a>6.17.5. EXAMPLES</h3></div></div></div><p>
+      Add the following line to <code class="filename">/etc/pam.d/su</code> to
+      allow only local users in group wheel to use su.
+      </p><pre class="programlisting">
+account sufficient pam_localuser.so
+account required pam_wheel.so
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_localuser-author"></a>6.17.6. AUTHOR</h3></div></div></div><p>
+        pam_localuser was written by Nalin Dahyabhai &lt;nalin@redhat.com&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_listfile.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_loginuid.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.16. pam_listfile - deny or allow services based on an arbitrary file </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.18. pam_loginuid - record user's login uid to the process attribute</td></tr></table></div></body></html>

@@ -1,0 +1,25 @@
+# Contributed by: João Valverde <joao.valverde@ist.utl.pt>
+
+. "$SUBR_DIR/ip"
+
+# Make sure BindsToInterfaces is set
+BindsToInterfaces=("${BindsToInterfaces[@]}")
+
+dummy_up() {
+    if is_interface "$Interface"; then
+        report_error "Interface '$Interface' already exists"
+        return 1
+    fi
+
+    interface_add dummy "$Interface"
+    bring_interface_up "$Interface"
+    ip_set
+}
+
+dummy_down() {
+    ip_unset
+    interface_delete "$Interface"
+}
+
+
+# vim: ft=sh ts=4 et sw=4:

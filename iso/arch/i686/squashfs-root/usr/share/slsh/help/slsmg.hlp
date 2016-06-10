@@ -1,0 +1,523 @@
+slsmg_suspend_smg
+
+ SYNOPSIS
+  Suspend screen management
+
+ USAGE
+  slsmg_suspend_smg ()
+
+ DESCRIPTION
+  The `slsmg_suspend_smg' function can be used to suspend the state of the
+  screen management facility during suspension of the program.  Use of
+  this function will reset the display back to its default state.  The
+  funtion `slsmg_resume_smg' should be called after suspension.
+
+  This function is similar to `slsmg_reset_smg' except that the
+  state of the display prior to calling `slsmg_suspend_smg' is saved.
+
+ SEE ALSO
+  slsmg_resume_smg, slsmg_reset_smg
+
+--------------------------------------------------------------
+
+slsmg_resume_smg
+
+ SYNOPSIS
+  Resume screen management
+
+ USAGE
+  slsmg_resume_smg ()
+
+ DESCRIPTION
+  The `slsmg_resume_smg' function should be called after
+  `slsmg_suspend_smg' to redraw the display exactly like it was
+  before `slsmg_suspend_smg' was called.
+
+ SEE ALSO
+  slsmg_suspend_smg
+
+--------------------------------------------------------------
+
+slsmg_erase_eol
+
+ SYNOPSIS
+  Erase to the end of the row
+
+ USAGE
+  slsmg_erase_eol ()
+
+ DESCRIPTION
+  The `slsmg_erase_eol' function erases all characters from the current
+  position to the end of the line.  The newly created space is given
+  the color of the current color.  This function has no effect on the
+  position of the virtual cursor.
+
+ SEE ALSO
+  slsmg_gotorc, slsmg_erase_eos, slsmg_fill_region
+
+--------------------------------------------------------------
+
+slsmg_gotorc
+
+ SYNOPSIS
+  Move the virtual cursor
+
+ USAGE
+  slsmg_gotorc (Integer_Type r, c)
+
+ DESCRIPTION
+  The `slsmg_gotorc' function moves the virtual cursor to the row
+  `r' and column `c'.  The first row and first column is
+  specified by `r = 0' and `c = 0'.
+
+ SEE ALSO
+  slsmg_refresh
+
+--------------------------------------------------------------
+
+slsmg_erase_eos
+
+ SYNOPSIS
+  Erase to the end of the screen
+
+ USAGE
+  slsmg_erase_eos ()
+
+ DESCRIPTION
+  The `slsmg_erase_eos' function is like `slsmg_erase_eol'
+  except that it erases all text from the current position to the
+  end of the display.  The current color will be used to set the
+  background of the erased area.
+
+ SEE ALSO
+  slsmg_erase_eol
+
+--------------------------------------------------------------
+
+slsmg_reverse_video
+
+ SYNOPSIS
+  Set the current color to 1
+
+ USAGE
+  slsmg_reverse_video ()
+
+ DESCRIPTION
+  This function is nothing more than `slsmg_set_color(1)'.
+
+ SEE ALSO
+  slsmg_set_color
+
+--------------------------------------------------------------
+
+slsmg_set_color
+
+ SYNOPSIS
+  Set the current color
+
+ USAGE
+  slsmg_set_color (Integer_Type c)
+
+ DESCRIPTION
+  The `slsmg_set_color' function is used to set the current
+  color.  The parameter `c' is a color object descriptor.
+  Actual foreground and background colors may be associated with a
+  color descriptor via the `slsmg_define_color' function.
+
+ EXAMPLE
+  This example defines color `7' to be green foreground on black
+  background and then displays some text in this color:
+
+      require ("slsmg");
+      variable
+        ref,
+        row = SLsmg_Screen_Rows / 2,
+        txt = [
+          "This should be displayed in green under a black background",
+          "Press enter to close this window"];
+
+      slsmg_init_smg ();
+      slsmg_define_color (7, "green", "black");
+      slsmg_gotorc (row, SLsmg_Screen_Cols / 2 - strlen (txt[0]) / 2);
+      slsmg_set_color (7);
+      slsmg_write_string (txt[0]);
+      row++;
+      slsmg_gotorc (row, SLsmg_Screen_Cols / 2 - strlen (txt[1]) / 2);
+      slsmg_write_string (txt[1]);
+      slsmg_refresh ();
+
+      ()=fgets(&ref, stdin);
+
+
+--------------------------------------------------------------
+
+slsmg_normal_video
+
+ SYNOPSIS
+  Set the current color to 0
+
+ USAGE
+  slsmg_normal_video ()
+
+ DESCRIPTION
+  The `slsmg_normal_video' function sets the current color descriptor to `0'.
+
+ SEE ALSO
+  slsmg_set_color
+
+--------------------------------------------------------------
+
+slsmg_write_string
+
+ USAGE
+  slsmg_write_string (String_Type s)
+
+--------------------------------------------------------------
+
+slsmg_cls
+
+ SYNOPSIS
+  Clear the virtual display
+
+ USAGE
+  slsmg_cls ()
+
+ DESCRIPTION
+  The `slsmg_cls' function erases the virtual display using
+  the current color.  This will cause the physical display to get
+  cleared the next time `slsmg_refresh' is called.
+
+ NOTES
+  This function is not the same as
+
+     slsmg_gotorc (0,0); slsmg_erase_eos ();
+
+  since these statements do not guarantee that the physical screen
+  will get cleared.
+
+ SEE ALSO
+  slsmg_refresh, slsmg_erase_eos
+
+--------------------------------------------------------------
+
+slsmg_refresh
+
+ SYNOPSIS
+  Update physical screen
+
+ USAGE
+  slsmg_refresh ()
+
+ DESCRIPTION
+  The `slsmg_refresh' function updates the physical display to
+  look like the virtual display.
+
+ SEE ALSO
+  slsmg_suspend_smg, slsmg_init_smg, slsmg_reset_smg
+
+--------------------------------------------------------------
+
+slsmg_reset_smg
+
+ SYNOPSIS
+  Reset the `SLsmg' routines
+
+ USAGE
+  slsmg_reset_smg ()
+
+ DESCRIPTION
+  The `slsmg_reset_smg' function resets the `SLsmg'
+  screen management routines by freeing all memory allocated
+  while it was active and also put the terminal's display in
+  it's default state.
+
+ SEE ALSO
+  slsmg_init_smg
+
+--------------------------------------------------------------
+
+slsmg_init_smg
+
+ SYNOPSIS
+  Initialize the `SLsmg' routines
+
+ USAGE
+  slsmg_init_smg ()
+
+ DESCRIPTION
+  The `slsmg_init_smg' function initializes the `SLsmg' screen
+  management routines.   Specifically, this function allocates space
+  for the virtual display and puts the terminal's physical display in
+  the proper state.
+
+  This function should also be called any time the size of the
+  physical display has changed so that it can reallocate a new virtual
+  display to match the physical display.
+
+ SEE ALSO
+  slsmg_reset_smg
+
+--------------------------------------------------------------
+
+slsmg_write_nstring
+
+ SYNOPSIS
+  Write the first n characters of a string on the display
+
+ USAGE
+  slsmg_write_nstring (String_Type s, Integer_Type len)
+
+ DESCRIPTION
+  The `slsmg_write_nstring' function writes the first `n'
+  characters of `s' to this virtual display.  If the length of
+  the string `s' is less than `n', the spaces will used until
+  `n' characters have been written.  `s' can be `NULL', in
+  which case `n' spaces will be written.
+
+ SEE ALSO
+  slsmg_write_string
+
+--------------------------------------------------------------
+
+slsmg_write_wrapped_string
+
+ SYNOPSIS
+  Write a string to the display with wrapping
+
+ USAGE
+  slsmg_write_wrapped_string (String_Type s, Integer_Type r, c, dr, dc, fill)
+
+ DESCRIPTION
+  The `slsmg_write_wrapped_string' function writes the
+  string `s' to the virtual display.  The string will be confined
+  to the rectangular region whose upper right corner is at row `r'
+  and column `c', and consists of `nr' rows and `dc' columns.
+  The string will be wrapped at the boundaries of the box.  If `fill'
+  is non-zero, the last line to which characters have been written will
+  get padded with spaces.
+
+ NOTES
+  This function does not wrap on word boundaries.  However, it will
+  wrap when a newline charater is encountered.
+
+ SEE ALSO
+  slsmg_write_string
+
+--------------------------------------------------------------
+
+slsmg_char_at
+
+ SYNOPSIS
+  Get the character at the current position on the virtual display
+
+ USAGE
+  Integer_Type slsmg_char_at ()
+
+ DESCRIPTION
+  The `slsmg_char_at' function returns the character and its color
+  at the current position on the virtual display.
+
+--------------------------------------------------------------
+
+slsmg_set_screen_start
+
+ SYNOPSIS
+  Set the origin of the virtual display
+
+ USAGE
+  slsmg_set_screen_start (Integer_Type r, c)
+
+ DESCRIPTION
+  The `slsmg_set_screen_start' function sets the origin of
+  the virtual display to the row `r' and the column `c'.
+
+ SEE ALSO
+  slsmg_init_smg
+
+--------------------------------------------------------------
+
+slsmg_draw_hline
+
+ SYNOPSIS
+  Draw a horizontal line
+
+ USAGE
+  slsmg_draw_hline (Integer_Type len)
+
+ DESCRIPTION
+  The `slsmg_draw_hline' function draws a horizontal line of
+  length `len' on the virtual display.  The position of the
+  virtual cursor is left at the end of the line.
+
+ SEE ALSO
+  slsmg_draw_vline
+
+--------------------------------------------------------------
+
+slsmg_draw_vline
+
+ SYNOPSIS
+  Draw a vertical line
+
+ USAGE
+  slsmg_draw_vline (Integer_Type len)
+
+ DESCRIPTION
+  The `slsmg_draw_vline' function draws a vertical line of
+  length `len' on the virtual display.  The position of the
+  virtual cursor is left at the end of the line.
+
+--------------------------------------------------------------
+
+slsmg_draw_object
+
+ SYNOPSIS
+  Draw an object from the alternate character set
+
+ USAGE
+  slsmg_draw_object (Integer_Type r, c, obj)
+
+ DESCRIPTION
+  The `slsmg_draw_object' function may be used to place the object
+  specified by `obj' at row `r' and column `c'.  The
+  object is really a character from the alternate character set and
+  may be specified using one of the following constants:
+
+    SLSMG_HLINE_CHAR         Horizontal line
+    SLSMG_VLINE_CHAR         Vertical line
+    SLSMG_ULCORN_CHAR        Upper left corner
+    SLSMG_URCORN_CHAR        Upper right corner
+    SLSMG_LLCORN_CHAR        Lower left corner
+    SLSMG_LRCORN_CHAR        Lower right corner
+    SLSMG_CKBRD_CHAR         Checkboard character
+    SLSMG_RTEE_CHAR          Right Tee
+    SLSMG_LTEE_CHAR          Left Tee
+    SLSMG_UTEE_CHAR          Up Tee
+    SLSMG_DTEE_CHAR          Down Tee
+    SLSMG_PLUS_CHAR          Plus or Cross character
+
+
+ SEE ALSO
+  slsmg_draw_vline, slsmg_draw_hline, slsmg_draw_box
+
+--------------------------------------------------------------
+
+slsmg_draw_box
+
+ SYNOPSIS
+  Draw a box on the virtual display
+
+ USAGE
+  slsmg_draw_box (Integer_Type r, c, dr, dc)
+
+ DESCRIPTION
+  The `slsmg_draw_box' function uses the `slsmg_draw_hline' and
+  `slsmg_draw_vline' functions to draw a rectangular box on the
+  virtual display.  The box's upper left corner is placed at row
+  `r' and column `c'.  The length and width of the box is
+  specified by `dr' and `dc', respectively.
+
+ SEE ALSO
+  slsmg_draw_vline, slsmg_draw_hline, slsmg_draw_object
+
+--------------------------------------------------------------
+
+slsmg_get_column
+
+ SYNOPSIS
+  Get the column of the virtual cursor
+
+ USAGE
+  Integer_Type slsmg_get_column ()
+
+ DESCRIPTION
+  The `slsmg_get_column' function returns the current column of
+  the virtual cursor on the virtual display.
+
+ SEE ALSO
+  slsmg_get_row, slsmg_gotorc
+
+--------------------------------------------------------------
+
+slsmg_get_row
+
+ SYNOPSIS
+  Get the row of the virtual cursor
+
+ USAGE
+  Integer_Type slsmg_get_row ()
+
+ DESCRIPTION
+  The `slsmg_get_row' function returns the current row of the
+  virtual cursor on the virtual display.
+
+ SEE ALSO
+  slsmg_get_column, slsmg_gotorc
+
+--------------------------------------------------------------
+
+slsmg_forward
+
+ SYNOPSIS
+  Move the virtual cursor forward n columns
+
+ USAGE
+  slsmg_forward (Integer_Type n)
+
+ DESCRIPTION
+  The `slsmg_forward' function moves the virtual cursor forward
+  `n' columns.
+
+ SEE ALSO
+  slsmg_gotorc
+
+--------------------------------------------------------------
+
+slsmg_set_color_in_region
+
+ SYNOPSIS
+  Change the color of a specifed region
+
+ USAGE
+  slsmg_set_color_in_region (Integer_Type color, r, c, dr, dc)
+
+ DESCRIPTION
+  The `slsmg_set_color_in_region' function may be used to
+  change the color of a rectangular region whose upper left corner
+  is given by (`r',`c'), and whose height and width is given
+  by `dr' and `dc', respectively.  The color of the region
+  is given by the `color' parameter.
+
+ SEE ALSO
+  slsmg_draw_box, slsmg_set_color
+
+--------------------------------------------------------------
+
+slsmg_define_color
+
+ USAGE
+  slsmg_define_color (Integer_Type obj, String_Type fg, bg)
+
+ DESCRIPTION
+  The `slsmg_define_color' function associates the color
+  descriptor `obj' with a foreground and a background color.
+  The `fg' and `bg' colors can be one of the following strings:
+
+  "color0" or "black",      "color8"  or "gray",
+  "color1" or "red",        "color9"  or "brightred",
+  "color2" or "green",      "color10" or "brightgreen",
+  "color3" or "brown",      "color11" or "yellow",
+  "color4" or "blue",       "color12" or "brightblue",
+  "color5" or "magenta",    "color13" or "brightmagenta",
+  "color6" or "cyan",       "color14" or "brightcyan",
+  "color7" or "lightgray",  "color15" or "white"
+
+
+--------------------------------------------------------------
+
+slsmg_write_to_status_line
+
+ USAGE
+  slsmg_write_to_status_line (String_Type s)
+
+--------------------------------------------------------------

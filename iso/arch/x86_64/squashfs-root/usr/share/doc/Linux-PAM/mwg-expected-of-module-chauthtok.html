@@ -1,0 +1,67 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>3.5. Authentication token management</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_MWG.html" title="The Linux-PAM Module Writers' Guide"><link rel="up" href="mwg-expected-of-module.html" title="Chapter 3. What is expected of a module"><link rel="prev" href="mwg-expected-of-module-session.html" title="3.4. Session management"><link rel="next" href="mwg-see-options.html" title="Chapter 4. Generic optional arguments"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">3.5. Authentication token management</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="mwg-expected-of-module-session.html">Prev</a> </td><th width="60%" align="center">Chapter 3. What is expected of a module</th><td width="20%" align="right"> <a accesskey="n" href="mwg-see-options.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mwg-expected-of-module-chauthtok"></a>3.5. Authentication token management</h2></div></div></div><p>
+        To be correctly initialized, <em class="parameter"><code>PAM_SM_PASSWORD</code></em>
+        must be <span class="command"><strong>#define</strong></span>'d prior to including
+        <code class="function">&lt;security/pam_modules.h&gt;</code>. This will
+        ensure that the prototypes for static modules are properly declared.
+      </p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mwg-pam_sm_chauthtok"></a>3.5.1. Service function to alter authentication token</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#define PAM_SM_PASSWORD</pre><pre class="funcsynopsisinfo">#include &lt;security/pam_modules.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">PAM_EXTERN int <b class="fsfunc">pam_sm_chauthtok</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">flags</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">argc</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">argv</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>int <var class="pdparam">flags</var></code>;<br><code>int <var class="pdparam">argc</var></code>;<br><code>const char **<var class="pdparam">argv</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mwg-pam_sm_chauthtok-description"></a>3.5.1.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_sm_chauthtok</code> function is the service
+      module's implementation of the
+      <span class="citerefentry"><span class="refentrytitle">pam_chauthtok</span>(3)</span> interface.
+    </p><p>
+      This function is used to (re-)set the authentication token of the user.
+    </p><p>
+       Valid flags, which may be logically OR'd with
+       <span class="emphasis"><em>PAM_SILENT</em></span>, are:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SILENT</span></dt><dd><p>
+             Do not emit any messages.
+          </p></dd><dt><span class="term">PAM_CHANGE_EXPIRED_AUTHTOK</span></dt><dd><p>
+            This argument indicates to the module that the user's
+            authentication token (password) should only be changed if
+            it has expired. This flag is optional and
+            <span class="emphasis"><em>must</em></span> be combined with one of the
+            following two flags. Note, however, the following two options
+            are <span class="emphasis"><em>mutually exclusive</em></span>.
+          </p></dd><dt><span class="term">PAM_PRELIM_CHECK</span></dt><dd><p>
+            This indicates that the modules are being probed as to
+            their ready status for altering the user's authentication
+            token. If the module requires access to another system over
+            some network it should attempt to verify it can connect to
+            this system on receiving this flag. If a module cannot establish
+            it is ready to update the user's authentication token it should
+            return <span class="emphasis"><em>PAM_TRY_AGAIN</em></span>, this
+            information will be passed back to the application.
+          </p><p>
+             If the control value <span class="emphasis"><em>sufficient</em></span> is used in
+             the password stack, the <span class="emphasis"><em>PAM_PRELIM_CHECK</em></span> section
+             of the modules following that control value is not always executed.
+          </p></dd><dt><span class="term">PAM_UPDATE_AUTHTOK</span></dt><dd><p>
+            This informs the module that this is the call it should change
+            the authorization tokens. If the flag is logically OR'd with
+            <span class="emphasis"><em>PAM_CHANGE_EXPIRED_AUTHTOK</em></span>, the
+            token is only changed if it has actually expired.
+          </p></dd></dl></div><p>
+      The PAM library calls this function twice in succession. The first
+      time with <span class="emphasis"><em>PAM_PRELIM_CHECK</em></span> and then,
+      if the module does not return
+      <span class="emphasis"><em>PAM_TRY_AGAIN</em></span>, subsequently with
+      <span class="emphasis"><em>PAM_UPDATE_AUTHTOK</em></span>. It is only on
+      the second call that the authorization token is (possibly) changed.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mwg-pam_sm_chauthtok-return_values"></a>3.5.1.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_AUTHTOK_ERR</span></dt><dd><p>
+             The module was unable to obtain the new authentication token.
+          </p></dd><dt><span class="term">PAM_AUTHTOK_RECOVERY_ERR</span></dt><dd><p>
+            The module was unable to obtain the old authentication token.
+          </p></dd><dt><span class="term">PAM_AUTHTOK_LOCK_BUSY</span></dt><dd><p>
+            Cannot change the authentication token since it is currently
+            locked.
+          </p></dd><dt><span class="term">PAM_AUTHTOK_DISABLE_AGING</span></dt><dd><p>
+            Authentication token aging has been disabled.
+          </p></dd><dt><span class="term">PAM_PERM_DENIED</span></dt><dd><p>
+            Permission denied.
+          </p></dd><dt><span class="term">PAM_TRY_AGAIN</span></dt><dd><p>
+            Preliminary check was unsuccessful. Signals an immediate
+            return to the application is desired.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             The authentication token was successfully updated.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+            User unknown to password service.
+          </p></dd></dl></div></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="mwg-expected-of-module-session.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="mwg-expected-of-module.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="mwg-see-options.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">3.4. Session management </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_MWG.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 4. Generic optional arguments</td></tr></table></div></body></html>

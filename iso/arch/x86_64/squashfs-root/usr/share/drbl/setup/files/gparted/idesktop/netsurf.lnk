@@ -1,0 +1,10 @@
+table Icon
+  Caption: Web Browser
+  Command: netsurf http://gparted.org/display-doc.php?name=gparted-live-manual
+  Icon: /usr/share/pixmaps/netsurf.xpm
+  Width: 48
+  Height: 48
+  X: 552
+  Y: TopLeft
+end
+

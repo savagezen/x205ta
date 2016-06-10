@@ -1,0 +1,33 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.8. pam_faildelay - change the delay on failure per-application</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_exec.html" title="6.7. pam_exec - call an external command"><link rel="next" href="sag-pam_filter.html" title="6.9. pam_filter - filter module"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.8. pam_faildelay - change the delay on failure per-application</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_exec.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_filter.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_faildelay"></a>6.8. pam_faildelay - change the delay on failure per-application</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_faildelay.so</code>  [
+        debug
+      ] [
+        delay=<em class="replaceable"><code>microseconds</code></em>
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_faildelay-description"></a>6.8.1. DESCRIPTION</h3></div></div></div><p>
+      pam_faildelay is a PAM module that can be used to set
+      the delay on failure per-application.
+    </p><p>
+      If no <code class="option">delay</code> is given, pam_faildelay will
+      use the value of FAIL_DELAY from <code class="filename">/etc/login.defs</code>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_faildelay-options"></a>6.8.2. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">debug</code>
+        </span></dt><dd><p>
+            Turns on debugging messages sent to syslog.
+          </p></dd><dt><span class="term">
+          <code class="option">delay=<em class="replaceable"><code>N</code></em></code>
+        </span></dt><dd><p>
+	    Set the delay on failure to N microseconds.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_faildelay-types"></a>6.8.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      Only the <code class="option">auth</code> module type is provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_faildelay-return_values"></a>6.8.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_IGNORE</span></dt><dd><p>
+            Delay was successful adjusted.
+          </p></dd><dt><span class="term">PAM_SYSTEM_ERR</span></dt><dd><p>
+            The specified delay was not valid.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_faildelay-examples"></a>6.8.5. EXAMPLES</h3></div></div></div><p>
+      The following example will set the delay on failure to
+      10 seconds:
+      </p><pre class="programlisting">
+auth  optional  pam_faildelay.so  delay=10000000
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_faildelay-author"></a>6.8.6. AUTHOR</h3></div></div></div><p>
+        pam_faildelay was written by Darren Tucker &lt;dtucker@zip.com.au&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_exec.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_filter.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.7. pam_exec - call an external command </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.9. pam_filter - filter module</td></tr></table></div></body></html>

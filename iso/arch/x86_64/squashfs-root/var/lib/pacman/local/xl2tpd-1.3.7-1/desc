@@ -1,0 +1,36 @@
+%NAME%
+xl2tpd
+
+%VERSION%
+1.3.7-1
+
+%DESC%
+an open source implementation of the L2TP maintained by Xelerance Corporation
+
+%URL%
+http://www.xelerance.com/services/software/xl2tpd/
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1461324415
+
+%INSTALLDATE%
+1464799590
+
+%PACKAGER%
+Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+%SIZE%
+190464
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+ppp
+

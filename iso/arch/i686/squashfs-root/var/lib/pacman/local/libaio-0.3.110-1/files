@@ -1,0 +1,9 @@
+%FILES%
+usr/
+usr/include/
+usr/include/libaio.h
+usr/lib/
+usr/lib/libaio.so
+usr/lib/libaio.so.1
+usr/lib/libaio.so.1.0.1
+

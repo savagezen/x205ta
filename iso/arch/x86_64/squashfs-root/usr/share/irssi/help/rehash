@@ -1,0 +1,21 @@
+
+%9Syntax:%9
+
+REHASH %|[<option>]
+
+%9Parameters:%9
+
+    The raw parameters to send to the server, if no arguments are given, none
+    will be sent to the server.
+
+%9Description:%9
+
+    Reloads the configuration of the IRC server you are are connected to; this
+    command is restricted to IRC operators.
+
+%9Examples:%9
+
+    /REHASH
+
+%9See also:%9 DIE, KILL, OPER
+

@@ -1,0 +1,85 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.25. pam_pwhistory - grant access using .pwhistory file</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_permit.html" title="6.24. pam_permit - the promiscuous module"><link rel="next" href="sag-pam_rhosts.html" title="6.26. pam_rhosts - grant access using .rhosts file"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.25. pam_pwhistory - grant access using .pwhistory file</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_permit.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_rhosts.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_pwhistory"></a>6.25. pam_pwhistory - grant access using .pwhistory file</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_pwhistory.so</code>  [
+        debug
+      ] [
+        use_authtok
+      ] [
+        enforce_for_root
+      ] [
+        remember=<em class="replaceable"><code>N</code></em>
+      ] [
+        retry=<em class="replaceable"><code>N</code></em>
+      ] [
+        authtok_type=<em class="replaceable"><code>STRING</code></em>
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_pwhistory-description"></a>6.25.1. DESCRIPTION</h3></div></div></div><p>
+      This module saves the last passwords for each user in order
+      to force password change history and keep the user from
+      alternating between the same password too frequently.
+    </p><p>
+      This module does not work together with kerberos. In general,
+      it does not make much sense to use this module in conjunction
+      with NIS or LDAP, since the old passwords are stored on the
+      local machine and are not available on another machine for
+      password history checking.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_pwhistory-options"></a>6.25.2. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">debug</code>
+        </span></dt><dd><p>
+            Turns on debugging via
+            <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span>.
+          </p></dd><dt><span class="term">
+          <code class="option">use_authtok</code>
+        </span></dt><dd><p>
+           When password changing enforce the module to use the new password
+           provided by a previously stacked <code class="option">password</code>
+           module (this is used in the example of the stacking of the
+           <span class="command"><strong>pam_cracklib</strong></span> module documented below).
+          </p></dd><dt><span class="term">
+          <code class="option">enforce_for_root</code>
+        </span></dt><dd><p>
+            If this option is set, the check is enforced for root, too.
+          </p></dd><dt><span class="term">
+          <code class="option">remember=<em class="replaceable"><code>N</code></em></code>
+        </span></dt><dd><p>
+            The last <em class="replaceable"><code>N</code></em> passwords for each
+            user are saved in <code class="filename">/etc/security/opasswd</code>.
+            The default is <span class="emphasis"><em>10</em></span>. Value of
+            <span class="emphasis"><em>0</em></span> makes the module to keep the existing
+            contents of the <code class="filename">opasswd</code> file unchanged.
+          </p></dd><dt><span class="term">
+            <code class="option">retry=<em class="replaceable"><code>N</code></em></code>
+          </span></dt><dd><p>
+              Prompt user at most <em class="replaceable"><code>N</code></em> times
+              before returning with error. The default is
+              <span class="emphasis"><em>1</em></span>.
+            </p></dd><dt><span class="term">
+            <code class="option">authtok_type=<em class="replaceable"><code>STRING</code></em></code>
+          </span></dt><dd><p>
+              See <span class="citerefentry"><span class="refentrytitle">pam_get_authtok</span>(3)</span> for more details.
+            </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_pwhistory-types"></a>6.25.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      Only the <code class="option">password</code> module type is provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_pwhistory-return_values"></a>6.25.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_AUTHTOK_ERR</span></dt><dd><p>
+            No new password was entered, the user aborted password
+            change or new password couldn't be set.
+          </p></dd><dt><span class="term">PAM_IGNORE</span></dt><dd><p>
+            Password history was disabled.
+          </p></dd><dt><span class="term">PAM_MAXTRIES</span></dt><dd><p>
+            Password was rejected too often.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+            User is not known to system.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_pwhistory-files"></a>6.25.5. FILES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="filename">/etc/security/opasswd</code></span></dt><dd><p>File with password history</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_pwhistory-examples"></a>6.25.6. EXAMPLES</h3></div></div></div><p>
+      An example password section would be:
+      </p><pre class="programlisting">
+#%PAM-1.0
+password     required       pam_pwhistory.so
+password     required       pam_unix.so        use_authtok
+      </pre><p>
+    </p><p>
+     In combination with <span class="command"><strong>pam_cracklib</strong></span>:
+      </p><pre class="programlisting">
+#%PAM-1.0
+password     required       pam_cracklib.so    retry=3
+password     required       pam_pwhistory.so   use_authtok
+password     required       pam_unix.so        use_authtok
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_pwhistory-author"></a>6.25.7. AUTHOR</h3></div></div></div><p>
+        pam_pwhistory was written by Thorsten Kukuk &lt;kukuk@thkukuk.de&gt;
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_permit.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_rhosts.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.24. pam_permit - the promiscuous module </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.26. pam_rhosts - grant access using .rhosts file</td></tr></table></div></body></html>

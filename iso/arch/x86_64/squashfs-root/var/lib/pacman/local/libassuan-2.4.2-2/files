@@ -1,0 +1,16 @@
+%FILES%
+usr/
+usr/bin/
+usr/bin/libassuan-config
+usr/include/
+usr/include/assuan.h
+usr/lib/
+usr/lib/libassuan.so
+usr/lib/libassuan.so.0
+usr/lib/libassuan.so.0.7.2
+usr/share/
+usr/share/aclocal/
+usr/share/aclocal/libassuan.m4
+usr/share/info/
+usr/share/info/assuan.info.gz
+

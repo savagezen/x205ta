@@ -1,0 +1,45 @@
+%NAME%
+wpa_supplicant
+
+%VERSION%
+1:2.5-3
+
+%DESC%
+A utility providing key negotiation for WPA wireless networks
+
+%URL%
+http://hostap.epitest.fi/wpa_supplicant
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1456943284
+
+%INSTALLDATE%
+1464799590
+
+%PACKAGER%
+Florian Pritz <bluewind@xinu.at>
+
+%SIZE%
+2028544
+
+%REASON%
+1
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+openssl
+libdbus
+readline
+libnl
+
+%OPTDEPENDS%
+wpa_supplicant_gui: wpa_gui program
+

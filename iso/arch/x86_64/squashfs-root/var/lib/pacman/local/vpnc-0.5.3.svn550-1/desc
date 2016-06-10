@@ -1,0 +1,41 @@
+%NAME%
+vpnc
+
+%VERSION%
+0.5.3.svn550-1
+
+%DESC%
+VPN client for cisco3000 VPN Concentrators
+
+%URL%
+http://www.unix-ag.uni-kl.de/~massar/vpnc/
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1420932695
+
+%INSTALLDATE%
+1464799589
+
+%PACKAGER%
+Jan Alexander Steffens (heftig) <jan.steffens@gmail.com>
+
+%SIZE%
+200704
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+libgcrypt
+openssl
+iproute2
+
+%OPTDEPENDS%
+openresolv: Let vpnc manage resolv.conf
+

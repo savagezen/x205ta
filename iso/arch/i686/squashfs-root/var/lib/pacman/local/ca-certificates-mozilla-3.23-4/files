@@ -1,0 +1,9 @@
+%FILES%
+usr/
+usr/share/
+usr/share/ca-certificates/
+usr/share/ca-certificates/trust-source/
+usr/share/ca-certificates/trust-source/mozilla.neutral-trust.crt
+usr/share/ca-certificates/trust-source/mozilla.supplement.p11-kit
+usr/share/ca-certificates/trust-source/mozilla.trust.crt
+

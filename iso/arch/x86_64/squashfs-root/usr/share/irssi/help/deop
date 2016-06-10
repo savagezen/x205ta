@@ -1,0 +1,23 @@
+
+%9Syntax:%9
+
+DEOP %|<nicks>
+
+%9Parameters:%9
+
+    A list of nicknames to deop.
+
+%9Description:%9
+
+    Removes the channel operator privileges from the given nicknames; you may
+    use the wildcard character '*' in a nickname.
+
+%9Examples:%9
+
+    /DEOP mike
+    /DEOP bob sarah
+    /DEOP jo*n
+    /DEOP *
+
+%9See also:%9 DEVOICE, MODE, OP, VOICE
+

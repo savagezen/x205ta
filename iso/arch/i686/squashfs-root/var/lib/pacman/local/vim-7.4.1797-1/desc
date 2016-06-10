@@ -1,0 +1,63 @@
+%NAME%
+vim
+
+%VERSION%
+7.4.1797-1
+
+%BASE%
+vim
+
+%DESC%
+Vi Improved, a highly configurable, improved version of the vi text editor
+
+%URL%
+http://www.vim.org
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1461954601
+
+%INSTALLDATE%
+1464799539
+
+%PACKAGER%
+Anatol Pomozov <anatol.pomozov@gmail.com>
+
+%SIZE%
+3025920
+
+%LICENSE%
+custom:vim
+
+%VALIDATION%
+pgp
+
+%REPLACES%
+vim-python3
+vim-minimal
+
+%DEPENDS%
+vim-runtime=7.4.1797-1
+gpm
+acl
+
+%OPTDEPENDS%
+python2: Python 2 language support
+python: Python 3 language support
+ruby: Ruby language support
+lua: Lua language support
+perl: Perl language support
+tcl: Tcl language support
+
+%CONFLICTS%
+gvim
+vim-minimal
+vim-python3
+
+%PROVIDES%
+xxd
+vim-minimal
+vim-python3
+

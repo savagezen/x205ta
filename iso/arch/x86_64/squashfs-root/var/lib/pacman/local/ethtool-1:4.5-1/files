@@ -1,0 +1,9 @@
+%FILES%
+usr/
+usr/bin/
+usr/bin/ethtool
+usr/share/
+usr/share/man/
+usr/share/man/man8/
+usr/share/man/man8/ethtool.8.gz
+

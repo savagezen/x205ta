@@ -1,0 +1,15 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>4.5. Sufficient resources</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_ADG.html" title="The Linux-PAM Application Developers' Guide"><link rel="up" href="adg-security.html" title="Chapter 4.  Security issues of Linux-PAM"><link rel="prev" href="adg-security-user-identity.html" title="4.4. The identity of the user"><link rel="next" href="adg-libpam_misc.html" title="Chapter 5. A library of miscellaneous helper functions"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">4.5. Sufficient resources</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="adg-security-user-identity.html">Prev</a> </td><th width="60%" align="center">Chapter 4. 
+      Security issues of <span class="emphasis"><em>Linux-PAM</em></span>
+    </th><td width="20%" align="right"> <a accesskey="n" href="adg-libpam_misc.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="adg-security-resources"></a>4.5. Sufficient resources</h2></div></div></div><p>
+        Care should be taken to ensure that the proper execution of an
+        application is not compromised by a lack of system resources. If an
+        application is unable to open sufficient files to perform its service,
+        it should fail gracefully, or request additional resources.
+        Specifically, the quantities manipulated by the <span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span> family of commands should be taken into consideration.
+      </p><p>
+        This is also true of conversation prompts. The application should not
+        accept prompts of arbitrary length with out checking for resource
+        allocation failure and dealing with such extreme conditions gracefully
+        and in a manner that preserves the PAM API. Such tolerance may be
+        especially important when attempting to track a malicious adversary.
+      </p></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="adg-security-user-identity.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="adg-security.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="adg-libpam_misc.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">4.4. The identity of the user </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_ADG.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 5. A library of miscellaneous helper functions</td></tr></table></div></body></html>

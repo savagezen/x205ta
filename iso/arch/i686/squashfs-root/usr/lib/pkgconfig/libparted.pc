@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libparted
+Description: The GNU Parted disk partitioning shared library
+Version: 3.2
+Libs: -L${libdir} -lparted
+Cflags: -I${includedir}

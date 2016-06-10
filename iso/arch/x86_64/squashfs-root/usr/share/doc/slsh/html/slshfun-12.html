@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.66">
+ <TITLE> SLSH Library Reference (version 2.3.0): Miscellaneous Functions</TITLE>
+ <LINK HREF="slshfun-13.html" REL=next>
+ <LINK HREF="slshfun-11.html" REL=previous>
+ <LINK HREF="slshfun.html#toc12" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="slshfun-13.html">Next</A>
+<A HREF="slshfun-11.html">Previous</A>
+<A HREF="slshfun.html#toc12">Contents</A>
+<HR>
+<H2><A NAME="s12">12.</A> <A HREF="slshfun.html#toc12">Miscellaneous Functions</A></H2>
+
+
+<H2><A NAME="print"></A> <A NAME="ss12.1">12.1</A> <A HREF="slshfun.html#toc12.1"><B>print</B></A>
+</H2>
+
+<P>
+<DL>
+<DT><B> Synopsis </B><DD>
+<P>Display a string representation of an object or value</P>
+<DT><B> Usage </B><DD>
+<P><CODE>print (value [,&amp;var|file-pointer|filename])</CODE></P>
+<DT><B> Description </B><DD>
+<P>The <CODE>print</CODE> function displays the string representation of a
+value to the display.  An optional second argument may be provided to
+specify where to write the resulting string: a variable, an open file
+pointer, or to a file.</P>
+<P>If the string representation of the object appears to contain more
+lines than are available on the screen, then the output will be piped
+to the program given by the <CODE>PAGER</CODE> environment variable.
+Alternatively the pager program may be specified via the <CODE>pager</CODE>
+qualifier.</P>
+<DT><B> Qualifiers </B><DD>
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+   pager[=string]       Force the use of the pager.  If a value is
+                         specified, then use it for the pager command.
+   nopager              Do not use a pager.
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<DT><B> Example </B><DD>
+<P>Print the string representation of an array to a file called
+<CODE>array.dat</CODE>:
+<BLOCKQUOTE><CODE>
+<PRE>
+   print ([1:20:0.1], "array.dat");
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<P>Print the string represent of an array to a string <CODE>str</CODE>:
+<BLOCKQUOTE><CODE>
+<PRE>
+   print ([1:20:0.1], &amp;str);
+</PRE>
+</CODE></BLOCKQUOTE>
+</P>
+<DT><B> See Also </B><DD>
+<P><CODE>print_set_pager, print_set_pager_lines</CODE></P>
+</DL>
+</P>
+
+
+<H2><A NAME="print_set_pager"></A> <A NAME="ss12.2">12.2</A> <A HREF="slshfun.html#toc12.2"><B>print_set_pager</B></A>
+</H2>
+
+<P>
+<DL>
+<DT><B> Synopsis </B><DD>
+<P>Set the name of the pager program used by the print program</P>
+<DT><B> Usage </B><DD>
+<P><CODE>print_set_pager (String_Type cmd)</CODE></P>
+<DT><B> Description </B><DD>
+<P>This function may be used to specify the name of the default pager to be
+used by the <CODE>print</CODE> function.</P>
+<DT><B> See Also </B><DD>
+<P><CODE>print, print_set_pager_lines</CODE></P>
+</DL>
+</P>
+
+
+<H2><A NAME="print_set_pager_lines"></A> <A NAME="ss12.3">12.3</A> <A HREF="slshfun.html#toc12.3"><B>print_set_pager_lines</B></A>
+</H2>
+
+<P>
+<DL>
+<DT><B> Synopsis </B><DD>
+<P>Set the maximum number of lines to print before using a pager</P>
+<DT><B> Usage </B><DD>
+<P><CODE>print_set_pager_lines (Int_Type num)</CODE></P>
+<DT><B> Description </B><DD>
+<P>The <CODE>print_set_pager_lines</CODE> function sets the maximum number of
+lines that the string representation of an object can be before the
+<CODE>print</CODE> function will use a pager.</P>
+<DT><B> See Also </B><DD>
+<P><CODE>print, print_set_pager</CODE></P>
+</DL>
+</P>
+
+
+<HR>
+<A HREF="slshfun-13.html">Next</A>
+<A HREF="slshfun-11.html">Previous</A>
+<A HREF="slshfun.html#toc12">Contents</A>
+</BODY>
+</HTML>

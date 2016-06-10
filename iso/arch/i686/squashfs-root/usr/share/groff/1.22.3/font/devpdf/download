@@ -1,0 +1,25 @@
+# foundry	ps name	psfile
+	AvantGarde-Book	/usr/share/ghostscript/9.19/Resource/Font/URWGothicL-Book
+	AvantGarde-BookOblique	/usr/share/ghostscript/9.19/Resource/Font/URWGothicL-BookObli
+	AvantGarde-Demi	/usr/share/ghostscript/9.19/Resource/Font/URWGothicL-Demi
+	AvantGarde-DemiOblique	/usr/share/ghostscript/9.19/Resource/Font/URWGothicL-DemiObli
+	Bookman-Demi	/usr/share/ghostscript/9.19/Resource/Font/URWBookmanL-DemiBold
+	Bookman-DemiItalic	/usr/share/ghostscript/9.19/Resource/Font/URWBookmanL-DemiBoldItal
+	Bookman-Light	/usr/share/ghostscript/9.19/Resource/Font/URWBookmanL-Ligh
+	Bookman-LightItalic	/usr/share/ghostscript/9.19/Resource/Font/URWBookmanL-LighItal
+	FreeEuro	../devps/freeeuro.pfa
+	Helvetica-Narrow	/usr/share/ghostscript/9.19/Resource/Font/NimbusSanL-ReguCond
+	Helvetica-Narrow-Bold	/usr/share/ghostscript/9.19/Resource/Font/NimbusSanL-BoldCond
+	Helvetica-Narrow-BoldOblique	/usr/share/ghostscript/9.19/Resource/Font/NimbusSanL-BoldCondItal
+	Helvetica-Narrow-Oblique	/usr/share/ghostscript/9.19/Resource/Font/NimbusSanL-ReguCondItal
+	NewCenturySchlbk-Bold	/usr/share/ghostscript/9.19/Resource/Font/CenturySchL-Bold
+	NewCenturySchlbk-BoldItalic	/usr/share/ghostscript/9.19/Resource/Font/CenturySchL-BoldItal
+	NewCenturySchlbk-Italic	/usr/share/ghostscript/9.19/Resource/Font/CenturySchL-Ital
+	NewCenturySchlbk-Roman	/usr/share/ghostscript/9.19/Resource/Font/CenturySchL-Roma
+	Palatino-Bold	/usr/share/ghostscript/9.19/Resource/Font/URWPalladioL-Bold
+	Palatino-BoldItalic	/usr/share/ghostscript/9.19/Resource/Font/URWPalladioL-BoldItal
+	Palatino-Italic	/usr/share/ghostscript/9.19/Resource/Font/URWPalladioL-Ital
+	Palatino-Roman	/usr/share/ghostscript/9.19/Resource/Font/URWPalladioL-Roma
+	Symbol	*/usr/share/ghostscript/9.19/Resource/Font/StandardSymL
+	ZapfChancery-MediumItalic	/usr/share/ghostscript/9.19/Resource/Font/URWChanceryL-MediItal
+	ZapfDingbats	*/usr/share/ghostscript/9.19/Resource/Font/Dingbats

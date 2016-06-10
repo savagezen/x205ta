@@ -1,0 +1,11 @@
+%FILES%
+usr/
+usr/lib/
+usr/lib/initcpio/
+usr/lib/initcpio/hooks/
+usr/lib/initcpio/hooks/net
+usr/lib/initcpio/install/
+usr/lib/initcpio/install/net
+usr/lib/initcpio/ipconfig
+usr/lib/initcpio/nfsmount
+

@@ -1,0 +1,36 @@
+#!/bin/bash
+
+build() {
+
+    # subshell to avoid namespace pollution
+    (
+        l=$LANG
+        unset LANG
+
+        for cfg in /etc/{vconsole,locale}.conf; do
+            [[ -s $cfg ]] && . "$cfg"
+        done
+
+        [[ $LANG ]] && LOCALE=$LANG
+        LANG=$l
+
+        if [[ $KEYMAP ]]; then
+            if [[ $LOCALE = *[Uu][Tt][Ff]?(-)8 ]]; then
+                touch "$BUILDROOT/keymap.utf8"
+                uc=-u
+            fi
+            loadkeys -q $uc $KEYMAP -b > "$BUILDROOT/keymap.bin"
+        else
+            warning "keymap: hook specified, but no KEYMAP found in configuration"
+            return 1
+        fi
+    ) && add_runscript
+}
+
+help() {
+    cat <<HELPEOF
+This hook loads keymap(s) specified in vconsole.conf during early userspace.
+HELPEOF
+}
+
+# vim: set ft=sh ts=4 sw=4 et:

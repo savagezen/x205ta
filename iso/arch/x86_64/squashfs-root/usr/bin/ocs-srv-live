@@ -1,0 +1,162 @@
+#!/bin/bash
+# Author: Steven Shiau <steven _at_ nchc org tw>
+# License: GPL
+# Description: Program to start Clonezilla SE on DRBL live.
+
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+. /etc/drbl/drbl-ocs.conf
+. $DRBL_SCRIPT_PATH/sbin/ocs-functions
+
+# Load the config in ocs-live.conf. This is specially for DRBL/Clonezilla live. It will overwrite some settings of /etc/drbl/drbl-ocs.conf, such as $DIA...
+[ -e "/etc/ocs/ocs-live.conf" ] && . /etc/ocs/ocs-live.conf
+
+# Settings
+# try IP from 192.168."100".254
+private_IP_alias_eth_def="100"
+
+# functions
+USAGE() {
+    echo "To start, restart or stop Clonezilla server edition service in DRBL Live environment."
+    echo "Usage:"
+    echo "$0 [OPTION] {start|stop|restart} [MODE]"
+    echo "OPTION:"
+    echo "-b, -batch, --batch          Run program in batch mode, i.e. without any prompt or wait for pressing enter key.  //NOTE// You have to use '-batch' instead of '-b' when you want to use it in the boot parameters. Otherwise the program init on system will honor '-b', too."
+    echo "-c, -client-no NO             Assign the client number as NO for each network card connected to clients. //NOTE// This option will only work when drbl environment is not configured yet, i.e. before 'drbl-live' is run after booting."
+    echo "start   Start Clonezilla server edition service now"
+    echo "stop    Stop Clonezilla server edition service service now"
+    echo "restart Restart Clonezilla server edition service service now"
+    echo "MODE could be one of the following:"
+    echo "save-disk: Clonezilla save disk mode"
+    echo "restore-disk: Clonezilla restore disk Mode"
+    echo "save-parts: Clonezilla save partitions mode"
+    echo "restore-parts: Clonezilla restore partitions mode"
+    echo "select-in-client: Select mode in client"
+    echo "Example: To start Clonezilla server edition service service in this DRBL Live server"
+    echo "$0 start"
+}
+#
+start_ocs_srv() {
+  # start drbl live first, which will setup drbl environment
+  echo "Checking if DRBL related sevices are started or not..."
+  # dhcpd is for isc-dhcp-server (from Squeeze), dhcpd3 is for dhcp3-server (< squeeze).
+  dhcpd_pid="$(LC_ALL=C pidof dhcpd || LC_ALL=C pidof dhcpd3)"
+  tftpd_pid="$(LC_ALL=C pidof in.tftpd)"
+  unfsd_pid="$(LC_ALL=C pidof unfsd)"
+  nfsd_pid="$(LC_ALL=C pidof nfsd)"
+  if [ -z "$dhcpd_pid" -o -z "$tftpd_pid" ] || [ -z "$unfsd_pid" -a -z "$nfsd_pid" ]; then
+    # Not configured yet or DRBL service is not started, either
+    if [ "$ocs_batch_mode" != "on" ]; then
+      echo "$msg_delimiter_star_line"
+      echo "$msg_drbl_env_is_not_ready_now_config"
+      echo $msg_this_might_take_several_minutes
+      echo -n $msg_press_enter_to_continue
+      read
+      echo "$msg_delimiter_star_line"
+    fi
+    # ocs_client_no_per_NIC is read from /etc/ocs/ocs-live.conf, which might be from boot parameter, or is assigned by this program with option "-c"
+    if [ -n "$ocs_client_no_per_NIC" ]; then
+      if [ -n "$(grep -Ew "^client_no_per_NIC=.*" /etc/ocs/ocs-live.conf)" ]; then
+        LC_ALL=C perl -pi -e "s/^client_no_per_NIC=.*/client_no_per_NIC=$ocs_client_no_per_NIC/g" /etc/ocs/ocs-live.conf
+      else
+        echo "client_no_per_NIC=$ocs_client_no_per_NIC" >> /etc/ocs/ocs-live.conf
+      fi
+    fi
+    # Now load $client_no_per_NIC for later use
+    . /etc/ocs/ocs-live.conf
+
+    # Check if $ocsroot is a mountpoint or not, if not, we have to mount it.
+    prepare_ocsroot_opt=""
+    if ! mountpoint $ocsroot &>/dev/null; then
+      echo "Directory $ocsroot is not a mount point. Will try to mount $ocsroot..."
+      prepare_ocsroot_opt="--prepare-ocsroot"
+    fi	        
+    drbl-live $prepare_ocsroot_opt --skip-pause-in-the-end --no-prompt-drbl-live start
+  else
+    # DRBL service has been started. Therefore for Clonezilla SE we need to mount $ocsroot
+    # Check if $ocsroot is a mountpoint or not, if not, we have to mount it.
+    if ! mountpoint $ocsroot &>/dev/null; then
+      echo "Directory $ocsroot is not a mount point. Will try to mount $ocsroot..."
+      prep-ocsroot
+    fi	        
+  fi
+  # disable the DRBL in pxelinux menu
+  hide_reveal_pxe_img drbl hide $pxecfg_pd/pxelinux.cfg/default
+  # set local as default
+  set-default-pxe-img -i local -c $pxecfg_pd/pxelinux.cfg/default
+
+  echo "$msg_delimiter_star_line"
+  echo "$msg_drbl_env_is_ready"
+  echo "$msg_delimiter_star_line"
+  sleep 1
+  dcs clonezilla-start $mode
+
+  echo "$msg_delimiter_star_line"
+  [ "$BOOTUP" = "color" ] && $SETCOLOR_WARNING
+  if [ "$ocs_prompt_mode" = "tui" ]; then
+    $DIA --title "$msg_nchc_free_software_labs" --clear \
+         --msgbox "$msg_do_not_close_window_until_clone_finish" 0 0
+  else
+    echo -e "$msg_do_not_close_window_until_clone_finish"
+  fi
+  [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+  /bin/bash
+} # end of start_ocs_srv
+#
+stop_ocs_srv() {
+  drbl-ocs stop
+  echo "$msg_delimiter_star_line"
+  echo -n $msg_press_enter_to_continue
+  read < /dev/stdin
+} # end of stop_ocs_srv
+
+#################
+##### MAIN ######
+#################
+#
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -b|-batch|--batch)
+            ocs_batch_mode="on"
+	    shift;;
+    -c|-client-no)
+            shift
+            if [ -z "$(echo $1 |grep ^-.)" ]; then
+              # skip the -xx option, in case 
+              ocs_client_no_per_NIC="$1"
+              shift
+            fi
+            ;;
+    -*)     echo "${0}: ${1}: invalid option" >&2
+            USAGE >& 2
+            exit 2 ;;
+    *)      break ;;
+  esac
+done
+check_if_root
+
+#
+ask_and_load_lang_set
+
+switch="$1"
+mode="$2"
+
+#
+if [ -z "$switch" ]; then
+  USAGE
+  exit 1
+fi
+#
+if ! is_boot_from_live; then
+  [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+  echo "This command $0 is used in DRBL Live environment only!"
+  [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+  echo "$msg_program_stop"
+  exit 1
+fi
+
+case "$switch" in
+   "start"|"restart") start_ocs_srv ;;
+   "stop")            stop_ocs_srv ;;
+esac

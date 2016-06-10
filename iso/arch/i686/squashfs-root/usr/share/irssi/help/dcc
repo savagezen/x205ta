@@ -1,0 +1,49 @@
+
+%9Syntax:%9
+
+DCC CHAT %|[-passive] [<nick>]
+DCC GET %|[<nick> [<file>]]
+DCC RESUME %|[<nick> [<file>]]
+DCC SERVER %|[+|-scf] [port]
+DCC CLOSE %|<type> <nick> [<file>]
+
+%9Parameters:%9
+
+    CHAT:        Initiates or accept a chat request.
+    GET:         Accepts a file transfer request.
+    RESUME:      Resumes a file transfer.
+    SERVER:      Starts a DCC server.
+    CLOSE:       Closes a DCC connection.
+    LIST:        Displays all the open DCC connections.
+
+    -passive:    Uses the passive DCC protocol.
+    -scf:        Use any combination of the flags to indicate:
+                     's' - send
+                     'c' - chat
+                     'f' - fserver
+
+    The nickname of the person to chat with, or the name of the file to
+    transfer.
+
+%9Description:%9
+
+    The DCC protocol is used to initiate client-to-client chat connections
+    and file transfers.
+
+    If you are behind NAT, or if the firewall is too restrictive, you might
+    want to try if using the passive parameter resolved your connection
+    problem.
+
+    You can send files which contain special character or spaces by enclosing
+    the filename within quotes. For example: 'my file with spaces.txt'.
+
+%9Examples:%9
+
+    /DCC CHAT mike
+    /DCC GET bob summer vacation.mkv
+    /DCC SEND sarah "summer vacation.mkv"
+    /DCC CLOSE get mike
+    /DCC CLOSE send bob summer vacation.mkv
+
+%9See also:%9 CD
+

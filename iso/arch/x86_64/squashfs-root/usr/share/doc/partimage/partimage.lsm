@@ -1,0 +1,15 @@
+Begin3
+Title:          partimage 
+Version:        0.6.9
+Entered-date:   25JUL2010
+Description:    saves used blocks of a partition to a compressed image file. It is very useful
+                to backup all data of a system. Then you can restore it on virus, crash, error...
+                You can also use this utility to install many computers with the same software. Then,
+                instead of doing the same work a lot of times, just install a computer, and create
+                an image of it. Then, you just have to restore the image file on others computers.
+Keywords:       image,file,ext2,ext2fs,ext3,ext3fs,reiserfs,jfs,fat,fat16,fat32,ntfs,hpfs,xfs,partition,MBR,dump
+Author:         Francois Dupoux, Franck Ladurelle
+Home-page:      http://www.partimage.org/
+Platforms:      Linux
+Copying-policy: GNU GPL2 (General Public License 2)
+End

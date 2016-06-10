@@ -1,0 +1,90 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.3. pam_debug - debug the PAM stack</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_cracklib.html" title="6.2. pam_cracklib - checks the password against dictionary words"><link rel="next" href="sag-pam_deny.html" title="6.4. pam_deny - locking-out PAM module"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.3. pam_debug - debug the PAM stack</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_cracklib.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_deny.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_debug"></a>6.3. pam_debug - debug the PAM stack</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_debug.so</code>  [
+	auth=<em class="replaceable"><code>value</code></em>
+      ] [
+	cred=<em class="replaceable"><code>value</code></em>
+      ] [
+	acct=<em class="replaceable"><code>value</code></em>
+      ] [
+	prechauthtok=<em class="replaceable"><code>value</code></em>
+      ] [
+	chauthtok=<em class="replaceable"><code>value</code></em>
+      ] [
+	auth=<em class="replaceable"><code>value</code></em>
+      ] [
+	open_session=<em class="replaceable"><code>value</code></em>
+      ] [
+	close_session=<em class="replaceable"><code>value</code></em>
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_debug-description"></a>6.3.1. DESCRIPTION</h3></div></div></div><p>
+      The pam_debug PAM module is intended as a debugging aide for
+      determining how the PAM stack is operating. This module returns
+      what its module arguments tell it to return.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_debug-options"></a>6.3.2. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">auth=<em class="replaceable"><code>value</code></em></code>
+        </span></dt><dd><p>
+            The
+	    <span class="citerefentry"><span class="refentrytitle">pam_sm_authenticate</span>(3)</span> function will return
+            <em class="replaceable"><code>value</code></em>.
+          </p></dd><dt><span class="term">
+          <code class="option">cred=<em class="replaceable"><code>value</code></em></code>
+        </span></dt><dd><p>
+            The
+	    <span class="citerefentry"><span class="refentrytitle">pam_sm_setcred</span>(3)</span> function will return
+            <em class="replaceable"><code>value</code></em>.
+          </p></dd><dt><span class="term">
+          <code class="option">acct=<em class="replaceable"><code>value</code></em></code>
+        </span></dt><dd><p>
+            The
+	    <span class="citerefentry"><span class="refentrytitle">pam_sm_acct_mgmt</span>(3)</span> function will return
+            <em class="replaceable"><code>value</code></em>.
+          </p></dd><dt><span class="term">
+          <code class="option">prechauthtok=<em class="replaceable"><code>value</code></em></code>
+        </span></dt><dd><p>
+            The
+	    <span class="citerefentry"><span class="refentrytitle">pam_sm_chauthtok</span>(3)</span> function will return
+            <em class="replaceable"><code>value</code></em> if the
+            <span class="emphasis"><em>PAM_PRELIM_CHECK</em></span> flag is set.
+          </p></dd><dt><span class="term">
+          <code class="option">chauthtok=<em class="replaceable"><code>value</code></em></code>
+        </span></dt><dd><p>
+            The
+	    <span class="citerefentry"><span class="refentrytitle">pam_sm_chauthtok</span>(3)</span> function will return
+            <em class="replaceable"><code>value</code></em> if the
+            <span class="emphasis"><em>PAM_PRELIM_CHECK</em></span> flag is
+            <span class="emphasis"><em>not</em></span> set.
+          </p></dd><dt><span class="term">
+          <code class="option">open_session=<em class="replaceable"><code>value</code></em></code>
+        </span></dt><dd><p>
+            The
+	    <span class="citerefentry"><span class="refentrytitle">pam_sm_open_session</span>(3)</span> function will return
+            <em class="replaceable"><code>value</code></em>.
+          </p></dd><dt><span class="term">
+          <code class="option">close_session=<em class="replaceable"><code>value</code></em></code>
+        </span></dt><dd><p>
+            The
+	    <span class="citerefentry"><span class="refentrytitle">pam_sm_close_session</span>(3)</span> function will return
+            <em class="replaceable"><code>value</code></em>.
+          </p></dd></dl></div><p>
+      Where <em class="replaceable"><code>value</code></em> can be one of: success,
+      open_err, symbol_err, service_err, system_err, buf_err, perm_denied,
+      auth_err, cred_insufficient, authinfo_unavail, user_unknown,
+      maxtries, new_authtok_reqd, acct_expired, session_err, cred_unavail,
+      cred_expired, cred_err, no_module_data, conv_err, authtok_err,
+      authtok_recover_err, authtok_lock_busy, authtok_disable_aging,
+      try_again, ignore, abort, authtok_expired, module_unknown,
+      bad_item, conv_again, incomplete.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_debug-types"></a>6.3.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      All module types (<code class="option">auth</code>, <code class="option">account</code>,
+      <code class="option">password</code> and <code class="option">session</code>) are provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_debug-return_values"></a>6.3.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+            Default return code if no other value was specified,
+            else specified return value.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_debug-examples"></a>6.3.5. EXAMPLES</h3></div></div></div><pre class="programlisting">
+auth    requisite       pam_permit.so
+auth    [success=2 default=ok]  pam_debug.so auth=perm_denied cred=success
+auth    [default=reset]         pam_debug.so auth=success cred=perm_denied
+auth    [success=done default=die] pam_debug.so
+auth    optional        pam_debug.so auth=perm_denied cred=perm_denied
+auth    sufficient      pam_debug.so auth=success cred=success
+    </pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_debug-author"></a>6.3.6. AUTHOR</h3></div></div></div><p>
+        pam_debug was written by Andrew G. Morgan &lt;morgan@kernel.org&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_cracklib.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_deny.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.2. pam_cracklib - checks the password against dictionary words </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.4. pam_deny - locking-out PAM module</td></tr></table></div></body></html>

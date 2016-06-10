@@ -1,0 +1,22 @@
+
+%9Syntax:%9
+
+UPGRADE %|[<irssi binary path>]
+
+%9Parameters:%9
+
+    The location of the new binary; if no arguments are given, the current
+    binary file will be used.
+
+%9Description:%9
+
+    Upgrades to a new version without disconnecting from non-SSL servers; please
+    bear in mind that it does not download or compile a new version.
+
+%9Examples:%9
+
+    /UPGRADE
+    /UPGRADE /home/mike/irssi-dev/bin/irssi
+
+%9See also:%9 CONNECT, DISCONNECT, HELP
+

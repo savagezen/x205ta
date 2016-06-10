@@ -1,0 +1,20 @@
+================================= BUGS IN PARTIMAGE: ===========================
+
+------- NOT FIXED -------
+* when using compression, the volumes sizes are a little bigger than the need
+  size (FIXED for gzip compression)(FIXED but files are far too small)
+
+* some avail space problems
+
+* if the link between server and a client fails for any reason, client
+  and/or server *may* die.
+
+* partimage imginfo imagefile fails on wrong permissions but with wrong message
+  'can't find compression level' instead of 'permission denied'
+
+* partimage doesn't rightly detect end of space so corrupts images maid with
+  compression. Image seems correct but restoring fails with 'invalid magic'.
+  This doesn't affect non compressed images nor multivolume images based on
+  size spliting.
+
+* partimage can't restore MBR is image is bzip2 compressed

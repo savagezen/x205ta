@@ -1,0 +1,65 @@
+%FILES%
+etc/
+etc/pam.d/
+etc/pam.d/rlogin
+etc/pam.d/rsh
+etc/xinetd.d/
+etc/xinetd.d/rlogin
+etc/xinetd.d/rsh
+etc/xinetd.d/talk
+etc/xinetd.d/telnet
+usr/
+usr/bin/
+usr/bin/dnsdomainname
+usr/bin/ftp
+usr/bin/ftpd
+usr/bin/hostname
+usr/bin/rcp
+usr/bin/rlogin
+usr/bin/rlogind
+usr/bin/rsh
+usr/bin/rshd
+usr/bin/talk
+usr/bin/talkd
+usr/bin/telnet
+usr/bin/telnetd
+usr/lib/
+usr/lib/systemd/
+usr/lib/systemd/system/
+usr/lib/systemd/system/ftpd.service
+usr/lib/systemd/system/rlogin.socket
+usr/lib/systemd/system/rlogin@.service
+usr/lib/systemd/system/rsh.socket
+usr/lib/systemd/system/rsh@.service
+usr/lib/systemd/system/talk.service
+usr/lib/systemd/system/talk.socket
+usr/lib/systemd/system/telnet.socket
+usr/lib/systemd/system/telnet@.service
+usr/share/
+usr/share/info/
+usr/share/info/inetutils.info.gz
+usr/share/man/
+usr/share/man/man1/
+usr/share/man/man1/dnsdomainname.1.gz
+usr/share/man/man1/ftp.1.gz
+usr/share/man/man1/hostname.1.gz
+usr/share/man/man1/rcp.1.gz
+usr/share/man/man1/rlogin.1.gz
+usr/share/man/man1/rsh.1.gz
+usr/share/man/man1/talk.1.gz
+usr/share/man/man1/telnet.1.gz
+usr/share/man/man8/
+usr/share/man/man8/ftpd.8.gz
+usr/share/man/man8/rlogind.8.gz
+usr/share/man/man8/rshd.8.gz
+usr/share/man/man8/talkd.8.gz
+usr/share/man/man8/telnetd.8.gz
+
+%BACKUP%
+etc/xinetd.d/telnet	ab71e7458e8ed2b9d31c48eba5ab4c3a
+etc/xinetd.d/talk	ae4539ffbabae314744aea8467125f85
+etc/xinetd.d/rlogin	bf522b381451b3fba8386f3566b37848
+etc/xinetd.d/rsh	50c76143eadd3c004f5857d712fa05c4
+etc/pam.d/rlogin	cda2aa3cd2353120b142fd33b3b4f4df
+etc/pam.d/rsh	8083b2fac54a76afb93be31d2f55dc68
+

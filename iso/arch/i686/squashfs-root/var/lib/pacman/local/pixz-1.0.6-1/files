@@ -1,0 +1,12 @@
+%FILES%
+usr/
+usr/bin/
+usr/bin/pixz
+usr/share/
+usr/share/licenses/
+usr/share/licenses/pixz/
+usr/share/licenses/pixz/LICENSE
+usr/share/man/
+usr/share/man/man1/
+usr/share/man/man1/pixz.1.gz
+

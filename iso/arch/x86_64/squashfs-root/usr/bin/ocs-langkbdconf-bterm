@@ -1,0 +1,67 @@
+#!/bin/bash
+# Author: Steven Shiau <steven _at_ nchc org tw>
+# License: GPL
+# This program is used in Debian and run in bterm or jfbterm
+
+#
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+. /etc/drbl/drbl-ocs.conf
+. $DRBL_SCRIPT_PATH/sbin/ocs-functions
+
+# Functions
+USAGE() {
+    echo "$ocs - Program to setup locales and keyboard layout in Clonezilla live"
+    echo "Usage:"
+    echo "To run $ocs:"
+    echo "$ocs"
+    echo "Ex:"
+    echo "To setup locales and keyboard layout in Clonezilla live, run:"
+    echo "   $ocs"
+} # end of USAGE
+
+####################
+### Main program ###
+####################
+
+ocs=`basename $0`
+#
+check_if_root
+#
+while [ $# -gt 0 ]; do
+ case "$1" in
+   -*)     echo "${0}: ${1}: invalid option" >&2
+           USAGE >& 2
+           exit 2 ;;
+   *)      break ;;
+ esac
+done
+
+#
+get_fb_term
+[ "$fb_term" = "bterm" -a ! -e "$uni_font" ] && exit 1
+
+#
+ask_language_if_supported_with_bterm
+[ -z "$ocs_lang" ] && ocs_lang=en_US.UTF-8
+
+# put the language setting so that later program can reuse
+if [ -z "$(grep -E "^[[:space:]]*ocs_lang=" /etc/ocs/ocs-live.conf 2>/dev/null)" ]; then
+  # append it
+  echo "ocs_lang=$ocs_lang" >> /etc/ocs/ocs-live.conf
+else
+  # modify it
+  perl -pi -e "s|^[[:space:]]*ocs_lang=.*|ocs_lang=\"$ocs_lang\"|g" /etc/ocs/ocs-live.conf
+fi
+
+#
+locale_region="$(echo "$ocs_lang" | sed -e "s|\..*||g")"
+gen_locale_if_not_found $locale_region $ocs_lang
+
+#
+export LANG="$ocs_lang"
+if [ ! -e /run/lock/drbl-kbdchooser ]; then
+  drbl-kbdchooser
+  touch /run/lock/drbl-kbdchooser
+fi

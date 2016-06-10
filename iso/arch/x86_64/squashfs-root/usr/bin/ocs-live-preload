@@ -1,0 +1,185 @@
+#!/bin/bash
+# License: GPL 
+# Author: Aaron Burling <aaron_burling _at_ lkstevens wednet edu; burlingaaron _at_ gmail com> and Steven Shiau <steven _at_ clonezilla org>
+# Description: Program to preload a tarball/zip file for live system from boot parameter "ocs_preload":
+# ocs_preload=[http|https|ftp|tftp|file]://[HOST_NAME_or_IP_ADD]/path/to/your_tarball_or_script
+# Support file format: tar.gz, tgz, tar.bz2, tbz2, tar.xz, txz, zip, .sh
+# E.g. You can put the following in the boot parameter:
+#      ocs_preload=tftp://192.168.100.254/my-custom.tgz
+#      ocs_preload=http://192.168.200.254/my-custom.tar.xz
+#      ocs_preload=ftp://192.168.250.254/my-custom.zip
+#      ocs_preload=file:///lib/live/mount/medium/my-custom.tar.bz2
+#      ocs_preload=tftp://192.168.100.254/my-custom.sh
+# Then in Clonezilla live ocs-live-preload will be run automatically and the file assigned by ocs_preload will be downloaded and extracted to /opt. Its mode will be set automatically, too. i.e. set as mode 755 and Unix format script.
+
+#
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+. /etc/drbl/drbl-ocs.conf
+. $DRBL_SCRIPT_PATH/sbin/ocs-functions
+
+# Settings
+cmdl_file="/proc/cmdline"
+dest="/opt"
+rm_tarball=""
+
+# Functions
+extract_tarball() {
+  # rm_tarball is global variable
+  local url download_file local_f download_file_absp
+  local ip rfile lfile
+  url="$1"
+
+  if [ -z "$url" ]; then
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+    echo "No \"url\" assigned in function extract_tarball!"
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+    echo "$msg_program_stop!"
+    return 1
+  fi
+  
+  # Fetch the file
+  # Part of the codes in the following are borrowed from live-boot package.
+  download_file="$(basename ${url})"	
+  case "$url" in
+  	file://*)
+      		local_f="$(echo $url | sed -e "s|file://||g")"
+  		download_file_absp="${local_f}"
+  		rm_tarball="no" # keep it since it's local file
+  		;;
+  	tftp*)
+  		ip="$(dirname $url | sed -e 's|tftp://||g' -e 's|/.*$||g')"
+  		rfile="$(echo $url | sed -e "s|tftp://$ip||g")"
+  		lfile="$(basename $url)"
+  		echo "Trying busybox tftp -g -b 65464 -r $rfile -l ${dest}/$lfile $ip"
+  		busybox tftp -g -b 65464 -r $rfile -l ${dest}/$lfile $ip
+  		download_file_absp="${dest}/${lfile}"
+  		rm_tarball="yes" # remove it since it's downloaded file
+  		;;
+  	*)
+  		echo "Trying wget ${url} -O ${dest}/$(basename ${url})"
+  		wget "${url}" -O "${dest}/${download_file}"
+  		download_file_absp="${dest}/${download_file}"
+  		rm_tarball="yes" # remove it since it's downloaded file
+  		;;
+  esac
+  
+  echo $msg_delimiter_star_line
+  if [ -e "$download_file_absp" ]; then
+  	echo "Putting $download_file_absp... to ${dest}/"
+  	case "$download_file" in
+  		*tar)           tar -xvf $download_file_absp -C ${dest}/;;
+  		*tar.gz|*tgz)   tar -xvzf $download_file_absp -C ${dest}/;;
+  		*tar.bz2|*tbz2) tar -xvjf $download_file_absp -C ${dest}/;;
+  		*tar.xz|*txz)   tar -xvJf $download_file_absp -C ${dest}/;;
+  		*.zip)          unzip -o $download_file_absp -d ${dest}/ 
+				convert_dos_format_script $download_file_absp;;
+  		*.sh)           set_mode_755_and_unix_format $download_file_absp
+				# keep it since it's will be used directly.
+  				rm_tarball="no" ;;
+  		*)
+  			[ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+  			echo "Unknown format for download file \"$download_file_absp\"".
+  			[ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+  			echo "$msg_program_stop!"
+  			return 1
+  	esac
+  	# Clean the tarball
+  	if [ "$rm_tarball" = "yes" ]; then
+  		echo "Remove the downloaded file..."
+  		rm -vf $download_file_absp
+  	fi
+  else
+  	[ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+  	echo "Preload file not found! Perhaps ocs_preload failed?"
+  	[ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+  	echo "$msg_program_stop!"
+  	return 1
+  fi
+  
+  echo "File(s) put in directory: ${dest}."
+  echo ""
+  return 0
+} # end of extract_tarball
+#
+convert_dos_format_script() {
+  local zip_file="$1"
+  local zip_flist i_exist
+  zip_flist_tmp="$(mktemp /tmp/zflist.XXXXXX)"
+  extract_flist_tmp="$(mktemp /tmp/extract_flist.XXXXXX)"
+  if [ -z "$zip_file" ]; then
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+    echo "No \"zip_file\" assigned in function convert_dos_format_script!"
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+    echo "$msg_program_stop!"
+    return 1
+  fi
+  # Sometimes zip will convert file name to lowercase, so we have to find it without case sensitive
+  echo "Searching the shell script in ${dest} extracted from $zip_file for setting mode..."
+  # File names in zip file might contain whitespace, like:
+  # $ unzip -l Example.zip
+  # Archive:  Example.zip
+  #   Length      Date    Time    Name
+  # ---------  ---------- -----   ----
+  #        84  2016-05-17 08:57   a b c.sh
+  #        97  2016-05-17 08:58   a-b-c.sh
+  #        84  2016-05-17 08:47   Subfolder/a b c.sh
+  #        97  2016-05-17 08:48   Subfolder/a-b-c.sh
+  # ---------                     -------
+  #       362                     4 files
+  unzip -l $zip_file | tail -n +4 | head -n -2 | awk -F" " '{$1=$2=$3=""; print $0}' > $zip_flist_tmp
+  find ${dest} -print > $extract_flist_tmp
+  while read i; do
+    i_exist="$(grep -Ei "^${dest}/${i}" $extract_flist_tmp)"
+    if [ -n "$i_exist" ]; then
+      if [ -n "$(LC_ALL=C file "$i_exist" | grep -i "shell script")" ]; then
+         echo "Setting mode for \"$i_exist\" to 755..."
+         set_mode_755_and_unix_format "$i_exist"
+      fi
+    fi
+  done < $zip_flist_tmp
+  rm -f $zip_flist_tmp $extract_flist_tmp
+} # end of convert_dos_format_script
+
+#################
+##### MAIN ######
+#################
+check_if_root
+ask_and_load_lang_set
+
+#
+ocs_preload_list="$(grep -Ewo "ocs_preload[[:digit:]]*" $cmdl_file | uniq | sort -V)"
+ocs_preload_list="$(echo $ocs_preload_list)"  # in one line
+
+if [ -z "$ocs_preload_list" ]; then
+  exit 0
+else
+  echo "Found ocs_preload* parameter in boot parameters..."
+  echo "The order to run: $ocs_preload_list"
+fi
+
+if [ -z "$ocs_preload_list" ]; then
+	[ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+	echo "Boot parameter \"ocs_preload\" not found!"
+	[ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+	echo "$msg_program_stop!"
+	my_ocs_exit 1
+fi
+
+# Prepare $dest in case it does not exist
+mkdir -p ${dest}
+
+parse_cmdline_option -c $cmdl_file "echo_ocs_preload"
+
+for i in $ocs_preload_list; do
+  parse_cmdline_option -c $cmdl_file "$i"
+  eval iload=\$$i
+  if [ -n "$iload" ]; then
+    echo "**************************"
+    # Process it
+    if [ "$echo_ocs_preload" != "no" ]; then
+      echo "Now process \"$i\": $iload"
+    fi
+    extract_tarball $iload
+  fi
+done

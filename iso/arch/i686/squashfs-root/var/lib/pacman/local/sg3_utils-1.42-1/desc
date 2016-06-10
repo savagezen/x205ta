@@ -1,0 +1,37 @@
+%NAME%
+sg3_utils
+
+%VERSION%
+1.42-1
+
+%DESC%
+Generic SCSI utilities
+
+%URL%
+http://sg.danny.cz/sg/sg3_utils.html
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1457260360
+
+%INSTALLDATE%
+1464799538
+
+%PACKAGER%
+Jan de Groot <jgc@archlinux.org>
+
+%SIZE%
+1941504
+
+%LICENSE%
+GPL
+custom:BSD
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+glibc
+

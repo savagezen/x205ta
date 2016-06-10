@@ -1,0 +1,81 @@
+%NAME%
+systemd
+
+%VERSION%
+229-3
+
+%BASE%
+systemd
+
+%DESC%
+system and service manager
+
+%URL%
+http://www.freedesktop.org/wiki/Software/systemd
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1455850537
+
+%INSTALLDATE%
+1464799552
+
+%PACKAGER%
+Dave Reisner <dreisner@archlinux.org>
+
+%SIZE%
+29207552
+
+%REASON%
+1
+
+%LICENSE%
+GPL2
+LGPL2.1
+
+%VALIDATION%
+pgp
+
+%REPLACES%
+nss-myhostname
+systemd-tools
+udev
+
+%DEPENDS%
+acl
+bash
+dbus
+iptables
+kbd
+kmod
+hwids
+libcap
+libgcrypt
+libsystemd
+libidn
+lz4
+pam
+libelf
+libseccomp
+util-linux
+xz
+
+%OPTDEPENDS%
+cryptsetup: required for encrypted block devices
+libmicrohttpd: remote journald capabilities
+quota-tools: kernel-level quota management
+systemd-sysvcompat: symlink package to provide sysvinit binaries
+polkit: allow administration as unprivileged user
+
+%CONFLICTS%
+nss-myhostname
+systemd-tools
+udev
+
+%PROVIDES%
+nss-myhostname
+systemd-tools=229
+udev=229
+

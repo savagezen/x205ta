@@ -1,0 +1,22 @@
+
+%9Syntax:%9
+
+VER %|[<nick> | <channel> | *]
+
+%9Parameters:%9
+
+    A nickname, channel or the wildcard character '*'.
+
+%9Description:%9
+
+    Send a CTCP VERION request to the target nickname, channel or to all the
+    users on the channel.
+
+%9Examples:%9
+
+    /VER *
+    /VER #irssi
+    /VER mike
+
+%9See also:%9 CTCP
+

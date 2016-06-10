@@ -1,0 +1,200 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.37. pam_unix - traditional password authentication</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_umask.html" title="6.36. pam_umask - set the file mode creation mask"><link rel="next" href="sag-pam_userdb.html" title="6.38. pam_userdb - authenticate against a db database"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.37. pam_unix - traditional password authentication</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_umask.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_userdb.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_unix"></a>6.37. pam_unix - traditional password authentication</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_unix.so</code>  [
+        ...
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_unix-description"></a>6.37.1. DESCRIPTION</h3></div></div></div><p>
+      This is the standard Unix authentication module. It uses standard
+      calls from the system's libraries to retrieve and set account
+      information as well as authentication. Usually this is obtained
+      from the /etc/passwd and the /etc/shadow file as well if shadow is
+      enabled.
+    </p><p>
+      The account component performs the task of establishing the status
+      of the user's account and password based on the following
+      <span class="emphasis"><em>shadow</em></span> elements: expire, last_change, max_change,
+      min_change, warn_change. In the case of the latter, it may offer advice
+      to the user on changing their password or, through the
+      <span class="emphasis"><em>PAM_AUTHTOKEN_REQD</em></span> return, delay
+      giving service to the user until they have established a new password.
+      The entries listed above are documented in the <span class="citerefentry"><span class="refentrytitle">shadow</span>(5)</span> manual page. Should the user's record not contain
+      one or more of these entries, the corresponding
+      <span class="emphasis"><em>shadow</em></span> check is not performed.
+    </p><p>
+      The authentication component performs the task of checking the
+      users credentials (password). The default action of this module
+      is to not permit the user access to a service if their official
+      password is blank.
+    </p><p>
+      A helper binary, <span class="citerefentry"><span class="refentrytitle">unix_chkpwd</span>(8)</span>, is provided
+      to check the user's password when it is stored in a read
+      protected database. This binary is very simple and will only
+      check the password of the user invoking it. It is called
+      transparently on behalf of the user by the authenticating
+      component of this module. In this way it is possible
+      for applications like <span class="citerefentry"><span class="refentrytitle">xlock</span>(1)</span> to work without
+      being setuid-root. The module, by default, will temporarily turn
+      off SIGCHLD handling for the duration of execution of the helper
+      binary. This is generally the right thing to do, as many applications
+      are not prepared to handle this signal from a child they didn't know
+      was <code class="function">fork()</code>d. The <code class="option">noreap</code> module
+      argument can be used to suppress this temporary shielding and may be
+      needed for use with certain applications.
+    </p><p>
+      The maximum length of a password supported by the pam_unix module
+      via the helper binary is <span class="emphasis"><em>PAM_MAX_RESP_SIZE</em></span>
+      - currently 512 bytes. The rest of the password provided by the
+      conversation function to the module will be ignored.
+    </p><p>
+      The password component of this module performs the task of updating
+      the user's password. The default encryption hash is taken from the
+      <span class="emphasis"><em>ENCRYPT_METHOD</em></span> variable from
+      <span class="emphasis"><em>/etc/login.defs</em></span>
+    </p><p>
+      The session component of this module logs when a user logins
+      or leave the system.
+    </p><p>
+      Remaining arguments, supported by others functions of this
+      module, are silently ignored. Other arguments are logged as
+      errors through <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_unix-options"></a>6.37.2. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">debug</code>
+        </span></dt><dd><p>
+	    Turns on debugging via
+            <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span>.
+          </p></dd><dt><span class="term">
+          <code class="option">audit</code>
+        </span></dt><dd><p>
+            A little more extreme than debug.
+          </p></dd><dt><span class="term">
+          <code class="option">quiet</code>
+        </span></dt><dd><p>
+	    Turns off informational messages namely messages about
+	    session open and close via
+            <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span>.
+          </p></dd><dt><span class="term">
+          <code class="option">nullok</code>
+        </span></dt><dd><p>
+            The default action of this module is to not permit the
+            user access to a service if their official password is blank.
+            The <code class="option">nullok</code> argument overrides this default.
+          </p></dd><dt><span class="term">
+          <code class="option">try_first_pass</code>
+        </span></dt><dd><p>
+            Before prompting the user for their password, the module first
+            tries the previous stacked module's password in case that
+            satisfies this module as well.
+          </p></dd><dt><span class="term">
+          <code class="option">use_first_pass</code>
+        </span></dt><dd><p>
+            The argument <code class="option">use_first_pass</code> forces the module
+            to use a previous stacked modules password and will never prompt
+            the user - if no password is available or the password is not
+            appropriate, the user will be denied access.
+          </p></dd><dt><span class="term">
+          <code class="option">nodelay</code>
+        </span></dt><dd><p>
+            This argument can be used to discourage the authentication
+            component from requesting a delay should the authentication
+            as a whole fail. The default action is for the module to
+            request a delay-on-failure of the order of two second.
+          </p></dd><dt><span class="term">
+          <code class="option">use_authtok</code>
+        </span></dt><dd><p>
+            When password changing enforce the module to set the new
+            password to the one provided by a previously stacked
+            <code class="option">password</code> module (this is used in the
+            example of the stacking of the <span class="command"><strong>pam_cracklib</strong></span>
+            module documented below).
+          </p></dd><dt><span class="term">
+          <code class="option">not_set_pass</code>
+        </span></dt><dd><p>
+            This argument is used to inform the module that it is not to
+            pay attention to/make available the old or new passwords from/to
+            other (stacked) password modules.
+          </p></dd><dt><span class="term">
+          <code class="option">nis</code>
+        </span></dt><dd><p>
+            NIS RPC is used for setting new passwords.
+          </p></dd><dt><span class="term">
+          <code class="option">remember=<em class="replaceable"><code>n</code></em></code>
+        </span></dt><dd><p>
+            The last <em class="replaceable"><code>n</code></em> passwords for each
+            user are saved in <code class="filename">/etc/security/opasswd</code>
+            in order to force password change history and keep the user
+            from alternating between the same password too frequently.
+            Instead of this option the <span class="command"><strong>pam_pwhistory</strong></span>
+            module should be used.
+          </p></dd><dt><span class="term">
+          <code class="option">shadow</code>
+        </span></dt><dd><p>
+            Try to maintain a shadow based system.
+          </p></dd><dt><span class="term">
+          <code class="option">md5</code>
+        </span></dt><dd><p>
+            When a user changes their password next, encrypt
+            it with the MD5 algorithm.
+          </p></dd><dt><span class="term">
+          <code class="option">bigcrypt</code>
+        </span></dt><dd><p>
+            When a user changes their password next,
+            encrypt it with the DEC C2 algorithm.
+          </p></dd><dt><span class="term">
+          <code class="option">sha256</code>
+        </span></dt><dd><p>
+            When a user changes their password next,
+            encrypt it with the SHA256 algorithm. If the
+            SHA256 algorithm is not known to the <span class="citerefentry"><span class="refentrytitle">crypt</span>(3)</span> function,
+            fall back to MD5.
+          </p></dd><dt><span class="term">
+          <code class="option">sha512</code>
+        </span></dt><dd><p>
+            When a user changes their password next,
+            encrypt it with the SHA512 algorithm. If the
+            SHA512 algorithm is not known to the <span class="citerefentry"><span class="refentrytitle">crypt</span>(3)</span> function,
+            fall back to MD5.
+          </p></dd><dt><span class="term">
+          <code class="option">blowfish</code>
+        </span></dt><dd><p>
+            When a user changes their password next,
+            encrypt it with the blowfish algorithm. If the
+            blowfish algorithm is not known to the <span class="citerefentry"><span class="refentrytitle">crypt</span>(3)</span> function,
+            fall back to MD5.
+          </p></dd><dt><span class="term">
+          <code class="option">rounds=<em class="replaceable"><code>n</code></em></code>
+        </span></dt><dd><p>
+            Set the optional number of rounds of the SHA256, SHA512
+            and blowfish password hashing algorithms to
+            <em class="replaceable"><code>n</code></em>.
+          </p></dd><dt><span class="term">
+          <code class="option">broken_shadow</code>
+        </span></dt><dd><p>
+            Ignore errors reading shadow information for
+            users in the account management module.
+          </p></dd><dt><span class="term">
+          <code class="option">minlen=<em class="replaceable"><code>n</code></em></code>
+        </span></dt><dd><p>
+            Set a minimum password length of <em class="replaceable"><code>n</code></em>
+            characters. The max. for DES crypt based passwords are 8
+            characters.
+          </p></dd></dl></div><p>
+      Invalid arguments are logged with  <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_unix-types"></a>6.37.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      All module types (<code class="option">account</code>, <code class="option">auth</code>,
+      <code class="option">password</code> and <code class="option">session</code>) are provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_unix-return_values"></a>6.37.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_IGNORE</span></dt><dd><p>
+            Ignore this module.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_unix-examples"></a>6.37.5. EXAMPLES</h3></div></div></div><p>
+      An example usage for <code class="filename">/etc/pam.d/login</code>
+      would be:
+      </p><pre class="programlisting">
+# Authenticate the user
+auth       required   pam_unix.so
+# Ensure users account and password are still active
+account    required   pam_unix.so
+# Change the user's password, but at first check the strength
+# with pam_cracklib(8)
+password   required   pam_cracklib.so retry=3 minlen=6 difok=3
+password   required   pam_unix.so use_authtok nullok md5
+session    required   pam_unix.so
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_unix-author"></a>6.37.6. AUTHOR</h3></div></div></div><p>
+        pam_unix was written by various people.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_umask.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_userdb.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.36. pam_umask - set the file mode creation mask </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.38. pam_userdb - authenticate against a db database</td></tr></table></div></body></html>

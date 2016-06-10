@@ -1,0 +1,10 @@
+Description='Example tuntap connection'
+Interface=tun0
+Connection=tuntap
+Mode='tun'
+User='nobody'
+Group='nobody'
+
+## Example IP configuration
+#IP=static
+#Address='10.10.1.2/16'

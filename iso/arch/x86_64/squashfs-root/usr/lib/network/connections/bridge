@@ -1,0 +1,42 @@
+# Contributed by: Thomas Bächler <thomas@archlinux.org>
+
+. "$SUBR_DIR/ip"
+
+# Make sure BindsToInterfaces is set
+BindsToInterfaces=("${BindsToInterfaces[@]}")
+
+bridge_up() {
+    if is_interface "$Interface"; then
+        if [[ ! -d "/sys/class/net/$Interface/brif" ]]; then
+            report_error "Interface '$Interface' already exists and is not a bridge"
+            return 1
+        fi
+    else
+        interface_add bridge "$Interface"
+    fi
+
+    for member in "${BindsToInterfaces[@]}"; do
+        ip link set dev "$member" promisc on up
+        ip addr flush dev "$member" scope host &>/dev/null
+        ip addr flush dev "$member" scope site &>/dev/null
+        ip addr flush dev "$member" scope global &>/dev/null
+        ip link set dev "$member" master "$Interface"
+        is_yes "${SkipForwardingDelay:-no}" && bridge link set dev "$member" state 3
+    done
+
+    bring_interface_up "$Interface"
+    ip_set
+}
+
+bridge_down() {
+    for member in "${BindsToInterfaces[@]}"; do
+        ip link set dev "$member" promisc off down
+        ip link set dev "$member" nomaster
+    done
+
+    ip_unset
+    interface_delete "$Interface"
+}
+
+
+# vim: ft=sh ts=4 et sw=4:

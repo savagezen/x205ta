@@ -1,0 +1,93 @@
+%FILES%
+etc/
+etc/ppp/
+etc/ppp/chap-secrets
+etc/ppp/ip-down
+etc/ppp/ip-down.d/
+etc/ppp/ip-down.d/00-dns.sh
+etc/ppp/ip-up
+etc/ppp/ip-up.d/
+etc/ppp/ip-up.d/00-dns.sh
+etc/ppp/ipv6-down
+etc/ppp/ipv6-down.d/
+etc/ppp/ipv6-up
+etc/ppp/ipv6-up.d/
+etc/ppp/ipv6-up.d/00-iface-config.sh
+etc/ppp/options
+etc/ppp/pap-secrets
+etc/ppp/peers/
+usr/
+usr/bin/
+usr/bin/chat
+usr/bin/plog
+usr/bin/poff
+usr/bin/pon
+usr/bin/pppd
+usr/bin/pppdump
+usr/bin/pppoe-discovery
+usr/bin/pppstats
+usr/include/
+usr/include/pppd/
+usr/include/pppd/cbcp.h
+usr/include/pppd/ccp.h
+usr/include/pppd/chap-new.h
+usr/include/pppd/chap_ms.h
+usr/include/pppd/eap.h
+usr/include/pppd/ecp.h
+usr/include/pppd/eui64.h
+usr/include/pppd/fsm.h
+usr/include/pppd/ipcp.h
+usr/include/pppd/ipv6cp.h
+usr/include/pppd/ipxcp.h
+usr/include/pppd/lcp.h
+usr/include/pppd/magic.h
+usr/include/pppd/md4.h
+usr/include/pppd/md5.h
+usr/include/pppd/patchlevel.h
+usr/include/pppd/pathnames.h
+usr/include/pppd/pppcrypt.h
+usr/include/pppd/pppd.h
+usr/include/pppd/session.h
+usr/include/pppd/sha1.h
+usr/include/pppd/spinlock.h
+usr/include/pppd/tdb.h
+usr/include/pppd/upap.h
+usr/lib/
+usr/lib/pppd/
+usr/lib/pppd/2.4.7/
+usr/lib/pppd/2.4.7/minconn.so
+usr/lib/pppd/2.4.7/openl2tp.so
+usr/lib/pppd/2.4.7/passprompt.so
+usr/lib/pppd/2.4.7/passwordfd.so
+usr/lib/pppd/2.4.7/pppoatm.so
+usr/lib/pppd/2.4.7/pppol2tp.so
+usr/lib/pppd/2.4.7/radattr.so
+usr/lib/pppd/2.4.7/radius.so
+usr/lib/pppd/2.4.7/radrealms.so
+usr/lib/pppd/2.4.7/rp-pppoe.so
+usr/lib/pppd/2.4.7/winbind.so
+usr/lib/systemd/
+usr/lib/systemd/system/
+usr/lib/systemd/system/ppp@.service
+usr/share/
+usr/share/man/
+usr/share/man/man1/
+usr/share/man/man1/pon.1.gz
+usr/share/man/man8/
+usr/share/man/man8/chat.8.gz
+usr/share/man/man8/pppd-radattr.8.gz
+usr/share/man/man8/pppd-radius.8.gz
+usr/share/man/man8/pppd.8.gz
+usr/share/man/man8/pppdump.8.gz
+usr/share/man/man8/pppstats.8.gz
+
+%BACKUP%
+etc/ppp/chap-secrets	d1cb45f1aedb9500ab1c325f887d8f84
+etc/ppp/pap-secrets	e0d80e4e091ba0ca3688784467a8205d
+etc/ppp/options	7a9259a8f038073eeea7e4552ff1849f
+etc/ppp/ip-up	e4beb16ed600b61336d50b2bd2df7cd5
+etc/ppp/ip-down	529b924f644f80cf30d72a966abc7419
+etc/ppp/ip-down.d/00-dns.sh	3a5d56ac23e36cdbf48187813c8ec981
+etc/ppp/ip-up.d/00-dns.sh	0e2eeb1af125a46291999162dcc9004a
+etc/ppp/ipv6-up.d/00-iface-config.sh	9dde53aa5a931ebe1c7e3469199777c5
+

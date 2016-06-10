@@ -1,0 +1,47 @@
+%NAME%
+glib2
+
+%VERSION%
+2.48.1-1
+
+%BASE%
+glib2
+
+%DESC%
+Common C routines used by GTK+ and other libs
+
+%URL%
+http://www.gtk.org/
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1462908180
+
+%INSTALLDATE%
+1464799501
+
+%PACKAGER%
+Jan Alexander Steffens (heftig) <jan.steffens@gmail.com>
+
+%SIZE%
+13777920
+
+%REASON%
+1
+
+%LICENSE%
+LGPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+pcre
+libffi
+
+%OPTDEPENDS%
+python: for gdbus-codegen and gtester-report
+libelf: gresource inspection tool
+

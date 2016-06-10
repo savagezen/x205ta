@@ -1,0 +1,36 @@
+%NAME%
+pambase
+
+%VERSION%
+20130928-1
+
+%DESC%
+Base PAM configuration for services
+
+%URL%
+http://www.archlinux.org
+
+%ARCH%
+any
+
+%BUILDDATE%
+1380403428
+
+%INSTALLDATE%
+1464799551
+
+%PACKAGER%
+Thomas Bächler <thomas@archlinux.org>
+
+%SIZE%
+2048
+
+%REASON%
+1
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+

@@ -1,0 +1,8 @@
+[Desktop Entry]
+_Name=Access Your Private Data
+_GenericName=Access Your Private Data
+Exec=/usr/bin/ecryptfs-mount-private
+Terminal=true
+Type=Application
+Categories=System;Security;
+X-Ubuntu-Gettext-Domain=ecryptfs-utils

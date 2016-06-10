@@ -1,0 +1,6 @@
+Description='A wpa_supplicant configuration file based wireless connection'
+Interface=wlan0
+Connection=wireless
+Security=wpa-config
+WPAConfigFile='/etc/wpa_supplicant.conf'
+IP=dhcp

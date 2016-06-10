@@ -1,0 +1,21 @@
+
+%9Syntax:%9
+
+RELOAD %|[<file>]
+
+%9Parameters:%9
+
+    The filename of any Irssi configuration; if no parameter is given, the
+    active configuration file will be used.
+
+%9Description:%9
+
+    Reloads the Irssi configuration file.
+
+%9Examples:%9
+
+    /RELOAD
+    /RELOAD ~/test.irssi.conf
+
+%9See also:%9 SAVE
+

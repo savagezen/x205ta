@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib/xplc-0.3.13
+includedir=${prefix}/include/xplc-0.3.13
+
+Name: XPLC
+Description: Cross-platform lightweight component system
+Version: 0.3.13
+Libs: -L${libdir} -lxplc -lxplc-cxx -ldl
+Cflags: -I${includedir}

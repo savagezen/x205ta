@@ -1,0 +1,69 @@
+#compdef ping
+
+if _pick_variant iputils=iputils unix -V; then
+              
+  _arguments \
+    '-a[audible]' \
+    '-A[adaptive]' \
+    '-b[allow pinging a broadcast address]' \
+    '-B[do not allow ping to change source address]' \
+    '-c:count' \
+    '-d[set SO_DEBUG on the socket]' \
+    '-f[flood ping]' \
+    '-i:interval in seconds' \
+    '-I:iface:_net_interfaces' \
+    '-l:preload number' \
+    '-L[suppress loopback of multicast packets]' \
+    '-n[numeric output only]' \
+    '-p:padding pattern' \
+    '-Q:QoS TOS bits' \
+    '-q[quiet]' \
+    '-r[bypass normal routing tables]' \
+    '-R[record route]' \
+    '-s:packet size in bytes' \
+    '-S:sndbuf' \
+    '-t:timeout in seconds' \
+    '-T:timestamp option:(tsonly tsandaddr tsprespec)' \
+    '-M:Path MTU Discovery strategy:((do\:prohibit\ fragmentation want\:fragment\ locally dont\:do\ not\ set\ DF\ flag))' \
+    '-U[print full user-to-user latency]' \
+    '-v[verbose]' \
+    '-w:deadline in seconds' \
+    '-W:seconds to wait for a response' \
+    ':host:_hosts'
+
+else
+
+  _arguments \
+    '-A[audible for no packet]' \
+    '-a[audible for each packet]' \
+    '-c:count' \
+    "-D[set the don't fragment bit]" \
+    '-d[set SO_DEBUG on the socket]' \
+    '-f[flood ping]' \
+    '-G[specify maximum size for ICMP payload for sweeping pings]:size' \
+    '-g[specify minimum size for ICMP payload for sweeping pings]:size [0]' \
+    '-h[specify size increment for ICMP payload for sweeping pings]:size [1]' \
+    '-i:wait seconds' \
+    '-I[source interface for multicast packets]:iface:_net_interfaces' \
+    '-L[suppress loopback of multicast packets]' \
+    '-l:preload number' \
+    '-M:icmp:(mask time)' \
+    '-m:ttl' \
+    '-n[numeric output only]' \
+    '-o[exit after receiving one packet]' \
+    '-P:IPsec policy' \
+    '-p:padding pattern' \
+    '-Q[somewhat quiet]' \
+    '-q[quiet]' \
+    '-R[record route]' \
+    '-r[bypass normal routing tables]' \
+    '-S:source address' \
+    '-s:packet size in bytes' \
+    '-T:ttl for multicasted packets' \
+    '-t:timeout in seconds' \
+    '-v[verbose]' \
+    '-W:wait time (ms)' \
+    '-z:type of service' \
+    ':host:_hosts'
+
+fi

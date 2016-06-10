@@ -1,0 +1,36 @@
+%NAME%
+ethtool
+
+%VERSION%
+1:4.5-1
+
+%DESC%
+Utility for controlling network drivers and hardware
+
+%URL%
+https://www.kernel.org/pub/software/network/ethtool/
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1461040539
+
+%INSTALLDATE%
+1464799587
+
+%PACKAGER%
+Anatol Pomozov <anatol.pomozov@gmail.com>
+
+%SIZE%
+306176
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+glibc
+

@@ -1,0 +1,12 @@
+%FILES%
+usr/
+usr/lib/
+usr/lib/firmware/
+usr/lib/firmware/ipw2100-1.3-i.fw
+usr/lib/firmware/ipw2100-1.3-p.fw
+usr/lib/firmware/ipw2100-1.3.fw
+usr/share/
+usr/share/licenses/
+usr/share/licenses/ipw2100-fw/
+usr/share/licenses/ipw2100-fw/LICENSE
+

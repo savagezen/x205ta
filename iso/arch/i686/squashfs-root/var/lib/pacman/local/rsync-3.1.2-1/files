@@ -1,0 +1,27 @@
+%FILES%
+etc/
+etc/rsyncd.conf
+etc/xinetd.d/
+etc/xinetd.d/rsync
+usr/
+usr/bin/
+usr/bin/rsync
+usr/lib/
+usr/lib/rsync/
+usr/lib/rsync/rrsync
+usr/lib/systemd/
+usr/lib/systemd/system/
+usr/lib/systemd/system/rsyncd.service
+usr/lib/systemd/system/rsyncd.socket
+usr/lib/systemd/system/rsyncd@.service
+usr/share/
+usr/share/man/
+usr/share/man/man1/
+usr/share/man/man1/rsync.1.gz
+usr/share/man/man5/
+usr/share/man/man5/rsyncd.conf.5.gz
+
+%BACKUP%
+etc/rsyncd.conf	bce64d122a8e0f86872a4a21a03bc7f3
+etc/xinetd.d/rsync	ea3e9277dc908bc51f9eddc0f6b935c1
+

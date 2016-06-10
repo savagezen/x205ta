@@ -1,0 +1,222 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.1. pam_access - logdaemon style login access control</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="next" href="sag-pam_cracklib.html" title="6.2. pam_cracklib - checks the password against dictionary words"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.1. pam_access - logdaemon style login access control</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-module-reference.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_cracklib.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_access"></a>6.1. pam_access - logdaemon style login access control</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_access.so</code>  [
+        debug
+      ] [
+        nodefgroup
+      ] [
+        noaudit
+      ] [
+        accessfile=<em class="replaceable"><code>file</code></em>
+      ] [
+        fieldsep=<em class="replaceable"><code>sep</code></em>
+      ] [
+        listsep=<em class="replaceable"><code>sep</code></em>
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_access-description"></a>6.1.1. DESCRIPTION</h3></div></div></div><p>
+      The pam_access PAM module is mainly for access management.
+      It provides logdaemon style login access control based on login
+      names, host or domain names, internet addresses or network numbers,
+      or on terminal line names, X <code class="varname">$DISPLAY</code> values,
+      or PAM service names in case of non-networked logins.
+    </p><p>
+      By default rules for access management are taken from config file
+      <code class="filename">/etc/security/access.conf</code> if you don't specify
+      another file.
+    </p><p>
+      If Linux PAM is compiled with audit support the module will report
+      when it denies access based on origin (host, tty, etc.).
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-access.conf-description"></a>6.1.2. DESCRIPTION</h3></div></div></div><p>
+      The <code class="filename">/etc/security/access.conf</code> file specifies
+      (<em class="replaceable"><code>user/group</code></em>, <em class="replaceable"><code>host</code></em>),
+      (<em class="replaceable"><code>user/group</code></em>, <em class="replaceable"><code>network/netmask</code></em>),
+      (<em class="replaceable"><code>user/group</code></em>, <em class="replaceable"><code>tty</code></em>),
+      (<em class="replaceable"><code>user/group</code></em>,
+      <em class="replaceable"><code>X-$DISPLAY-value</code></em>), or
+      (<em class="replaceable"><code>user/group</code></em>,
+      <em class="replaceable"><code>pam-service-name</code></em>)
+      combinations for which a login will be either accepted or refused.
+    </p><p>
+      When someone logs in, the file <code class="filename">access.conf</code> is
+      scanned for the first entry that matches the
+      (<em class="replaceable"><code>user/group</code></em>, <em class="replaceable"><code>host</code></em>) or
+      (<em class="replaceable"><code>user/group</code></em>, <em class="replaceable"><code>network/netmask</code></em>)
+      combination, or, in case of non-networked logins, the first entry
+      that matches the
+      (<em class="replaceable"><code>user/group</code></em>, <em class="replaceable"><code>tty</code></em>)
+      combination, or in the case of non-networked logins without a
+      tty, the first entry that matches the
+      (<em class="replaceable"><code>user/group</code></em>,
+      <em class="replaceable"><code>X-$DISPLAY-value</code></em>) or
+      (<em class="replaceable"><code>user/group</code></em>,
+      <em class="replaceable"><code>pam-service-name/</code></em>)
+      combination.  The permissions field of that table entry
+      determines
+      whether the login will be accepted or refused.
+   </p><p>
+      Each line of the login access control table has three fields separated
+      by a ":" character (colon):
+    </p><p>
+      <em class="replaceable"><code>permission</code></em>:<em class="replaceable"><code>users/groups</code></em>:<em class="replaceable"><code>origins</code></em>
+    </p><p>
+      The first field, the <em class="replaceable"><code>permission</code></em> field, can be either a
+      "<span class="emphasis"><em>+</em></span>" character (plus) for access granted or a
+      "<span class="emphasis"><em>-</em></span>" character (minus) for access denied.
+    </p><p>
+      The second field, the
+      <em class="replaceable"><code>users</code></em>/<em class="replaceable"><code>group</code></em>
+      field, should be a list of one or more login names, group names, or
+      <span class="emphasis"><em>ALL</em></span> (which always matches). To differentiate
+      user entries from group entries, group entries should be written
+      with brackets, e.g. <span class="emphasis"><em>(group)</em></span>.
+    </p><p>
+      The third field, the <em class="replaceable"><code>origins</code></em>
+      field, should be a list of one or more tty names (for non-networked
+      logins), X <code class="varname">$DISPLAY</code> values or PAM service
+      names (for non-networked logins without a tty), host names,
+      domain names (begin with "."), host addresses,
+      internet network numbers (end with "."), internet network addresses
+      with network mask (where network mask can be a decimal number or an
+      internet address also), <span class="emphasis"><em>ALL</em></span> (which always matches)
+      or <span class="emphasis"><em>LOCAL</em></span>. The <span class="emphasis"><em>LOCAL</em></span>
+      keyword matches if and only if
+      <span class="citerefentry"><span class="refentrytitle">pam_get_item</span>(3)</span>,
+      when called with an <em class="parameter"><code>item_type</code></em> of
+      <span class="emphasis"><em>PAM_RHOST</em></span>, returns <code class="code">NULL</code> or an
+      empty string (and therefore the
+      <em class="replaceable"><code>origins</code></em> field is compared against the
+      return value of
+      <span class="citerefentry"><span class="refentrytitle">pam_get_item</span>(3)</span>
+      called with an <em class="parameter"><code>item_type</code></em> of
+      <span class="emphasis"><em>PAM_TTY</em></span> or, absent that,
+      <span class="emphasis"><em>PAM_SERVICE</em></span>).
+    </p><p>
+      If supported by the system you can use
+      <span class="emphasis"><em>@netgroupname</em></span> in host or user patterns. The
+      <span class="emphasis"><em>@@netgroupname</em></span> syntax is supported in the user
+      pattern only and it makes the local system hostname to be passed
+      to the netgroup match call in addition to the user name. This might not
+      work correctly on some libc implementations causing the match to
+      always fail.
+    </p><p>
+      The <em class="replaceable"><code>EXCEPT</code></em> operator makes it possible to
+      write very compact rules.
+    </p><p>
+       If the <code class="option">nodefgroup</code> is not set, the group file
+       is searched when a name does not match that of the logged-in
+       user. Only groups are matched in which users are explicitly listed.
+       However the PAM module does not look at the primary group id of a user.
+    </p><p>
+      The "<span class="emphasis"><em>#</em></span>" character at start of line (no space
+      at front) can be used to mark this line as a comment line.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_access-options"></a>6.1.3. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">accessfile=<em class="replaceable"><code>/path/to/access.conf</code></em></code>
+        </span></dt><dd><p>
+            Indicate an alternative <code class="filename">access.conf</code>
+            style configuration file to override the default. This can
+            be useful when different services need different access lists.
+          </p></dd><dt><span class="term">
+          <code class="option">debug</code>
+        </span></dt><dd><p>
+            A lot of debug information is printed with
+            <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span>.
+          </p></dd><dt><span class="term">
+          <code class="option">noaudit</code>
+        </span></dt><dd><p>
+            Do not report logins from disallowed hosts and ttys to the audit subsystem.
+          </p></dd><dt><span class="term">
+          <code class="option">fieldsep=<em class="replaceable"><code>separators</code></em></code>
+        </span></dt><dd><p>
+            This option modifies the field separator character that
+            pam_access will recognize when parsing the access
+            configuration file. For example:
+            <span class="emphasis"><em>fieldsep=|</em></span> will cause the
+            default `:' character to be treated as part of a field value
+            and `|' becomes the field separator. Doing this may be
+            useful in conjunction with a system that wants to use
+            pam_access with X based applications, since the
+            <span class="emphasis"><em>PAM_TTY</em></span> item is likely to be
+            of the form "hostname:0" which includes a `:' character in
+            its value. But you should not need this.
+          </p></dd><dt><span class="term">
+          <code class="option">listsep=<em class="replaceable"><code>separators</code></em></code>
+        </span></dt><dd><p>
+            This option modifies the list separator character that
+            pam_access will recognize when parsing the access
+            configuration file. For example:
+            <span class="emphasis"><em>listsep=,</em></span> will cause the
+            default ` ' (space) and `\t' (tab) characters to be treated
+            as part of a list element value and `,' becomes the only
+            list element separator. Doing this may be useful on a system
+            with group information obtained from a Windows domain,
+            where the default built-in groups "Domain Users",
+            "Domain Admins" contain a space.
+          </p></dd><dt><span class="term">
+          <code class="option">nodefgroup</code>
+        </span></dt><dd><p>
+            User tokens which are not enclosed in parentheses will not be
+	    matched against the group database. The backwards compatible default is
+            to try the group database match even for tokens not enclosed
+            in parentheses.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_access-types"></a>6.1.4. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      All module types (<code class="option">auth</code>, <code class="option">account</code>,
+      <code class="option">password</code> and <code class="option">session</code>) are provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_access-return_values"></a>6.1.5. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             Access was granted.
+          </p></dd><dt><span class="term">PAM_PERM_DENIED</span></dt><dd><p>
+             Access was not granted.
+          </p></dd><dt><span class="term">PAM_IGNORE</span></dt><dd><p>
+             <code class="function">pam_setcred</code> was called which does nothing.
+          </p></dd><dt><span class="term">PAM_ABORT</span></dt><dd><p>
+             Not all relevant data or options could be gotten.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+             The user is not known to the system.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_access-files"></a>6.1.6. FILES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="filename">/etc/security/access.conf</code></span></dt><dd><p>Default configuration file</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-access.conf-examples"></a>6.1.7. EXAMPLES</h3></div></div></div><p>
+      These are some example lines which might be specified in
+      <code class="filename">/etc/security/access.conf</code>.
+    </p><p>
+      User <span class="emphasis"><em>root</em></span> should be allowed to get access via
+      <span class="emphasis"><em>cron</em></span>, X11 terminal <span class="emphasis"><em>:0</em></span>,
+      <span class="emphasis"><em>tty1</em></span>, ..., <span class="emphasis"><em>tty5</em></span>,
+      <span class="emphasis"><em>tty6</em></span>.
+    </p><p>+ : root : crond :0 tty1 tty2 tty3 tty4 tty5 tty6</p><p>
+      User <span class="emphasis"><em>root</em></span> should be allowed to get access from
+      hosts which own the IPv4 addresses. This does not mean that the
+      connection have to be a IPv4 one, a IPv6 connection from a host with
+      one of this IPv4 addresses does work, too.
+    </p><p>+ : root : 192.168.200.1 192.168.200.4 192.168.200.9</p><p>+ : root : 127.0.0.1</p><p>
+      User <span class="emphasis"><em>root</em></span> should get access from network
+      <code class="literal">192.168.201.</code> where the term will be evaluated by
+      string matching. But it might be better to use network/netmask instead.
+      The same meaning of <code class="literal">192.168.201.</code> is
+      <span class="emphasis"><em>192.168.201.0/24</em></span> or
+      <span class="emphasis"><em>192.168.201.0/255.255.255.0</em></span>.
+    </p><p>+ : root : 192.168.201.</p><p>
+      User <span class="emphasis"><em>root</em></span> should be able to have access from hosts
+      <span class="emphasis"><em>foo1.bar.org</em></span> and <span class="emphasis"><em>foo2.bar.org</em></span>
+      (uses string matching also).
+    </p><p>+ : root : foo1.bar.org foo2.bar.org</p><p>
+      User <span class="emphasis"><em>root</em></span> should be able to have access from
+      domain <span class="emphasis"><em>foo.bar.org</em></span> (uses string matching also).
+    </p><p>+ : root : .foo.bar.org</p><p>
+      User <span class="emphasis"><em>root</em></span> should be denied to get access
+      from all other sources.
+    </p><p>- : root : ALL</p><p>
+      User <span class="emphasis"><em>foo</em></span> and members of netgroup
+      <span class="emphasis"><em>admins</em></span> should be allowed to get access
+      from all sources. This will only work if netgroup service is available.
+    </p><p>+ : @admins foo : ALL</p><p>
+      User <span class="emphasis"><em>john</em></span> and <span class="emphasis"><em>foo</em></span>
+      should get access from IPv6 host address.
+    </p><p>+ : john foo : 2001:db8:0:101::1</p><p>
+      User <span class="emphasis"><em>john</em></span> should get access from IPv6 net/mask.
+    </p><p>+ : john : 2001:db8:0:101::/64</p><p>
+      Disallow console logins to all but the shutdown, sync and all
+      other accounts, which are a member of the wheel group.
+    </p><p>-:ALL EXCEPT (wheel) shutdown sync:LOCAL</p><p>
+      All other users should be denied to get access from all sources.
+    </p><p>- : ALL : ALL</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_access-authors"></a>6.1.8. AUTHORS</h3></div></div></div><p>
+      The logdaemon style login access control scheme was designed and implemented by
+      Wietse Venema.
+      The pam_access PAM module was developed by
+      Alexei Nogin &lt;alexei@nogin.dnttm.ru&gt;.
+      The IPv6 support and the network(address) / netmask feature
+      was developed and provided by Mike Becher &lt;mike.becher@lrz-muenchen.de&gt;.
+    </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-module-reference.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_cracklib.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 6. A reference guide for available modules </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.2. pam_cracklib - checks the password against dictionary words</td></tr></table></div></body></html>

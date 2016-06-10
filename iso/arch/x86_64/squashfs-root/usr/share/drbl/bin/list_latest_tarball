@@ -1,0 +1,96 @@
+#!/bin/bash
+# The script is borrowed from 
+#============================================================================
+# http://staff.washington.edu/corey/tools.html
+# Author: Corey Satten, corey @ cac.washington.edu, 06/26/03, release 1.8
+#============================================================================
+# Modified by Steven Shiau <steven _at_ nchc org tw> Sep/03/07
+# We use this one to find the last version tar.bz2 in the repository.
+# Because we might have a lot of tar.bz2...
+# clonezilla-2.1.8-1.tar.bz2
+# clonezilla-2.1.8-2.tar.bz2
+# clonezilla-2.1.8-3.tar.bz2
+# clonezilla-2.1.9-1.tar.bz2
+# clonezilla-2.1.9-2.tar.bz2
+# clonezilla-2.2.0-1.tar.bz2
+# clonezilla-2.2.0-2.tar.bz2
+# clonezilla-2.2.0-3.tar.bz2
+# clonezilla-2.2.0-4.tar.bz2
+# we just want to list the last one clonezilla-2.2.0-4.tar.bz2
+#============================================================================
+# "$GREP_NEWER" is in drbl-functions
+
+# Load DRBL setting and functions
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+
+# Default settings
+suf_default="gz"
+#
+USAGE () {
+  echo "Usage: `basename $0` [path]"
+  echo "Example:"
+  echo "`basename $0` /mirror/src/stable/"
+  echo "`basename $0` http://free.nchc.org.tw/drbl-core/src/stable/"
+}
+
+# Try to help people figure out if/when this file has DOS line terminators
+# Chances are the initial #!/bin/sh will fail with a cryptic "not found" msg
+# If someone tries to debug it by feeding it to sh manually, this should help:
+NL=
+case "$NL" in '');; *)                                                    #
+    echo "ERROR: $0 was improperly saved with CR-LF newlines." 1>&2       #
+    echo "Please try again after restoring Unix-style (LF) newlines" 1>&2 #
+    exit 1 ;;                                                             #
+esac                                                                      #
+
+#
+while [ $# -gt 0 ]; do
+ case "$1" in
+   -f|--comp-format) 
+           shift; 
+           if [ -z "$(echo $1 |grep ^-.)" ]; then
+             # skip the -xx option, in case 
+             suf="$1"
+             shift;
+           fi
+           [ -z "$ocsroot" ] && USAGE && exit 1
+           ;;
+   -*)     echo "${0}: ${1}: invalid option" >&2
+           USAGE >& 2
+           exit 2 ;;
+   *)      break ;;
+ esac
+done
+
+SRC=$1
+[ -z "$SRC" ] && echo "You must provide the URL or PATH!" && USAGE && exit 1
+
+case "$SRC" in */);; *) SRC=$SRC/;; esac	# URL must end in slash
+
+#
+[ -z "$suf" ] && suf="$suf_default"
+
+#-------------------------------------------------------------------------------
+list_available_tarball -f $suf $SRC |
+#-------------------------------------------------------------------------------
+#
+# Find all installed packages with patches
+#
+(
+  case "${EFLAG}${OFLAG}${UFLAG}" in
+    '') 
+        # Note! Here we'd better ot use gawk, not awk (mawk which exists in Debian)
+        gawk "$GREP_NEWER"'	# omit all but newest of multiple available patches
+  		{ L0=R0; L1=R1; L2=R2
+		  R0=$0
+		  R1=$0; sub(/\.[^.]+.${suf}$/,"",R1) 	# pkg name+version
+		  R2=$0; sub(/-[^-]+$/, "",R2) 	# pkg name-version
+		  if ((R2 == L2) && newer(R1, L1)) {R0=L0; R1=L1}
+		  if ((R2 != L2) && L0) {print L0}
+		}
+	END	{ print R0 }';;
+     *) cat -;;
+  esac
+) 

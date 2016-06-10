@@ -1,0 +1,31 @@
+type dhcpcd &> /dev/null || return
+
+dhcpcd_start() {
+    local options
+    case $1 in
+      4) options="$DhcpcdOptions -L";;
+      6) options=$DhcpcdOptions6;;
+      *) return 1;;
+    esac
+    if [[ $2 == "noaddr" ]]; then
+        report_error "Using 'dhcpcd' for configuration without address assignment is unsupported"
+        return 1
+    fi
+    # If using own dns, tell dhcpcd to NOT replace resolv.conf
+    [[ $DNS ]] && options+=" -C resolv.conf"
+    if ! do_debug do_readable dhcpcd -$1 -q -t "${TimeoutDHCP:-30}" $options "$Interface"; then
+        report_error "DHCP IPv$1 lease attempt failed on interface '$Interface'"
+        return 1
+    fi
+}
+
+dhcpcd_stop() {
+    local stop="-x"
+    if [[ -f "/run/dhcpcd-$Interface-$1.pid" ]]; then
+        is_yes "${DHCPReleaseOnStop:-no}" && stop="-k"
+        do_debug dhcpcd -$1 -q $stop "$Interface" > /dev/null
+    fi
+}
+
+
+# vim: ft=sh ts=4 et sw=4:

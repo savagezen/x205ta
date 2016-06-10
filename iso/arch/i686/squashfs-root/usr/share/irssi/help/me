@@ -1,0 +1,21 @@
+
+%9Syntax:%9
+
+ME %|<message>
+
+%9Parameters:%9
+
+    The message to emote.
+
+%9Description:%9
+
+    Sends an action emote to the active nickname or channel.
+
+%9Examples:%9
+
+    /ME is hungry!
+    /ME had an awesome day @ work
+    /ME is happy it's Friday
+
+%9See also:%9 ACTION, CTCP
+

@@ -1,0 +1,48 @@
+
+%9Syntax:%9
+
+CHANNEL LIST%|
+CHANNEL ADD %|[-auto | -noauto] [-bots <masks>] [-botcmd <command>] <channel> <network> [<password>]
+CHANNEL REMOVE %|<channel> <network>
+
+%9Parameters:%9
+
+    LIST:       Displays the list of configured channels.
+    ADD:        Adds a channel to your configuration.
+    REMOVE:     Removes a channel from your configuration.
+
+    -auto:      Automatically join the channel.
+    -noauto:    Don't join the channel automatically.
+    -bots:      The list of hostnames send automated commands to.
+    -botcmd:    The automated commands to perform.
+
+    The channel and network to add to the configuration; you can optionally
+    specify the password of a channel.
+
+    If no parameters are given, the list of channels you have joined will be
+    displayed.
+
+%9Description:%9
+
+    Adds, removes or displays the configuration of channels; this method is
+    used to automate and simplify your workflow.
+
+    You can use the ADDALLCHANS command, which is a default alias, to add all
+    the channels you are present on into the configuration.
+
+%9Examples:%9
+
+    /CHANNEL
+    /CHANNEL LIST
+    /CHANNEL ADD -auto #irssi Freenode
+    /CHANNEL ADD -auto #basementcat Quakenet secret_lair
+    /CHANNEL ADD -auto -bots '*!@*.irssi.org *!bot@irssi.org' -botcmd 'msg $0 op WzerTrzq' #hideout Freenode
+    /CHANNEL ADD -auto -bots 'Q!TheQBot@CServe.quakenet.org' -botcmd '^MSG Q op #irssi' #irssi Quakenet
+    /CHANNEL REMOVE #hideout Freenode
+
+%9Special Example:%9
+
+    /ADDALLCHANS
+
+%9See also:%9 JOIN, TS
+

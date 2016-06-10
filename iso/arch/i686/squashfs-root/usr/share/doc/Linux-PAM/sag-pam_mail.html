@@ -1,0 +1,105 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.19. pam_mail - inform about available mail</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_loginuid.html" title="6.18. pam_loginuid - record user's login uid to the process attribute"><link rel="next" href="sag-pam_mkhomedir.html" title="6.20. pam_mkhomedir - create users home directory"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.19. pam_mail - inform about available mail</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_loginuid.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_mkhomedir.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_mail"></a>6.19. pam_mail - inform about available mail</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_mail.so</code>  [
+	close
+      ] [
+	debug
+      ] [
+        dir=<em class="replaceable"><code>maildir</code></em>
+      ] [
+	empty
+      ] [
+	hash=<em class="replaceable"><code>count</code></em>
+      ] [
+	noenv
+      ] [
+	nopen
+      ] [
+	quiet
+      ] [
+	standard
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_mail-description"></a>6.19.1. DESCRIPTION</h3></div></div></div><p>
+      The pam_mail PAM module provides the "you have new mail"
+      service to the user. It can be plugged into any application
+      that has credential or session hooks. It gives a single message
+      indicating the <span class="emphasis"><em>newness</em></span> of any mail it finds
+      in the user's mail folder. This module also sets the PAM
+      environment variable, <span class="emphasis"><em>MAIL</em></span>, to the
+      user's mail directory.
+    </p><p>
+      If the mail spool file (be it <code class="filename">/var/mail/$USER</code>
+      or a pathname given with the <code class="option">dir=</code> parameter) is
+      a directory then pam_mail assumes it is in the
+      <span class="emphasis"><em>Maildir</em></span> format.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_mail-options"></a>6.19.2. OPTIONS</h3></div></div></div><p>
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+            <code class="option">close</code>
+          </span></dt><dd><p>
+              Indicate if the user has any mail also on logout.
+            </p></dd><dt><span class="term">
+            <code class="option">debug</code>
+          </span></dt><dd><p>
+	      Print debug information.
+            </p></dd><dt><span class="term">
+            <code class="option">dir=<em class="replaceable"><code>maildir</code></em></code>
+          </span></dt><dd><p>
+              Look for the user's mail in an alternative location defined by
+             <code class="filename">maildir/&lt;login&gt;</code>.  The default
+             location for mail is <code class="filename">/var/mail/&lt;login&gt;</code>.
+             Note, if the supplied
+             <code class="filename">maildir</code> is prefixed by a '~', the
+             directory is interpreted as indicating a file in the user's
+             home directory.
+            </p></dd><dt><span class="term">
+            <code class="option">empty</code>
+          </span></dt><dd><p>
+              Also print message if user has no mail.
+            </p></dd><dt><span class="term">
+            <code class="option">hash=<em class="replaceable"><code>count</code></em></code>
+          </span></dt><dd><p>
+              Mail directory hash depth. For example, a
+              <span class="emphasis"><em>hashcount</em></span> of 2 would
+              make the mail file be
+              <code class="filename">/var/spool/mail/u/s/user</code>.
+            </p></dd><dt><span class="term">
+            <code class="option">noenv</code>
+          </span></dt><dd><p>
+	      Do not set the <span class="emphasis"><em>MAIL</em></span>
+              environment variable.
+            </p></dd><dt><span class="term">
+            <code class="option">nopen</code>
+          </span></dt><dd><p>
+	      Don't print any mail information on login. This flag is
+              useful to get the <span class="emphasis"><em>MAIL</em></span>
+              environment variable set, but to not display any information
+              about it.
+            </p></dd><dt><span class="term">
+            <code class="option">quiet</code>
+          </span></dt><dd><p>
+	      Only report when there is new mail.
+            </p></dd><dt><span class="term">
+            <code class="option">standard</code>
+          </span></dt><dd><p>
+	      Old style "You have..." format which doesn't show the
+              mail spool being used. This also implies "empty".
+            </p></dd></dl></div><p>
+
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_mail-types"></a>6.19.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      The <code class="option">session</code> and
+      <code class="option">auth</code> (on establishment and
+      deletion of credentials) module types are provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_mail-return_values"></a>6.19.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+             Memory buffer error.
+          </p></dd><dt><span class="term">PAM_SERVICE_ERR</span></dt><dd><p>
+	    Badly formed arguments.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+            Success.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+            User not known.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_mail-examples"></a>6.19.5. EXAMPLES</h3></div></div></div><p>
+      Add the following line to <code class="filename">/etc/pam.d/login</code> to
+      indicate that the user has new mail when they login to the system.
+      </p><pre class="programlisting">
+session  optional  pam_mail.so standard
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_mail-author"></a>6.19.6. AUTHOR</h3></div></div></div><p>
+        pam_mail was written by Andrew G. Morgan &lt;morgan@kernel.org&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_loginuid.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_mkhomedir.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.18. pam_loginuid - record user's login uid to the process attribute </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.20. pam_mkhomedir - create users home directory</td></tr></table></div></body></html>

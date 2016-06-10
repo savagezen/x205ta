@@ -1,0 +1,70 @@
+#!/bin/bash
+
+build() {
+    local m=
+    local -a md_devs mods
+
+    [[ $KERNELVERSION == none ]] && return 0
+
+    add_if_avail() {
+        local r= resolved=()
+
+        # treat this as an alias, since ext3 might be aliased to ext4. also, as
+        # of linux 3.9, we can find any filesystem by the alias "fs-$name"
+        # rather than having to guess at the corresponding module name.
+        mapfile -t resolved < <(modprobe -Ra {fs-,}"$1" 2>/dev/null)
+
+        for r in "${resolved[@]}"; do
+            _autodetect_cache["$r"]=1
+        done
+    }
+
+    if [[ ! -d /sys/devices ]]; then
+        error "/sys does not appear to be mounted. Unable to use autodetection"
+        return 1
+    fi
+
+    mapfile -t mods < <(auto_modules)
+    for m in "${mods[@]}"; do
+        _autodetect_cache["$m"]=1
+    done
+
+    # detect filesystem for root
+    if rootfstype=$(findmnt -uno fstype -T '/'); then
+        add_if_avail "$rootfstype"
+    else
+        error "failed to detect root filesystem"
+        fs_autodetect_failed=1
+    fi
+
+    # detect filesystem for separate /usr
+    if usrfstype=$(findmnt -snero fstype -T '/usr'); then
+        add_if_avail "$usrfstype"
+    fi
+
+    # scan for md raid devices
+    md_devs=(/sys/class/block/md*/md/level)
+    if [[ -e $md_devs ]]; then
+        quiet "found %d mdadm arrays to scan" "${#md_devs[*]}"
+        mapfile -t mods < <(awk '{ gsub(/raid[456]/, "raid456"); print; }' "${md_devs[@]}")
+        for m in "${mods[@]}"; do
+            _autodetect_cache["$m"]=1
+        done
+    fi
+
+    if (( ${#_autodetect_cache[*]} )); then
+        quiet "caching %d modules" "${#_autodetect_cache[*]}"
+    fi
+}
+
+help() {
+    cat <<HELPEOF
+This hook shrinks your initramfs to a smaller size by autodetecting the needed
+modules. Be sure to verify included modules are correct and none are missing.
+This hook must be run before other subsystem hooks in order to take advantage
+of auto-detection.  Any hooks placed before 'autodetect' will be installed in
+full.
+HELPEOF
+}
+
+# vim: set ft=sh ts=4 sw=4 et:

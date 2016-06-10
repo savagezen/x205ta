@@ -1,0 +1,650 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>3.1. What can be expected by the application</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_ADG.html" title="The Linux-PAM Application Developers' Guide"><link rel="up" href="adg-interface.html" title="Chapter 3.  The public interface to Linux-PAM"><link rel="prev" href="adg-interface.html" title="Chapter 3.  The public interface to Linux-PAM"><link rel="next" href="adg-interface-of-app-expected.html" title="3.2. What is expected of an application"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">3.1. What can be expected by the application</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="adg-interface.html">Prev</a> </td><th width="60%" align="center">Chapter 3. 
+      The public interface to <span class="emphasis"><em>Linux-PAM</em></span>
+    </th><td width="20%" align="right"> <a accesskey="n" href="adg-interface-of-app-expected.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="adg-interface-by-app-expected"></a>3.1. What can be expected by the application</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_start"></a>3.1.1. Initialization of PAM transaction</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_appl.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">pam_start</b>(</code></td><td><var class="pdparam">service_name</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">user</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">pam_conversation</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">pamh</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>const char *<var class="pdparam">service_name</var></code>;<br><code>const char *<var class="pdparam">user</var></code>;<br><code>const struct pam_conv *<var class="pdparam">pam_conversation</var></code>;<br><code>pam_handle_t **<var class="pdparam">pamh</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_start-description"></a>3.1.1.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_start</code> function creates the PAM context
+      and initiates the PAM transaction. It is the first of the PAM
+      functions that needs to be called by an application. The transaction
+      state is contained entirely within the structure identified by this
+      handle, so it is possible to have multiple transactions in parallel.
+      But it is not possible to use the same handle for different
+      transactions, a new one is needed for every new context.
+    </p><p>
+      The <span class="emphasis"><em>service_name</em></span> argument specifies the name
+      of the service to apply and will be stored as PAM_SERVICE item in
+      the new context. The policy for the service will be read from the
+      file <code class="filename">/etc/pam.d/service_name</code> or, if that file
+      does not exist, from <code class="filename">/etc/pam.conf</code>.
+    </p><p>
+       The <span class="emphasis"><em>user</em></span> argument can specify the name
+       of the target user and will be stored as PAM_USER item. If
+       the argument is NULL, the module has to ask for this item if
+       necessary.
+    </p><p>
+       The <span class="emphasis"><em>pam_conversation</em></span> argument points to
+       a <span class="emphasis"><em>struct pam_conv</em></span> describing the
+       conversation function to use. An application must provide this
+       for direct communication between a loaded module and the
+       application.
+    </p><p>
+       Following a successful return (PAM_SUCCESS) the contents of
+       <span class="emphasis"><em>pamh</em></span> is a handle that contains the PAM
+       context for successive calls to the PAM functions. In an error
+       case is the content of <span class="emphasis"><em>pamh</em></span> undefined.
+    </p><p>
+      The <span class="emphasis"><em>pam_handle_t</em></span> is a blind structure and
+      the application should not attempt to probe it directly for
+      information. Instead the PAM library provides the functions
+      <span class="citerefentry"><span class="refentrytitle">pam_set_item</span>(3)</span> and
+      <span class="citerefentry"><span class="refentrytitle">pam_get_item</span>(3)</span>.
+      The PAM handle cannot be used for mulitiple authentications at the
+      same time as long as <code class="function">pam_end</code> was not called on
+      it before.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_start-return_values"></a>3.1.1.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_ABORT</span></dt><dd><p>
+              General failure.
+          </p></dd><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+              Memory buffer error.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             Transaction was successful created.
+          </p></dd><dt><span class="term">PAM_SYSTEM_ERR</span></dt><dd><p>
+              System error, for example a NULL pointer was submitted
+              instead of a pointer to data.
+          </p></dd></dl></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_end"></a>3.1.2. Termination of PAM transaction</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_appl.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">pam_end</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">pam_status</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>int <var class="pdparam">pam_status</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_end-description"></a>3.1.2.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_end</code> function terminates the PAM
+      transaction and is the last function an application should call
+      in the PAM context.  Upon return the handle <span class="emphasis"><em>pamh</em></span>
+      is no longer valid and all memory associated with it will be
+      invalid.
+    </p><p>
+      The <span class="emphasis"><em>pam_status</em></span> argument should be set to
+      the value returned to the application by the last PAM
+      library call.
+    </p><p>
+      The value taken by <span class="emphasis"><em>pam_status</em></span> is used as
+      an argument to the module specific callback function,
+      <code class="function">cleanup()</code>
+      (See <span class="citerefentry"><span class="refentrytitle">pam_set_data</span>(3)</span> and
+      <span class="citerefentry"><span class="refentrytitle">pam_get_data</span>(3)</span>). In this way the module can be given notification
+      of the pass/fail nature of the tear-down process, and perform any
+      last minute tasks that are appropriate to the module before it is
+      unlinked. This argument can be logically OR'd with
+      <span class="emphasis"><em>PAM_DATA_SILENT</em></span> to indicate to indicate that
+      the module should not treat the call too seriously. It is generally
+      used to indicate that the current closing of the library is in a
+      <span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span>ed
+      process, and that the parent will take care of cleaning up things
+      that exist outside of the current process space (files etc.).
+    </p><p>
+      This function <span class="emphasis"><em>free</em></span>'s all memory for items
+      associated with the
+      <span class="citerefentry"><span class="refentrytitle">pam_set_item</span>(3)</span> and
+      <span class="citerefentry"><span class="refentrytitle">pam_get_item</span>(3)</span> functions. Pointers associated with such objects
+      are not valid anymore after <code class="function">pam_end</code> was called.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_end-return_values"></a>3.1.2.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             Transaction was successful terminated.
+          </p></dd><dt><span class="term">PAM_SYSTEM_ERR</span></dt><dd><p>
+              System error, for example a NULL pointer was submitted
+              as PAM handle or the function was called by a module.
+          </p></dd></dl></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_set_item"></a>3.1.3. Setting PAM items</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_modules.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">pam_set_item</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">item_type</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">item</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>int <var class="pdparam">item_type</var></code>;<br><code>const void *<var class="pdparam">item</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_set_item-description"></a>3.1.3.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_set_item</code> function allows applications
+      and PAM service modules to access and to update PAM informations
+      of <span class="emphasis"><em>item_type</em></span>. For this a copy
+      of the object pointed to by the <span class="emphasis"><em>item</em></span> argument
+      is created. The following <span class="emphasis"><em>item_type</em></span>s are
+      supported:
+   </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SERVICE</span></dt><dd><p>
+            The service name (which identifies that PAM stack that
+            the PAM functions will use to authenticate the program).
+          </p></dd><dt><span class="term">PAM_USER</span></dt><dd><p>
+            The username of the entity under whose identity service
+            will be given. That is, following authentication,
+            <span class="emphasis"><em>PAM_USER</em></span> identifies the local entity
+            that gets to use the service. Note, this value can be mapped
+            from something (eg., "anonymous") to something else (eg.
+            "guest119") by any module in the PAM stack. As such an
+            application should consult the value of
+            <span class="emphasis"><em>PAM_USER</em></span> after each call to a PAM function.
+          </p></dd><dt><span class="term">PAM_USER_PROMPT</span></dt><dd><p>
+            The string used when prompting for a user's name. The default
+            value for this string is a localized version of "login: ".
+          </p></dd><dt><span class="term">PAM_TTY</span></dt><dd><p>
+            The terminal name: prefixed by <code class="filename">/dev/</code> if
+            it is a device file; for graphical, X-based, applications the
+            value for this item should be the
+            <span class="emphasis"><em>$DISPLAY</em></span> variable.
+          </p></dd><dt><span class="term">PAM_RUSER</span></dt><dd><p>
+            The requesting user name: local name for a locally
+            requesting user or a remote user name for a remote
+            requesting user.
+          </p><p>
+            Generally an application or module will attempt to supply
+            the value that is most strongly authenticated (a local account
+            before a remote one. The level of trust in this value is
+            embodied in the actual authentication stack associated with
+            the application, so it is ultimately at the discretion of the
+            system administrator.
+          </p><p>
+            <span class="emphasis"><em>PAM_RUSER@PAM_RHOST</em></span> should always identify
+             the requesting user. In some cases,
+             <span class="emphasis"><em>PAM_RUSER</em></span> may be NULL. In such situations,
+             it is unclear who the requesting entity is.
+          </p></dd><dt><span class="term">PAM_RHOST</span></dt><dd><p>
+            The requesting hostname (the hostname of the machine from
+            which the <span class="emphasis"><em>PAM_RUSER</em></span> entity is requesting
+            service). That is <span class="emphasis"><em>PAM_RUSER@PAM_RHOST</em></span>
+            does identify the requesting user. In some applications,
+            <span class="emphasis"><em>PAM_RHOST</em></span> may be NULL. In such situations,
+            it is unclear where the authentication request is originating
+            from.
+          </p></dd><dt><span class="term">PAM_AUTHTOK</span></dt><dd><p>
+            The authentication token (often a password). This token
+            should be ignored by all module functions besides
+            <span class="citerefentry"><span class="refentrytitle">pam_sm_authenticate</span>(3)</span> and
+            <span class="citerefentry"><span class="refentrytitle">pam_sm_chauthtok</span>(3)</span>.
+            In the former function it is used to pass the most recent
+            authentication token from one stacked module to another. In
+            the latter function the token is used for another purpose.
+            It contains the currently active authentication token.
+          </p></dd><dt><span class="term">PAM_OLDAUTHTOK</span></dt><dd><p>
+            The old authentication token. This token should be ignored
+            by all module functions except
+            <span class="citerefentry"><span class="refentrytitle">pam_sm_chauthtok</span>(3)</span>.
+          </p></dd><dt><span class="term">PAM_CONV</span></dt><dd><p>
+            The pam_conv structure. See
+            <span class="citerefentry"><span class="refentrytitle">pam_conv</span>(3)</span>.
+          </p></dd></dl></div><p>
+     The following additional items are specific to Linux-PAM and should not be used in
+     portable applications:
+   </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_FAIL_DELAY</span></dt><dd><p>
+            A function pointer to redirect centrally managed
+            failure delays. See
+            <span class="citerefentry"><span class="refentrytitle">pam_fail_delay</span>(3)</span>.
+          </p></dd><dt><span class="term">PAM_XDISPLAY</span></dt><dd><p>
+            The name of the X display.  For graphical, X-based applications the
+	    value for this item should be the <span class="emphasis"><em>$DISPLAY</em></span>
+	    variable.  This value may be used independently of
+	    <span class="emphasis"><em>PAM_TTY</em></span> for passing the
+	    name of the display.
+          </p></dd><dt><span class="term">PAM_XAUTHDATA</span></dt><dd><p>
+            A pointer to a structure containing the X authentication data
+	    required to make a connection to the display specified by
+	    <span class="emphasis"><em>PAM_XDISPLAY</em></span>, if such information is
+	    necessary.  See
+            <span class="citerefentry"><span class="refentrytitle">pam_xauth_data</span>(3)</span>.
+          </p></dd><dt><span class="term">PAM_AUTHTOK_TYPE</span></dt><dd><p>
+            The default action is for the module to use the
+            following prompts when requesting passwords:
+            "New UNIX password: " and "Retype UNIX password: ".
+            The example word <span class="emphasis"><em>UNIX</em></span> can
+            be replaced with this item, by default it is empty.
+            This item is used by <span class="citerefentry"><span class="refentrytitle">pam_get_authtok</span>(3)</span>.
+          </p></dd></dl></div><p>
+      For all <span class="emphasis"><em>item_type</em></span>s, other than PAM_CONV and
+      PAM_FAIL_DELAY, <span class="emphasis"><em>item</em></span> is a pointer to a &lt;NUL&gt;
+      terminated character string. In the case of PAM_CONV,
+      <span class="emphasis"><em>item</em></span> points to an initialized
+      <span class="emphasis"><em>pam_conv</em></span> structure. In the case of
+      PAM_FAIL_DELAY, <span class="emphasis"><em>item</em></span> is a function pointer:
+      <code class="function">void (*delay_fn)(int retval, unsigned usec_delay, void *appdata_ptr)</code>
+    </p><p>
+      Both, PAM_AUTHTOK and PAM_OLDAUTHTOK, will be reseted before
+      returning to the application. Which means an application is not
+      able to access the authentication tokens.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_set_item-return_values"></a>3.1.3.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_BAD_ITEM</span></dt><dd><p>
+             The application attempted to set an undefined or inaccessible
+             item.
+          </p></dd><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+              Memory buffer error.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             Data was successful updated.
+          </p></dd><dt><span class="term">PAM_SYSTEM_ERR</span></dt><dd><p>
+             The <span class="emphasis"><em>pam_handle_t</em></span> passed as first
+             argument was invalid.
+          </p></dd></dl></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_get_item"></a>3.1.4. Getting PAM items</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_modules.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">pam_get_item</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">item_type</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">item</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>const pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>int <var class="pdparam">item_type</var></code>;<br><code>const void **<var class="pdparam">item</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_get_item-description"></a>3.1.4.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_get_item</code> function allows applications
+      and PAM service modules to access and retrieve PAM informations
+      of <span class="emphasis"><em>item_type</em></span>. Upon successful return,
+      <span class="emphasis"><em>item</em></span> contains a pointer to the value of the
+      corresponding item. Note, this is a pointer to the
+      <span class="emphasis"><em>actual</em></span> data and should
+      <span class="emphasis"><em>not</em></span> be <span class="emphasis"><em>free()</em></span>'ed or
+      over-written! The following values are supported for
+      <span class="emphasis"><em>item_type</em></span>:
+   </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SERVICE</span></dt><dd><p>
+            The service name (which identifies that PAM stack that
+            the PAM functions will use to authenticate the program).
+          </p></dd><dt><span class="term">PAM_USER</span></dt><dd><p>
+            The username of the entity under whose identity service
+            will be given. That is, following authentication,
+            <span class="emphasis"><em>PAM_USER</em></span> identifies the local entity
+            that gets to use the service. Note, this value can be mapped
+            from something (eg., "anonymous") to something else (eg.
+            "guest119") by any module in the PAM stack. As such an
+            application should consult the value of
+            <span class="emphasis"><em>PAM_USER</em></span> after each call to a PAM function.
+          </p></dd><dt><span class="term">PAM_USER_PROMPT</span></dt><dd><p>
+            The string used when prompting for a user's name. The default
+            value for this string is a localized version of "login: ".
+          </p></dd><dt><span class="term">PAM_TTY</span></dt><dd><p>
+            The terminal name: prefixed by <code class="filename">/dev/</code> if
+            it is a device file; for graphical, X-based, applications the
+            value for this item should be the
+            <span class="emphasis"><em>$DISPLAY</em></span> variable.
+          </p></dd><dt><span class="term">PAM_RUSER</span></dt><dd><p>
+            The requesting user name: local name for a locally
+            requesting user or a remote user name for a remote
+            requesting user.
+          </p><p>
+            Generally an application or module will attempt to supply
+            the value that is most strongly authenticated (a local account
+            before a remote one. The level of trust in this value is
+            embodied in the actual authentication stack associated with
+            the application, so it is ultimately at the discretion of the
+            system administrator.
+          </p><p>
+            <span class="emphasis"><em>PAM_RUSER@PAM_RHOST</em></span> should always identify
+             the requesting user. In some cases,
+             <span class="emphasis"><em>PAM_RUSER</em></span> may be NULL. In such situations,
+             it is unclear who the requesting entity is.
+          </p></dd><dt><span class="term">PAM_RHOST</span></dt><dd><p>
+            The requesting hostname (the hostname of the machine from
+            which the <span class="emphasis"><em>PAM_RUSER</em></span> entity is requesting
+            service). That is <span class="emphasis"><em>PAM_RUSER@PAM_RHOST</em></span>
+            does identify the requesting user. In some applications,
+            <span class="emphasis"><em>PAM_RHOST</em></span> may be NULL. In such situations,
+            it is unclear where the authentication request is originating
+            from.
+          </p></dd><dt><span class="term">PAM_AUTHTOK</span></dt><dd><p>
+            The authentication token (often a password). This token
+            should be ignored by all module functions besides
+            <span class="citerefentry"><span class="refentrytitle">pam_sm_authenticate</span>(3)</span> and
+            <span class="citerefentry"><span class="refentrytitle">pam_sm_chauthtok</span>(3)</span>.
+            In the former function it is used to pass the most recent
+            authentication token from one stacked module to another. In
+            the latter function the token is used for another purpose.
+            It contains the currently active authentication token.
+          </p></dd><dt><span class="term">PAM_OLDAUTHTOK</span></dt><dd><p>
+            The old authentication token. This token should be ignored
+            by all module functions except
+            <span class="citerefentry"><span class="refentrytitle">pam_sm_chauthtok</span>(3)</span>.
+          </p></dd><dt><span class="term">PAM_CONV</span></dt><dd><p>
+            The pam_conv structure. See
+            <span class="citerefentry"><span class="refentrytitle">pam_conv</span>(3)</span>.
+          </p></dd></dl></div><p>
+     The following additional items are specific to Linux-PAM and should not be used in
+     portable applications:
+   </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_FAIL_DELAY</span></dt><dd><p>
+            A function pointer to redirect centrally managed
+            failure delays. See
+            <span class="citerefentry"><span class="refentrytitle">pam_fail_delay</span>(3)</span>.
+          </p></dd><dt><span class="term">PAM_XDISPLAY</span></dt><dd><p>
+            The name of the X display.  For graphical, X-based applications the
+	    value for this item should be the <span class="emphasis"><em>$DISPLAY</em></span>
+	    variable.  This value may be used independently of
+	    <span class="emphasis"><em>PAM_TTY</em></span> for passing the
+	    name of the display.
+          </p></dd><dt><span class="term">PAM_XAUTHDATA</span></dt><dd><p>
+            A pointer to a structure containing the X authentication data
+	    required to make a connection to the display specified by
+	    <span class="emphasis"><em>PAM_XDISPLAY</em></span>, if such information is
+	    necessary.  See
+            <span class="citerefentry"><span class="refentrytitle">pam_xauth_data</span>(3)</span>.
+          </p></dd><dt><span class="term">PAM_AUTHTOK_TYPE</span></dt><dd><p>
+            The default action is for the module to use the
+            following prompts when requesting passwords:
+            "New UNIX password: " and "Retype UNIX password: ".
+            The example word <span class="emphasis"><em>UNIX</em></span> can
+            be replaced with this item, by default it is empty.
+            This item is used by <span class="citerefentry"><span class="refentrytitle">pam_get_authtok</span>(3)</span>.
+          </p></dd></dl></div><p>
+      If a service module wishes to obtain the name of the user,
+      it should not use this function, but instead perform a call to
+      <span class="citerefentry"><span class="refentrytitle">pam_get_user</span>(3)</span>.
+    </p><p>
+      Only a service module is privileged to read the
+      authentication tokens, PAM_AUTHTOK and PAM_OLDAUTHTOK.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_get_item-return_values"></a>3.1.4.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_BAD_ITEM</span></dt><dd><p>
+             The application attempted to set an undefined or inaccessible
+             item.
+          </p></dd><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+              Memory buffer error.
+          </p></dd><dt><span class="term">PAM_PERM_DENIED</span></dt><dd><p>
+             The value of <span class="emphasis"><em>item</em></span> was NULL.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             Data was successful updated.
+          </p></dd><dt><span class="term">PAM_SYSTEM_ERR</span></dt><dd><p>
+             The <span class="emphasis"><em>pam_handle_t</em></span> passed as first
+             argument was invalid.
+          </p></dd></dl></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_strerror"></a>3.1.5. Strings describing PAM error codes</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_appl.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">const char *<b class="fsfunc">pam_strerror</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">errnum</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>int <var class="pdparam">errnum</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_strerror-description"></a>3.1.5.1. DESCRIPTION</h4></div></div></div><p>
+       The <code class="function">pam_strerror</code> function returns a pointer to
+       a string describing the error code passed in the argument
+       <span class="emphasis"><em>errnum</em></span>, possibly using the LC_MESSAGES part of
+       the current locale to select the appropriate language. This string
+       must not be modified by the application. No library function will
+       modify this string.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_strerror-return_values"></a>3.1.5.2. RETURN VALUES</h4></div></div></div><p>
+       This function returns always a pointer to a string.
+    </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_fail_delay"></a>3.1.6. Request a delay on failure</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_appl.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">pam_fail_delay</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">usec</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>unsigned int <var class="pdparam">usec</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_fail_delay-description"></a>3.1.6.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_fail_delay</code> function provides a
+      mechanism by which an application or module can suggest a minimum
+      delay of <span class="emphasis"><em>usec</em></span> micro-seconds. The
+      function  keeps a record of the longest time requested with this
+      function. Should
+      <span class="citerefentry"><span class="refentrytitle">pam_authenticate</span>(3)</span> fail, the failing return to the application is
+      delayed by an amount of time randomly distributed (by up to 50%)
+      about this longest value.
+    </p><p>
+      Independent of success, the delay time is reset to its zero
+      default value when the PAM service module returns control to
+      the application. The delay occurs <span class="emphasis"><em>after</em></span> all
+      authentication modules have been called, but <span class="emphasis"><em>before</em></span>
+      control is returned to the service application.
+    </p><p>
+      When using this function the programmer should check if it is
+      available with:
+    </p><pre class="programlisting">
+#ifdef HAVE_PAM_FAIL_DELAY
+    ....
+#endif /* HAVE_PAM_FAIL_DELAY */
+      </pre><p>
+      For applications written with a single thread that are event
+      driven in nature, generating this delay may be undesirable.
+      Instead, the application may want to register the delay in some
+      other way. For example, in a single threaded server that serves
+      multiple authentication requests from a single event loop, the
+      application might want to simply mark a given connection as
+      blocked until an application timer expires. For this reason
+      the delay function can be changed with the
+      <span class="emphasis"><em>PAM_FAIL_DELAY</em></span> item. It can be queried and
+      set with
+      <span class="citerefentry"><span class="refentrytitle">pam_get_item</span>(3)</span>
+      and
+      <span class="citerefentry"><span class="refentrytitle">pam_set_item </span>(3)</span>  respectively. The value used to set it should be
+      a function pointer of the following prototype:
+      </p><pre class="programlisting">
+void (*delay_fn)(int retval, unsigned usec_delay, void *appdata_ptr);
+      </pre><p>
+      The arguments being the <span class="emphasis"><em>retval</em></span> return code
+      of the module stack, the <span class="emphasis"><em>usec_delay</em></span>
+      micro-second delay that libpam is requesting and the
+      <span class="emphasis"><em>appdata_ptr</em></span> that the application has associated
+      with the current <span class="emphasis"><em>pamh</em></span>. This last value was set
+      by the application when it called
+      <span class="citerefentry"><span class="refentrytitle">pam_start</span>(3)</span> or explicitly with
+      <span class="citerefentry"><span class="refentrytitle">pam_set_item</span>(3)</span>.
+      Note, if PAM_FAIL_DELAY item is unset (or set to NULL), then no delay
+      will be performed.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_fail_delay-return_values"></a>3.1.6.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+            Delay was successful adjusted.
+          </p></dd><dt><span class="term">PAM_SYSTEM_ERR</span></dt><dd><p>
+             A NULL pointer was submitted as PAM handle.
+          </p></dd></dl></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_authenticate"></a>3.1.7. Authenticating the user</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_appl.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">pam_authenticate</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">flags</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>int <var class="pdparam">flags</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_authenticate-description"></a>3.1.7.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_authenticate</code> function is used to
+      authenticate the user. The user is required to provide an
+      authentication token depending upon the authentication service,
+      usually this is a password, but could also be a finger print.
+    </p><p>
+      The PAM service module may request that the user enter their
+      username via the conversation mechanism (see
+      <span class="citerefentry"><span class="refentrytitle">pam_start</span>(3)</span> and
+      <span class="citerefentry"><span class="refentrytitle">pam_conv</span>(3)</span>). The name of the authenticated user
+       will be present in the PAM item PAM_USER. This item may be
+       recovered with a call to
+      <span class="citerefentry"><span class="refentrytitle">pam_get_item</span>(3)</span>.
+    </p><p>
+      The <span class="emphasis"><em>pamh</em></span> argument is an authentication
+      handle obtained by a prior call to pam_start().
+      The flags argument is the binary or of zero or more of the
+      following values:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SILENT</span></dt><dd><p>
+             Do not emit any messages.
+          </p></dd><dt><span class="term">PAM_DISALLOW_NULL_AUTHTOK</span></dt><dd><p>
+            The PAM module service should return PAM_AUTH_ERR
+            if the user does not have a registered authentication token.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_authenticate-return_values"></a>3.1.7.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_ABORT</span></dt><dd><p>
+            The application should exit immediately after calling
+            <span class="citerefentry"><span class="refentrytitle">pam_end</span>(3)</span> first.
+          </p></dd><dt><span class="term">PAM_AUTH_ERR</span></dt><dd><p>
+            The user was not authenticated.
+          </p></dd><dt><span class="term">PAM_CRED_INSUFFICIENT</span></dt><dd><p>
+            For some reason the application does not have sufficient
+            credentials to authenticate the user.
+          </p></dd><dt><span class="term">PAM_AUTHINFO_UNAVAIL</span></dt><dd><p>
+            The modules were not able to access the authentication
+            information. This might be due to a network or hardware
+            failure etc.
+          </p></dd><dt><span class="term">PAM_MAXTRIES</span></dt><dd><p>
+            One or more of the authentication modules has reached its
+            limit of tries authenticating the user. Do not try again.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             The user was successfully authenticated.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+            User unknown to authentication service.
+          </p></dd></dl></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_setcred"></a>3.1.8. Setting user credentials</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_appl.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">pam_setcred</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">flags</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>int <var class="pdparam">flags</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_setcred-description"></a>3.1.8.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_setcred</code> function is used to establish,
+      maintain and delete the credentials of a user. It should be called
+      to set the credentials after a user has been authenticated and before
+      a session is opened for the user (with
+      <span class="citerefentry"><span class="refentrytitle">pam_open_session</span>(3)</span>). The credentials should be deleted after the session
+      has been closed (with
+      <span class="citerefentry"><span class="refentrytitle">pam_close_session</span>(3)</span>).
+     </p><p>
+       A credential is something that the user possesses. It is some
+       property, such as a <span class="emphasis"><em>Kerberos</em></span> ticket, or a
+       supplementary group membership that make up the uniqueness of a
+       given user. On a Linux system the user's <span class="emphasis"><em>UID</em></span>
+       and <span class="emphasis"><em>GID</em></span>'s are credentials too. However, it
+       has been decided that these properties (along with the default
+       supplementary groups of which the user is a member) are credentials
+       that should be set directly by the application and not by PAM.
+       Such credentials should be established, by the application, prior
+       to a call to this function.  For example,
+       <span class="citerefentry"><span class="refentrytitle">initgroups</span>(2)</span> (or equivalent) should have been performed.
+      </p><p>
+        Valid <span class="emphasis"><em>flags</em></span>, any one of which, may be
+        logically OR'd with <code class="option">PAM_SILENT</code>, are:
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_ESTABLISH_CRED</span></dt><dd><p>Initialize the credentials for the user.</p></dd><dt><span class="term">PAM_DELETE_CRED</span></dt><dd><p>Delete the user's credentials.</p></dd><dt><span class="term">PAM_REINITIALIZE_CRED</span></dt><dd><p>Fully reinitialize the user's credentials.</p></dd><dt><span class="term">PAM_REFRESH_CRED</span></dt><dd><p>Extend the lifetime of the existing credentials.</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_setcred-return_values"></a>3.1.8.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+              Memory buffer error.
+          </p></dd><dt><span class="term">PAM_CRED_ERR</span></dt><dd><p>
+              Failed to set user credentials.
+          </p></dd><dt><span class="term">PAM_CRED_EXPIRED</span></dt><dd><p>
+             User credentials are expired.
+          </p></dd><dt><span class="term">PAM_CRED_UNAVAIL</span></dt><dd><p>
+              Failed to retrieve user credentials.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             Data was successful stored.
+          </p></dd><dt><span class="term">PAM_SYSTEM_ERR</span></dt><dd><p>
+             A NULL pointer was submitted as PAM handle, the
+             function was called by a module or another system
+             error occured.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+              User is not known to an authentication module.
+          </p></dd></dl></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_acct_mgmt"></a>3.1.9. Account validation management</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_appl.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">pam_acct_mgmt</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">flags</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>int <var class="pdparam">flags</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_acct_mgmt-description"></a>3.1.9.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_acct_mgmt</code> function is used to determine
+      if the user's account is valid. It checks for authentication token
+      and account expiration and verifies access restrictions. It is
+      typically called after the user has been authenticated.
+    </p><p>
+      The <span class="emphasis"><em>pamh</em></span> argument is an authentication
+      handle obtained by a prior call to pam_start().
+      The flags argument is the binary or of zero or more of the
+      following values:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SILENT</span></dt><dd><p>
+             Do not emit any messages.
+          </p></dd><dt><span class="term">PAM_DISALLOW_NULL_AUTHTOK</span></dt><dd><p>
+            The PAM module service should return PAM_NEW_AUTHTOK_REQD
+            if the user has a null authentication token.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_acct_mgmt-return_values"></a>3.1.9.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_ACCT_EXPIRED</span></dt><dd><p>
+             User account has expired.
+          </p></dd><dt><span class="term">PAM_AUTH_ERR</span></dt><dd><p>
+            Authentication failure.
+          </p></dd><dt><span class="term">PAM_NEW_AUTHTOK_REQD</span></dt><dd><p>
+            The user account is valid but their authentication token
+            is <span class="emphasis"><em>expired</em></span>. The correct response to
+            this return-value is to require that the user satisfies
+            the <code class="function">pam_chauthtok()</code> function before
+            obtaining service. It may not be possible for some
+            applications to do this. In such cases, the user should be
+            denied access until such time as they can update their password.
+          </p></dd><dt><span class="term">PAM_PERM_DENIED</span></dt><dd><p>
+            Permission denied.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             The authentication token was successfully updated.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+            User unknown to password service.
+          </p></dd></dl></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_chauthtok"></a>3.1.10. Updating authentication tokens</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_appl.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">pam_chauthtok</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">flags</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>int <var class="pdparam">flags</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_chauthtok-description"></a>3.1.10.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_chauthtok</code> function is used to change the
+      authentication token for a given user (as indicated by the state
+      associated with the handle <span class="emphasis"><em>pamh</em></span>).
+    </p><p>
+      The <span class="emphasis"><em>pamh</em></span> argument is an authentication
+      handle obtained by a prior call to pam_start().
+      The flags argument is the binary or of zero or more of the
+      following values:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SILENT</span></dt><dd><p>
+             Do not emit any messages.
+          </p></dd><dt><span class="term">PAM_CHANGE_EXPIRED_AUTHTOK</span></dt><dd><p>
+            This argument indicates to the modules that the user's
+            authentication token (password) should only be changed
+            if it has expired.
+            If this argument is not passed, the application requires
+            that all authentication tokens are to be changed.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_chauthtok-return_values"></a>3.1.10.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_AUTHTOK_ERR</span></dt><dd><p>
+             A module was unable to obtain the new authentication token.
+          </p></dd><dt><span class="term">PAM_AUTHTOK_RECOVERY_ERR</span></dt><dd><p>
+             A module was unable to obtain the old authentication token.
+          </p></dd><dt><span class="term">PAM_AUTHTOK_LOCK_BUSY</span></dt><dd><p>
+             One or more of the modules was unable to change the
+             authentication token since it is currently locked.
+          </p></dd><dt><span class="term">PAM_AUTHTOK_DISABLE_AGING</span></dt><dd><p>
+             Authentication token aging has been disabled for at least
+             one of the modules.
+          </p></dd><dt><span class="term">PAM_PERM_DENIED</span></dt><dd><p>
+             Permission denied.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             The authentication token was successfully updated.
+          </p></dd><dt><span class="term">PAM_TRY_AGAIN</span></dt><dd><p>
+             Not all of the modules were in a position to update the
+             authentication token(s). In such a case none of the user's
+             authentication tokens are updated.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+             User unknown to password service.
+          </p></dd></dl></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_open_session"></a>3.1.11. Start PAM session management</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_appl.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">pam_open_session</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">flags</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>int <var class="pdparam">flags</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_open_session-description"></a>3.1.11.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_open_session</code> function sets up a
+      user session for a previously successful authenticated user.
+      The session should later be terminated with a call to
+      <span class="citerefentry"><span class="refentrytitle">pam_close_session</span>(3)</span>.
+    </p><p>
+      It should be noted that the effective uid,
+      <span class="citerefentry"><span class="refentrytitle">geteuid</span>(2)</span>. of the application should be of sufficient
+      privilege to perform such tasks as creating or mounting the
+      user's home directory for example.
+    </p><p>
+      The flags argument is the binary or of zero or more of the
+      following values:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SILENT</span></dt><dd><p>
+             Do not emit any messages.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_open_session-return_values"></a>3.1.11.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_ABORT</span></dt><dd><p>
+              General failure.
+          </p></dd><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+              Memory buffer error.
+          </p></dd><dt><span class="term">PAM_SESSION_ERR</span></dt><dd><p>
+             Session failure.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             Session was successful created.
+          </p></dd></dl></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_close_session"></a>3.1.12. terminating PAM session management</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_appl.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">pam_close_session</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">flags</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>int <var class="pdparam">flags</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_close_session-description"></a>3.1.12.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_close_session</code> function is used
+      to indicate that an authenticated session has ended.
+      The session should have been created with a call to
+      <span class="citerefentry"><span class="refentrytitle">pam_open_session</span>(3)</span>.
+    </p><p>
+      It should be noted that the effective uid,
+      <span class="citerefentry"><span class="refentrytitle">geteuid</span>(2)</span>. of the application should be of sufficient
+      privilege to perform such tasks as unmounting the
+      user's home directory for example.
+    </p><p>
+      The flags argument is the binary or of zero or more of the
+      following values:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SILENT</span></dt><dd><p>
+             Do not emit any messages.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_close_session-return_values"></a>3.1.12.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_ABORT</span></dt><dd><p>
+              General failure.
+          </p></dd><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+              Memory buffer error.
+          </p></dd><dt><span class="term">PAM_SESSION_ERR</span></dt><dd><p>
+             Session failure.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             Session was successful terminated.
+          </p></dd></dl></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_putenv"></a>3.1.13. Set or change PAM environment variable</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_appl.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">pam_putenv</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">name_value</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>const char *<var class="pdparam">name_value</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_putenv-description"></a>3.1.13.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_putenv</code> function is used to
+      add or change the value of PAM environment variables as
+      associated with the <span class="emphasis"><em>pamh</em></span> handle.
+    </p><p>
+      The <span class="emphasis"><em>pamh</em></span> argument is an authentication
+      handle obtained by a prior call to pam_start().
+      The <span class="emphasis"><em>name_value</em></span> argument is a single NUL
+      terminated string of one of the following forms:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">NAME=value of variable</span></dt><dd><p>
+             In this case the environment variable of the given NAME
+             is set to the indicated value:
+             <span class="emphasis"><em>value of variable</em></span>. If this variable
+             is already known, it is overwritten. Otherwise it is added
+             to the PAM environment.
+          </p></dd><dt><span class="term">NAME=</span></dt><dd><p>
+            This function sets the variable to an empty value. It is
+            listed separately to indicate that this is the correct way
+            to achieve such a setting.
+          </p></dd><dt><span class="term">NAME</span></dt><dd><p>
+            Without an '=' the <code class="function">pam_putenv</code>() function
+            will delete the
+            corresponding variable from the PAM environment.
+          </p></dd></dl></div><p>
+      <code class="function">pam_putenv</code>() operates on a copy of
+      <span class="emphasis"><em>name_value</em></span>, which means in contrast to
+      <span class="citerefentry"><span class="refentrytitle">putenv</span>(3)</span>, the application is responsible to free the data.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_putenv-return_values"></a>3.1.13.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_PERM_DENIED</span></dt><dd><p>
+             Argument <span class="emphasis"><em>name_value</em></span> given is a NULL pointer.
+          </p></dd><dt><span class="term">PAM_BAD_ITEM</span></dt><dd><p>
+             Variable requested (for deletion) is not currently set.
+          </p></dd><dt><span class="term">PAM_ABORT</span></dt><dd><p>
+             The <span class="emphasis"><em>pamh</em></span> handle is corrupt.
+          </p></dd><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+             Memory buffer error.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             The environment variable was successfully updated.
+          </p></dd></dl></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_getenv"></a>3.1.14. Get a PAM environment variable</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_appl.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">const char *<b class="fsfunc">pam_getenv</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">name</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>const char *<var class="pdparam">name</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_getenv-description"></a>3.1.14.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_getenv</code> function searches the
+      PAM environment list as associated with the handle
+      <span class="emphasis"><em>pamh</em></span> for an item that matches the string
+      pointed to by <span class="emphasis"><em>name</em></span> and returns a pointer
+      to the value of the environment variable. The application is
+      not allowed to free the data.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_getenv-return_values"></a>3.1.14.2. RETURN VALUES</h4></div></div></div><p>
+      The <code class="function">pam_getenv</code> function returns NULL
+      on failure.
+    </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_getenvlist"></a>3.1.15. Getting the PAM environment</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_appl.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">char **<b class="fsfunc">pam_getenvlist</b>(</code></td><td><var class="pdparam">pamh</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_getenvlist-description"></a>3.1.15.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_getenvlist</code> function returns a complete
+      copy of the PAM environment as associated with the handle
+      <span class="emphasis"><em>pamh</em></span>. The PAM environment variables
+      represent the contents of the regular environment variables of the
+      authenticated user when service is granted.
+    </p><p>
+      The format of the memory is a malloc()'d array of char pointers,
+      the last element of which is set to NULL. Each of the non-NULL
+      entries in this array point to a NUL terminated and malloc()'d
+      char string of the form: "<span class="emphasis"><em>name=value</em></span>".
+    </p><p>
+      It should be noted that this memory will never be free()'d by
+      libpam. Once obtained by a call to
+      <code class="function">pam_getenvlist</code>, it is the responsibility of
+      the calling application to free() this memory.
+    </p><p>
+      It is by design, and not a coincidence, that the format and contents
+      of the returned array matches that required for the third argument of
+      the
+      <span class="citerefentry"><span class="refentrytitle">execle</span>(3)</span> function call.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_getenvlist-return_values"></a>3.1.15.2. RETURN VALUES</h4></div></div></div><p>
+      The <code class="function">pam_getenvlist</code> function returns NULL
+      on failure.
+    </p></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="adg-interface.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="adg-interface.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="adg-interface-of-app-expected.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 3. 
+      The public interface to <span class="emphasis"><em>Linux-PAM</em></span>
+     </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_ADG.html">Home</a></td><td width="40%" align="right" valign="top"> 3.2. What is expected of an application</td></tr></table></div></body></html>

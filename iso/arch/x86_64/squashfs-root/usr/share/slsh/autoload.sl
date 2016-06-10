@@ -1,0 +1,13 @@
+autoload ("require", "require");
+autoload ("provide", "require");
+autoload ("reverse", "arrayfuns");
+autoload ("shift", "arrayfuns");
+autoload ("rearrange", "arrayfuns");
+autoload ("struct_filter", "structfuns");
+autoload ("struct_combine", "structfuns");
+autoload ("struct_field_exists", "structfuns");
+autoload ("readascii", "readascii");
+autoload ("glob", "glob");
+autoload ("sldb", "sldb");
+autoload ("print", "print");
+autoload ("list_sort", "listfuns");

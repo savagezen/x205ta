@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libgssglue
+Description: Library that implements multi-mechanism GSS-API interface.
+Requires:
+Version: 0.4
+Libs: -L${exec_prefix}/lib -lgssglue -ldl
+Cflags: -I${prefix}/include/gssglue

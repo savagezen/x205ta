@@ -1,0 +1,12 @@
+%FILES%
+usr/
+usr/bin/
+usr/bin/tcpdump
+usr/share/
+usr/share/licenses/
+usr/share/licenses/tcpdump/
+usr/share/licenses/tcpdump/LICENSE
+usr/share/man/
+usr/share/man/man1/
+usr/share/man/man1/tcpdump.1.gz
+

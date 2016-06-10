@@ -1,0 +1,134 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.16. pam_listfile - deny or allow services based on an arbitrary file</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_limits.html" title="6.15. pam_limits - limit resources"><link rel="next" href="sag-pam_localuser.html" title="6.17. pam_localuser - require users to be listed in /etc/passwd"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.16. pam_listfile - deny or allow services based on an arbitrary file</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_limits.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_localuser.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_listfile"></a>6.16. pam_listfile - deny or allow services based on an arbitrary file</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_listfile.so</code>   
+	item=[tty|user|rhost|ruser|group|shell]
+         
+        sense=[allow|deny]
+         
+        file=<em class="replaceable"><code>/path/filename</code></em>
+         
+        onerr=[succeed|fail]
+        [
+        apply=[<em class="replaceable"><code>user</code></em>|<em class="replaceable"><code>@group</code></em>]
+      ] [
+        quiet
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_listfile-description"></a>6.16.1. DESCRIPTION</h3></div></div></div><p>
+      pam_listfile is a PAM module which provides a way to deny or
+      allow services based on an arbitrary file.
+    </p><p>
+      The module gets the <code class="option">item</code> of the type specified --
+      <span class="emphasis"><em>user</em></span> specifies the username,
+      <span class="emphasis"><em>PAM_USER</em></span>; tty specifies the name of the terminal
+      over which the request has been made, <span class="emphasis"><em>PAM_TTY</em></span>;
+      rhost specifies the name of the remote host (if any) from which the
+      request was made, <span class="emphasis"><em>PAM_RHOST</em></span>; and ruser specifies
+      the name of the remote user (if available) who made the request,
+      <span class="emphasis"><em>PAM_RUSER</em></span> -- and looks for an instance of that
+      item in the <code class="option">file=<em class="replaceable"><code>filename</code></em></code>.
+      <code class="filename">filename</code> contains one line per item listed. If
+      the item is found, then if
+      <code class="option">sense=<em class="replaceable"><code>allow</code></em></code>,
+      <span class="emphasis"><em>PAM_SUCCESS</em></span> is returned, causing the authorization
+      request to succeed; else if
+      <code class="option">sense=<em class="replaceable"><code>deny</code></em></code>,
+      <span class="emphasis"><em>PAM_AUTH_ERR</em></span> is returned, causing the authorization
+      request to fail.
+    </p><p>
+      If an error is encountered (for instance, if
+      <code class="filename">filename</code> does not exist, or a poorly-constructed
+      argument is encountered), then if <span class="emphasis"><em>onerr=succeed</em></span>,
+      <span class="emphasis"><em>PAM_SUCCESS</em></span> is returned, otherwise if
+      <span class="emphasis"><em>onerr=fail</em></span>, <span class="emphasis"><em>PAM_AUTH_ERR</em></span> or
+      <span class="emphasis"><em>PAM_SERVICE_ERR</em></span> (as appropriate) will be returned.
+    </p><p>
+      An additional argument, <code class="option">apply=</code>, can be used
+      to restrict the application of the above to a specific user
+      (<code class="option">apply=<em class="replaceable"><code>username</code></em></code>)
+      or a given group
+      (<code class="option">apply=<em class="replaceable"><code>@groupname</code></em></code>).
+      This added restriction is only meaningful when used with the
+      <span class="emphasis"><em>tty</em></span>, <span class="emphasis"><em>rhost</em></span> and
+      <span class="emphasis"><em>shell</em></span> items.
+    </p><p>
+      Besides this last one, all arguments should be specified; do not
+      count on any default behavior.
+    </p><p>
+      No credentials are awarded by this module.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_listfile-options"></a>6.16.2. OPTIONS</h3></div></div></div><p>
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+            <code class="option">item=[tty|user|rhost|ruser|group|shell]</code>
+          </span></dt><dd><p>
+	      What is listed in the file and should be checked for.
+            </p></dd><dt><span class="term">
+            <code class="option">sense=[allow|deny]</code>
+          </span></dt><dd><p>
+              Action to take if found in file, if the item is NOT found in
+              the file, then the opposite action is requested.
+            </p></dd><dt><span class="term">
+            <code class="option">file=<em class="replaceable"><code>/path/filename</code></em></code>
+          </span></dt><dd><p>
+              File containing one item per line. The file needs to be a plain
+              file and not world writable.
+            </p></dd><dt><span class="term">
+            <code class="option">onerr=[succeed|fail]</code>
+          </span></dt><dd><p>
+              What to do if something weird happens like being unable to open
+              the file.
+            </p></dd><dt><span class="term">
+            <code class="option">apply=[<em class="replaceable"><code>user</code></em>|<em class="replaceable"><code>@group</code></em>]</code>
+          </span></dt><dd><p>
+              Restrict the user class for which the restriction apply. Note that
+              with <code class="option">item=[user|ruser|group]</code> this does not make sense,
+              but for <code class="option">item=[tty|rhost|shell]</code> it have a meaning.
+            </p></dd><dt><span class="term">
+            <code class="option">quiet</code>
+          </span></dt><dd><p>
+              Do not treat service refusals or missing list files as
+              errors that need to be logged.
+            </p></dd></dl></div><p>
+
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_listfile-types"></a>6.16.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      All module types (<code class="option">auth</code>, <code class="option">account</code>,
+      <code class="option">password</code> and <code class="option">session</code>) are provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_listfile-return_values"></a>6.16.4. RETURN VALUES</h3></div></div></div><p>
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_AUTH_ERR</span></dt><dd><p>Authentication failure.</p></dd><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+               Memory buffer error.
+            </p></dd><dt><span class="term">PAM_IGNORE</span></dt><dd><p>
+              The rule does not apply to the <code class="option">apply</code> option.
+            </p></dd><dt><span class="term">PAM_SERVICE_ERR</span></dt><dd><p>
+	      Error in service module.
+            </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+              Success.
+            </p></dd></dl></div><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_listfile-examples"></a>6.16.5. EXAMPLES</h3></div></div></div><p>
+      Classic 'ftpusers' authentication can be implemented with this entry
+      in <code class="filename">/etc/pam.d/ftpd</code>:
+      </p><pre class="programlisting">
+#
+# deny ftp-access to users listed in the /etc/ftpusers file
+#
+auth    required       pam_listfile.so \
+        onerr=succeed item=user sense=deny file=/etc/ftpusers
+      </pre><p>
+      Note, users listed in <code class="filename">/etc/ftpusers</code> file are
+      (counterintuitively) <span class="emphasis"><em>not</em></span> allowed access to
+      the ftp service.
+    </p><p>
+      To allow login access only for certain users, you can use a
+      <code class="filename">/etc/pam.d/login</code> entry like this:
+      </p><pre class="programlisting">
+#
+# permit login to users listed in /etc/loginusers
+#
+auth    required       pam_listfile.so \
+        onerr=fail item=user sense=allow file=/etc/loginusers
+      </pre><p>
+      For this example to work, all users who are allowed to use the
+      login service should be listed in the file
+      <code class="filename">/etc/loginusers</code>.  Unless you are explicitly
+      trying to lock out root, make sure that when you do this, you leave
+      a way for root to log in, either by listing root in
+      <code class="filename">/etc/loginusers</code>, or by listing a user who is
+      able to <span class="emphasis"><em>su</em></span> to the root account.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_listfile-author"></a>6.16.6. AUTHOR</h3></div></div></div><p>
+        pam_listfile was written by Michael K. Johnson &lt;johnsonm@redhat.com&gt;
+        and Elliot Lee &lt;sopwith@cuc.edu&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_limits.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_localuser.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.15. pam_limits - limit resources </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.17. pam_localuser - require users to be listed in /etc/passwd</td></tr></table></div></body></html>

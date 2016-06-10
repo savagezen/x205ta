@@ -1,0 +1,104 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.7. pam_exec - call an external command</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_env.html" title="6.6. pam_env - set/unset environment variables"><link rel="next" href="sag-pam_faildelay.html" title="6.8. pam_faildelay - change the delay on failure per-application"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.7. pam_exec - call an external command</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_env.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_faildelay.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_exec"></a>6.7. pam_exec - call an external command</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_exec.so</code>  [
+	debug
+      ] [
+         expose_authtok
+      ] [
+        seteuid
+      ] [
+        quiet
+      ] [
+        stdout
+      ] [
+        log=<em class="replaceable"><code>file</code></em>
+      ] [
+        type=<em class="replaceable"><code>type</code></em>
+      ]  
+       <em class="replaceable"><code>command</code></em>
+        [
+        <em class="replaceable"><code>...</code></em>
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_exec-description"></a>6.7.1. DESCRIPTION</h3></div></div></div><p>
+      pam_exec is a PAM module that can be used to run
+      an external command.
+    </p><p>
+     The child's environment is set to the current PAM environment list, as
+     returned by
+     <span class="citerefentry"><span class="refentrytitle">pam_getenvlist</span>(3)</span>
+     In addition, the following PAM items are
+     exported as environment variables: <span class="emphasis"><em>PAM_RHOST</em></span>,
+     <span class="emphasis"><em>PAM_RUSER</em></span>, <span class="emphasis"><em>PAM_SERVICE</em></span>,
+     <span class="emphasis"><em>PAM_TTY</em></span>, <span class="emphasis"><em>PAM_USER</em></span> and
+     <span class="emphasis"><em>PAM_TYPE</em></span>, which contains one of the module
+     types: <code class="option">account</code>, <code class="option">auth</code>,
+     <code class="option">password</code>, <code class="option">open_session</code> and
+     <code class="option">close_session</code>.
+    </p><p>
+      Commands called by pam_exec need to be aware of that the user
+      can have controll over the environment.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_exec-options"></a>6.7.2. OPTIONS</h3></div></div></div><p>
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+            <code class="option">debug</code>
+          </span></dt><dd><p>
+	      Print debug information.
+            </p></dd><dt><span class="term">
+            <code class="option">expose_authtok</code>
+          </span></dt><dd><p>
+              During authentication the calling command can read
+              the password from <span class="citerefentry"><span class="refentrytitle">stdin</span>(3)</span>. Only first <span class="emphasis"><em>PAM_MAX_RESP_SIZE</em></span>
+              bytes of a password are provided to the command.
+            </p></dd><dt><span class="term">
+            <code class="option">log=<em class="replaceable"><code>file</code></em></code>
+          </span></dt><dd><p>
+	      The output of the command is appended to
+              <code class="filename">file</code>
+            </p></dd><dt><span class="term">
+            <code class="option">type=<em class="replaceable"><code>type</code></em></code>
+          </span></dt><dd><p>
+              Only run the command if the module type matches the given type.
+            </p></dd><dt><span class="term">
+            <code class="option">stdout</code>
+          </span></dt><dd><p>
+              Per default the output of the executed command is written to <code class="filename">/dev/null</code>. With this option, the stdout output of the executed command is redirected to the calling application. It's in the responsibility of this application what happens with the output. The <code class="option">log</code> option is ignored.
+            </p></dd><dt><span class="term">
+            <code class="option">quiet</code>
+          </span></dt><dd><p>
+              Per default pam_exec.so will echo the exit status of the
+              external command if it fails.
+              Specifying this option will suppress the message.
+            </p></dd><dt><span class="term">
+            <code class="option">seteuid</code>
+          </span></dt><dd><p>
+              Per default pam_exec.so will execute the external command
+              with the real user ID of the calling process.
+              Specifying this option means the command is run
+              with the effective user ID.
+            </p></dd></dl></div><p>
+
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_exec-types"></a>6.7.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      All module types (<code class="option">auth</code>, <code class="option">account</code>,
+      <code class="option">password</code> and <code class="option">session</code>) are provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_exec-return_values"></a>6.7.4. RETURN VALUES</h3></div></div></div><p>
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+              The external command was run successfully.
+            </p></dd><dt><span class="term">PAM_SERVICE_ERR</span></dt><dd><p>
+	      No argument or a wrong number of arguments were given.
+            </p></dd><dt><span class="term">PAM_SYSTEM_ERR</span></dt><dd><p>
+	      A system error occurred or the command to execute failed.
+            </p></dd><dt><span class="term">PAM_IGNORE</span></dt><dd><p>
+	      <code class="function">pam_setcred</code> was called, which
+	      does not execute the command.  Or, the value given for the type=
+	      parameter did not match the module type.
+            </p></dd></dl></div><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_exec-examples"></a>6.7.5. EXAMPLES</h3></div></div></div><p>
+      Add the following line to <code class="filename">/etc/pam.d/passwd</code> to
+      rebuild the NIS database after each local password change:
+      </p><pre class="programlisting">
+        password optional pam_exec.so seteuid /usr/bin/make -C /var/yp
+      </pre><p>
+
+      This will execute the command
+      </p><pre class="programlisting">make -C /var/yp</pre><p>
+       with effective user ID.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_exec-author"></a>6.7.6. AUTHOR</h3></div></div></div><p>
+        pam_exec was written by Thorsten Kukuk &lt;kukuk@thkukuk.de&gt; and
+        Josh Triplett &lt;josh@joshtriplett.org&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_env.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_faildelay.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.6. pam_env - set/unset environment variables </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.8. pam_faildelay - change the delay on failure per-application</td></tr></table></div></body></html>

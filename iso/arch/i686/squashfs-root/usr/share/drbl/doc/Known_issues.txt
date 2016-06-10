@@ -1,0 +1,50 @@
+Known issues:
+SIS900 network card (Note: SIS191 has same problem, however, since Etherboot/gPXE does not support SIS191, this workaround won't work for SIS191):
+   sis900 client does NOT work with pxelinux >=3.07 simple menu, it will hang like this:
+   http://drbl.sf.net/screenshot/?in_path=/00_DRBL#xxx-sis900-client-hang.jpg
+   you WON'T see this:
+   http://drbl.sf.net/screenshot/?in_path=/00_DRBL#syslinux_drbl.jpg
+   The client will hang before this.
+   It's reported to:
+   http://syslinux.zytor.com/archives/2005-April/005030.html
+
+   There *IS* a workaround (Thanks to Alexander Heinz for providing that in syslinux mailing list):
+   1. Install DRBL version 1.5.8-1 or newer one, finish all the setup.
+   2. Find your SIS900 Clients' MAC vendor prefix, for example, if their MAC addresses are AA:BB:CC:DD:XX:YY, the MAC vendor prefix is AA:BB:CC.
+   3. Modify the file /etc/dhcpd.conf (RH-like) or /etc/dhcp3/dhcpd.conf (Debian based):
+   ---------------------------------------------------------
+#if substring (option vendor-class-identifier, 0, 3) = "PXE" {
+#     # **************************************************************
+#     # ***MODIFY*** the MAC vendor prefix of client network card here.
+#     # **************************************************************
+#     # For annoying sis900 network card, maybe it's 00:07:95, 00:0C:6E...
+#     if substring (hardware, 1, 3) = 00:0C:6E {
+#         # eb-5.4.3-etherboot-pci.zpxe is a all-in-one pxe image, works for most NIC.
+#         # sis900.zpxe is specially for sis900 NIC.
+#         # Try either one.
+#         #filename = "eb-5.4.3-etherboot-pci.zpxe";
+#         filename = "sis900.zpxe";
+#     }
+#}
+   ---------------------------------------------------------
+   uncomment the "if block", and change the MAC vendor prefix to yours. In this example, we use AA:BB:CC like this:
+   ---------------------------------------------------------
+if substring (option vendor-class-identifier, 0, 3) = "PXE" {
+     # **************************************************************
+     # ***MODIFY*** the MAC vendor prefix of client network card here.
+     # **************************************************************
+     # For annoying sis900 network card, maybe it's 00:07:95, 00:0C:6E...
+     if substring (hardware, 1, 3) = AA:BB:CC {
+         # eb-5.4.3-etherboot-pci.zpxe is a all-in-one pxe image, works for most NIC.
+         # sis900.zpxe is specially for sis900 NIC.
+         # Try either one.
+         #filename = "eb-5.4.3-etherboot-pci.zpxe";
+         filename = "sis900.zpxe";
+     }
+}
+   ---------------------------------------------------------
+   4. restart dhcpd service, like "/etc/init.d/dhcpd restart" (RH-like) or "/etc/init.d/dhcp3-server restart".
+
+   5. Start your annoying sis900 box! It should work now.
+
+Updated on Dec/13/2014.

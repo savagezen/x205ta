@@ -1,0 +1,41 @@
+%NAME%
+wget
+
+%VERSION%
+1.17.1-2
+
+%DESC%
+A network utility to retrieve files from the Web
+
+%URL%
+http://www.gnu.org/software/wget/wget.html
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1462396064
+
+%INSTALLDATE%
+1464799539
+
+%PACKAGER%
+Antonio Rojas <arojas@archlinux.org>
+
+%SIZE%
+2372608
+
+%LICENSE%
+GPL3
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+openssl
+libidn
+libutil-linux
+
+%OPTDEPENDS%
+ca-certificates: HTTPS downloads
+

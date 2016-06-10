@@ -1,0 +1,24 @@
+%FILES%
+etc/
+etc/logrotate.conf
+etc/logrotate.d/
+usr/
+usr/bin/
+usr/bin/logrotate
+usr/lib/
+usr/lib/systemd/
+usr/lib/systemd/system/
+usr/lib/systemd/system/logrotate.service
+usr/lib/systemd/system/logrotate.timer
+usr/lib/systemd/system/multi-user.target.wants/
+usr/lib/systemd/system/multi-user.target.wants/logrotate.timer
+usr/share/
+usr/share/man/
+usr/share/man/man5/
+usr/share/man/man5/logrotate.conf.5.gz
+usr/share/man/man8/
+usr/share/man/man8/logrotate.8.gz
+
+%BACKUP%
+etc/logrotate.conf	94dae4d3eded2fab9ae879533d3680db
+

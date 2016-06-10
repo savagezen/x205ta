@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: path_utils
+Description: Utility functions to manipulate filesystem pathnames
+Version: 0.2.1
+Libs: -L${libdir} -lpath_utils
+Cflags: -I${includedir}
+URL: http://fedorahosted.org/sssd/

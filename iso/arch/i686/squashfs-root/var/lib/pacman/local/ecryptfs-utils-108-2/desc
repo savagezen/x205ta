@@ -1,0 +1,43 @@
+%NAME%
+ecryptfs-utils
+
+%VERSION%
+108-2
+
+%DESC%
+Enterprise-class stacked cryptographic filesystem for Linux
+
+%URL%
+https://launchpad.net/ecryptfs
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1453462618
+
+%INSTALLDATE%
+1464799536
+
+%PACKAGER%
+Timothy Redaelli <timothy.redaelli@gmail.com>
+
+%SIZE%
+455680
+
+%REASON%
+1
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+nss
+pam
+
+%OPTDEPENDS%
+python2: for python module
+

@@ -1,0 +1,23 @@
+
+%9Syntax:%9
+
+NOTICE %|<targets> <message>
+
+%9Parameters:%9
+
+    The targets and the message to notify.
+
+%9Description:%9
+
+    Sends a notice to the target nickname or channel; these are often used in
+    automated bots or scripts.
+
+    You can provide multiple targets by separating them with a comma.
+
+%9Examples:%9
+
+    /NOTICE mike You sir, are just awesome!
+    /NOTICE bob,#irssi Fish go blub :p
+
+%9See also:%9 CTCP, MSG, NCTCP
+

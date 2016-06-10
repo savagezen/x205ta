@@ -1,0 +1,16 @@
+
+%9Syntax:%9
+
+RESTART
+
+%9Description:%9
+
+    Restarts the active IRC server; this command is restricted to IRC
+    administrators.
+
+%9Examples:%9
+
+    /RESTART
+
+%9See also:%9 DIE, KILL, OPER, REHASH
+

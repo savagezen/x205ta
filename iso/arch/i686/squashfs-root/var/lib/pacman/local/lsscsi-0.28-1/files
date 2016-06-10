@@ -1,0 +1,9 @@
+%FILES%
+usr/
+usr/bin/
+usr/bin/lsscsi
+usr/share/
+usr/share/man/
+usr/share/man/man8/
+usr/share/man/man8/lsscsi.8.gz
+

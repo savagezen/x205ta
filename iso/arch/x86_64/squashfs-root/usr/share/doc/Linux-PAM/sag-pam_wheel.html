@@ -1,0 +1,85 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.40. pam_wheel - only permit root access to members of group wheel</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_warn.html" title="6.39. pam_warn - logs all PAM items"><link rel="next" href="sag-pam_xauth.html" title="6.41. pam_xauth - forward xauth keys between users"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.40. pam_wheel - only permit root access to members of group wheel</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_warn.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_xauth.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_wheel"></a>6.40. pam_wheel - only permit root access to members of group wheel</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_wheel.so</code>  [
+	debug
+      ] [
+        deny
+      ] [
+	group=<em class="replaceable"><code>name</code></em>
+      ] [
+	root_only
+      ] [
+	trust
+      ] [
+	use_uid
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_wheel-description"></a>6.40.1. DESCRIPTION</h3></div></div></div><p>
+      The pam_wheel PAM module is used to enforce the so-called
+      <span class="emphasis"><em>wheel</em></span> group. By default it permits root
+      access to the system if the applicant user is a member of the
+      <span class="emphasis"><em>wheel</em></span> group. If no group with this name exist,
+      the module is using the group with the group-ID
+      <span class="emphasis"><em>0</em></span>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_wheel-options"></a>6.40.2. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">debug</code>
+        </span></dt><dd><p>
+            Print debug information.
+          </p></dd><dt><span class="term">
+          <code class="option">deny</code>
+        </span></dt><dd><p>
+            Reverse the sense of the auth operation: if the user
+            is trying to get UID 0 access and is a member of the
+            wheel group (or the group of the <code class="option">group</code> option),
+            deny access. Conversely, if the user is not in the group, return
+            PAM_IGNORE (unless <code class="option">trust</code> was also specified,
+            in which case we return PAM_SUCCESS).
+          </p></dd><dt><span class="term">
+          <code class="option">group=<em class="replaceable"><code>name</code></em></code>
+        </span></dt><dd><p>
+            Instead of checking the wheel or GID 0 groups, use
+            the <code class="option"><em class="replaceable"><code>name</code></em></code> group
+            to perform the authentication.
+          </p></dd><dt><span class="term">
+          <code class="option">root_only</code>
+        </span></dt><dd><p>
+            The check for wheel membership is done only.
+          </p></dd><dt><span class="term">
+          <code class="option">trust</code>
+        </span></dt><dd><p>
+            The pam_wheel module will return PAM_SUCCESS instead
+            of PAM_IGNORE if the user is a member of the wheel group
+            (thus with a little play stacking the modules the wheel
+            members may be able to su to root without being prompted
+            for a passwd).
+          </p></dd><dt><span class="term">
+          <code class="option">use_uid</code>
+        </span></dt><dd><p>
+            The check for wheel membership will be done against
+            the current uid instead of the original one (useful when
+            jumping with su from one account to another for example).
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_wheel-types"></a>6.40.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      The <span class="emphasis"><em>auth</em></span> and
+      <span class="emphasis"><em>account</em></span> module types are provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_wheel-return_values"></a>6.40.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_AUTH_ERR</span></dt><dd><p>
+             Authentication failure.
+          </p></dd><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+             Memory buffer error.
+          </p></dd><dt><span class="term">PAM_IGNORE</span></dt><dd><p>
+            The return value should be ignored by PAM dispatch.
+          </p></dd><dt><span class="term">PAM_PERM_DENY</span></dt><dd><p>
+            Permission denied.
+          </p></dd><dt><span class="term">PAM_SERVICE_ERR</span></dt><dd><p>
+	    Cannot determine the user name.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+            Success.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+            User not known.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_wheel-examples"></a>6.40.5. EXAMPLES</h3></div></div></div><p>
+      The root account gains access by default (rootok), only wheel
+      members can become root (wheel) but Unix authenticate non-root
+      applicants.
+      </p><pre class="programlisting">
+su      auth     sufficient     pam_rootok.so
+su      auth     required       pam_wheel.so
+su      auth     required       pam_unix.so
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_wheel-author"></a>6.40.6. AUTHOR</h3></div></div></div><p>
+        pam_wheel was written by Cristian Gafton &lt;gafton@redhat.com&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_warn.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_xauth.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.39. pam_warn - logs all PAM items </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.41. pam_xauth - forward xauth keys between users</td></tr></table></div></body></html>

@@ -1,0 +1,71 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>2.2.  Other functions provided by libpam</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_MWG.html" title="The Linux-PAM Module Writers' Guide"><link rel="up" href="mwg-expected-by-module.html" title="Chapter 2. What can be expected by the module"><link rel="prev" href="mwg-expected-by-module-item.html" title="2.1.  Getting and setting PAM_ITEMs and data"><link rel="next" href="mwg-expected-of-module.html" title="Chapter 3. What is expected of a module"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">2.2. 
+        Other functions provided by <code class="filename">libpam</code>
+      </th></tr><tr><td width="20%" align="left"><a accesskey="p" href="mwg-expected-by-module-item.html">Prev</a> </td><th width="60%" align="center">Chapter 2. What can be expected by the module</th><td width="20%" align="right"> <a accesskey="n" href="mwg-expected-of-module.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mwg-expected-by-module-other"></a>2.2. 
+        Other functions provided by <code class="filename">libpam</code>
+      </h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_strerror"></a>2.2.1. Strings describing PAM error codes</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_appl.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">const char *<b class="fsfunc">pam_strerror</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">errnum</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>int <var class="pdparam">errnum</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_strerror-description"></a>2.2.1.1. DESCRIPTION</h4></div></div></div><p>
+       The <code class="function">pam_strerror</code> function returns a pointer to
+       a string describing the error code passed in the argument
+       <span class="emphasis"><em>errnum</em></span>, possibly using the LC_MESSAGES part of
+       the current locale to select the appropriate language. This string
+       must not be modified by the application. No library function will
+       modify this string.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_strerror-return_values"></a>2.2.1.2. RETURN VALUES</h4></div></div></div><p>
+       This function returns always a pointer to a string.
+    </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_fail_delay"></a>2.2.2. Request a delay on failure</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_appl.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">pam_fail_delay</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">usec</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>unsigned int <var class="pdparam">usec</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_fail_delay-description"></a>2.2.2.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_fail_delay</code> function provides a
+      mechanism by which an application or module can suggest a minimum
+      delay of <span class="emphasis"><em>usec</em></span> micro-seconds. The
+      function  keeps a record of the longest time requested with this
+      function. Should
+      <span class="citerefentry"><span class="refentrytitle">pam_authenticate</span>(3)</span> fail, the failing return to the application is
+      delayed by an amount of time randomly distributed (by up to 50%)
+      about this longest value.
+    </p><p>
+      Independent of success, the delay time is reset to its zero
+      default value when the PAM service module returns control to
+      the application. The delay occurs <span class="emphasis"><em>after</em></span> all
+      authentication modules have been called, but <span class="emphasis"><em>before</em></span>
+      control is returned to the service application.
+    </p><p>
+      When using this function the programmer should check if it is
+      available with:
+    </p><pre class="programlisting">
+#ifdef HAVE_PAM_FAIL_DELAY
+    ....
+#endif /* HAVE_PAM_FAIL_DELAY */
+      </pre><p>
+      For applications written with a single thread that are event
+      driven in nature, generating this delay may be undesirable.
+      Instead, the application may want to register the delay in some
+      other way. For example, in a single threaded server that serves
+      multiple authentication requests from a single event loop, the
+      application might want to simply mark a given connection as
+      blocked until an application timer expires. For this reason
+      the delay function can be changed with the
+      <span class="emphasis"><em>PAM_FAIL_DELAY</em></span> item. It can be queried and
+      set with
+      <span class="citerefentry"><span class="refentrytitle">pam_get_item</span>(3)</span>
+      and
+      <span class="citerefentry"><span class="refentrytitle">pam_set_item </span>(3)</span>  respectively. The value used to set it should be
+      a function pointer of the following prototype:
+      </p><pre class="programlisting">
+void (*delay_fn)(int retval, unsigned usec_delay, void *appdata_ptr);
+      </pre><p>
+      The arguments being the <span class="emphasis"><em>retval</em></span> return code
+      of the module stack, the <span class="emphasis"><em>usec_delay</em></span>
+      micro-second delay that libpam is requesting and the
+      <span class="emphasis"><em>appdata_ptr</em></span> that the application has associated
+      with the current <span class="emphasis"><em>pamh</em></span>. This last value was set
+      by the application when it called
+      <span class="citerefentry"><span class="refentrytitle">pam_start</span>(3)</span> or explicitly with
+      <span class="citerefentry"><span class="refentrytitle">pam_set_item</span>(3)</span>.
+      Note, if PAM_FAIL_DELAY item is unset (or set to NULL), then no delay
+      will be performed.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_fail_delay-return_values"></a>2.2.2.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+            Delay was successful adjusted.
+          </p></dd><dt><span class="term">PAM_SYSTEM_ERR</span></dt><dd><p>
+             A NULL pointer was submitted as PAM handle.
+          </p></dd></dl></div></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="mwg-expected-by-module-item.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="mwg-expected-by-module.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="mwg-expected-of-module.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">2.1. 
+        Getting and setting <span class="emphasis"><em>PAM_ITEM</em></span>s and
+        <span class="emphasis"><em>data</em></span>
+       </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_MWG.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 3. What is expected of a module</td></tr></table></div></body></html>

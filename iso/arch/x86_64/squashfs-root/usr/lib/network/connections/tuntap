@@ -1,0 +1,28 @@
+# Contributed by: Rémy Oudompheng <remy@archlinux.org>
+
+. "$SUBR_DIR/ip"
+
+# Make sure BindsToInterfaces is set
+BindsToInterfaces=("${BindsToInterfaces[@]}")
+
+tuntap_up() {
+    if is_interface "$Interface"; then
+        report_error "Interface '$Interface' already exists"
+        return 1
+    fi
+
+    do_debug ip tuntap add dev "$Interface" mode "$Mode" \
+        ${User:+user "$User"} ${Group:+group "$Group"} || return
+
+    bring_interface_up "$Interface"
+    IP=${IP-no} ip_set
+}
+
+tuntap_down() {
+    ip_unset
+    bring_interface_down "$Interface"
+    ip tuntap delete dev "$Interface" mode "$Mode"
+}
+
+
+# vim: ft=sh ts=4 et sw=4:

@@ -1,0 +1,42 @@
+%NAME%
+libevent
+
+%VERSION%
+2.0.22-2
+
+%DESC%
+An event notification library
+
+%URL%
+http://libevent.org/
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1456942898
+
+%INSTALLDATE%
+1464799537
+
+%PACKAGER%
+Florian Pritz <bluewind@xinu.at>
+
+%SIZE%
+1075200
+
+%REASON%
+1
+
+%LICENSE%
+BSD
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+openssl
+
+%OPTDEPENDS%
+python2: to use event_rpcgen.py
+

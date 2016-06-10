@@ -1,0 +1,47 @@
+%NAME%
+gettext
+
+%VERSION%
+0.19.7-1
+
+%DESC%
+GNU internationalization library
+
+%URL%
+http://www.gnu.org/software/gettext/
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1454437970
+
+%INSTALLDATE%
+1464799501
+
+%PACKAGER%
+Tobias Powalowski <tpowa@archlinux.org>
+
+%SIZE%
+8446976
+
+%GROUPS%
+base
+base-devel
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+gcc-libs
+acl
+sh
+glib2
+libunistring
+
+%OPTDEPENDS%
+git: for autopoint infrastructure updates
+

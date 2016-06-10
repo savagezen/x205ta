@@ -1,0 +1,48 @@
+                                 Partition Image Daemon                        
+                             -----------------------------                                         
+    begin                : ven avr 23 18:58:17 CEST 1999                                          
+    copyright            : (C) 1999 by François Dupoux                         
+
+WEB:    http://www.partimage.org/
+AUTHOR: Francois Dupoux
+MAIL:   fdupoux@partimage.org 
+AUTHOR: Franck Ladurelle
+MAIL:   ladurelf@partimage.org
+                       
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation; either version 2 of the License, or
+at your option) any later version.
+
+See README for informations on Partition Image.
+
+Partimaged is still in alpha version. Use at your risks on production station or
+server.
+
+Partimaged was developped to provide Partition Image accros network.
+
+For now, it can only handle up to ten remote connection and is very slow. 
+It can be a serious hole in your network if not used behind a firewall since
+it can access ANY file with root rigths.
+
+To use, your just need to run it. By default, it listens on port 4025.
+
+To use SSL, you need a certificate file and a private key file for this
+certificate.
+
+You can use your own files or generate them with `make certificates' after
+compiling and installing partimage/partimaged:
+use the following instructions:
+./configure ..what you want.. --with-ssl
+make
+make install
+make certificates.
+
+The certificate files, must be installed in the directory containing partimaged.
+They are named partimaged.cert for the certificate and partimaged.key for the
+private key of the certificate.
+
+You have to edit partimagedusers to add all users you want to be able to
+connect partimaged. Refer to FAQ or man partimagedusers to understand its
+format.
+

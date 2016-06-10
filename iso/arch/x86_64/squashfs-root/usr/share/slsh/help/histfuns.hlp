@@ -1,0 +1,217 @@
+hist1d
+
+ SYNOPSIS
+  Compute a 1-d histogram
+
+ USAGE
+  h = hist1d ([h,] pnts, grid [, &rev])
+
+ DESCRIPTION
+ The `hist1d' function bins a set of points `pnts' into a
+ 1-d histogram using bin-edges given by the grid argument.  The
+ optional last argument `&rev' is a reference to a variable
+ whose value will be assigned the reverse-indices of the histogram.
+
+ The first argument `h' is optional.  If present and non-NULL, it
+ will be used as the histogram buffer with new binned values added to
+ it.  That is, the following statements are equivalent:
+
+    h = h + hist1d (pnts, grid);
+    h = hist1d (h, pnts, grid);
+
+
+ The value of the ith bin in the histogram is given by the number of
+ values in the `pnts' array that satisfy
+ `grid[i]<=X<grid[i+1]' where `X' represents the value of
+ the candidate point.  The last bin of the histogram represents an
+ overflow bin with the right bin edge at plus infinity.  The grid is
+ required to be sorted into ascending order.
+
+ The reverse-indices array is an array-of-arrays of indices such that
+ `rev[i]' is an array of indices into the `pnts' array that
+ have fallen into the ith bin.
+
+ SEE ALSO
+  hist1d_rebin, hist2d, hist2d_rebin, hist_bsearch
+
+--------------------------------------------------------------
+
+hist2d
+
+ SYNOPSIS
+  Compute a 2-d histogram
+
+ USAGE
+  h = hist2d ([h,] xpnts, ypnts, xgrid, ygrid [, &rev])
+
+ DESCRIPTION
+ The `hist2d' function bins a set of `(x,y)' pairs
+ represented by the `xpnts' and `ypnts' arrays into a 2-d
+ histogram using bin-edges given by the `xgrid' and `ygrid'
+ arguments.  The optional last argument `&rev' is a reference to
+ a variable whose value will be assigned the reverse-indices of the
+ histogram.  The first argument is also optional and, if present and
+ non-NULL, will be used for the histogram values.
+
+ The value of the bin `[i,j]' of the histogram is given by the
+ number of (X,Y) pairs that satisfy `xgrid[i]<=X<xgrid[i+1]' and
+ `ygrid[j]<=Y<ygrid[j+1]'. The bins at the extreme edges of the
+ histogram represent overflow bins with the upper bin edge at plus
+ infinity. The grids are required to be sorted into ascending order.
+
+ The reverse-indices array is a 2-d array-of-arrays of indices such that
+ `rev[i,j]' is an array of indices into the `xpnts' and
+ `ypnts' arrays that have fallen into the bin `[i,j]'.
+
+ SEE ALSO
+  hist1d, whist2d, hist2d_rebin, hist1d_rebin, hist_bsearch
+
+--------------------------------------------------------------
+
+hist1d_rebin
+
+ SYNOPSIS
+  Rebin a 1-d histogram
+
+ USAGE
+  new_h = hist1d_rebin (new_grid, old_grid, old_h)
+
+ DESCRIPTION
+  The `hist1d_rebin' function rebins a histogram `old_h'
+  with bin edges defined by `old_grid' into a histogram with bin
+  edges given by `new_grid'.  The rebinning operation preserves
+  the normalization of the histogram where the grids overlap.
+
+  Unlike the `hist1d' function which returns an integer array,
+  the `hist1d_rebin' function returns an array of doubles since
+  the new grid does not have to be commensurate with the old grid.
+
+ SEE ALSO
+  hist1d, hist2d_rebin, hist2d, hist_bsearch
+
+--------------------------------------------------------------
+
+hist2d_rebin
+
+ SYNOPSIS
+  Rebin a 2-d histogram
+
+ USAGE
+  new_h = hist2d_rebin (new_xgrid, new_ygrid, old_xgrid, old_ygrid, old_h)
+
+ DESCRIPTION
+  The `hist2d_rebin' function rebins a 2-d histogram `old_h'
+  with bin edges defined by `old_xgrid' and `old_ygrid' into
+  a 2-d histogram with bin edges given by `new_xgrid' and
+  `new_ygrid'.
+
+  Unlike the `hist2d' function which returns an integer array,
+  the `hist2d_rebin' function returns an array of doubles since
+  the new grids do not have to be commensurate with the old grids.
+
+ SEE ALSO
+  hist1d_rebin, hist2d, whist2d, hist_bsearch
+
+--------------------------------------------------------------
+
+hist_bsearch
+
+ SYNOPSIS
+  Perform a binary search
+
+ USAGE
+  i = hist_bsearch (x, xbins)
+
+ DESCRIPTION
+  The `hist_bsearch' function performs a binary search for the
+  bin `i' satisfying `xbins[i]<=x<xbins[i+1]'.  If the value
+  `x' is greater than or equal to the value of the last bin, the
+  index of the last bin will be returned.  If `x' is smaller than
+  the value of the first bin (`xbins[0]'), then the function will
+  return the index of the first bin, i.e., `0'. The grid is
+  required to be sorted into ascending order.
+
+  If the value of `x' is an array, an array of indices will be
+  returned.
+
+ NOTES
+  As pointed out above, if the value of `x' is less than the value
+  of the first bin, the index of the first bin will be returned even
+  though `x' does not belong to the bin.  If this behavior is not
+  desired, then such points should be filtered out before the binary
+  search is performed.
+
+ SEE ALSO
+  hist1d, hist1d_rebin
+
+--------------------------------------------------------------
+
+whist1d
+
+ SYNOPSIS
+  Created a weighted 1-d histogram
+
+ USAGE
+  h = whist1d (pnts, wghts, grid [,&rev [,&weight_func]]
+
+ DESCRIPTION
+ The `whist1d' function creates a 1-dimensional weighted
+ histogram.  The value of the ith bin in the histogram is given by a
+ function applied to values of the `wghts' that correspond to
+ those values in the `pnts' array that satisfy
+ `grid[i]<=X<grid[i+1]' where `X' represents the value of
+ the candidate point.  The last bin of the histogram represents an
+ overflow bin with the right bin edge at plus infinity.  The grid is
+ required to be sorted into ascending order.
+
+ If the optional fourth argument `&rev' is present, upon return
+ it will be set to the array of reverse-indices of the histogram.  The
+ optional `&weight_func' argument may be used to specify the
+ function to be applied to the weights array.  By default, the
+ `sum' function will be used.
+
+ NOTES
+ The source code to this function may be found in `histogram.sl'.
+ As such, it is available only after this file has been loaded.
+ Simply importing the module will not load this function into the
+ interpreter.
+
+ SEE ALSO
+  hist1d, whist2d, hist1d_rebin
+
+--------------------------------------------------------------
+
+whist2d
+
+ SYNOPSIS
+  Created a weighted 2-d histogram
+
+ USAGE
+  h = whist2d (xpnts, ypnts, wghts, xgrid, ygrid [,&rev [,&weight_func]]
+
+ DESCRIPTION
+ The `whist2d' function creates a 2-dimensional weighted
+ histogram.  The value of the bin `[i,j]' of the histogram is
+ given by a function applied to those values in the `wghts' array
+ that correspond to the (X,Y) pairs that satisfy
+ `xgrid[i]<=X<xgrid[i+1]' and `ygrid[i]<=Y<ygrid[i+1]'.  The
+ bins at the extreme edges of the histogram represent overflow bins
+ with the upper bin edge at plus infinity. The grids are required to
+ be sorted into ascending order.
+
+ If the optional sixth argument `&rev' is present, upon return
+ it will be set to the array of reverse-indices of the histogram.  The
+ optional `&weight_func' argument may be used to specify the
+ function to be applied to the weights array.  By default, the
+ `sum' function will be used.
+
+ NOTES
+ The source code to this function may be found in `histogram.sl'.
+ As such, it is available only after this file has been loaded.
+ Simply importing the module will not load this function into the
+ interpreter.
+
+ SEE ALSO
+  hist2d, whist1d, hist1d, hist2d_rebin
+
+--------------------------------------------------------------

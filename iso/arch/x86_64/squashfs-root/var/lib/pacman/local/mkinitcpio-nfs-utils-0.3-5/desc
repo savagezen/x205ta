@@ -1,0 +1,36 @@
+%NAME%
+mkinitcpio-nfs-utils
+
+%VERSION%
+0.3-5
+
+%DESC%
+ipconfig and nfsmount tools for NFS root support in mkinitcpio
+
+%URL%
+http://www.archlinux.org/
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1408352542
+
+%INSTALLDATE%
+1464799583
+
+%PACKAGER%
+Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+
+%SIZE%
+46080
+
+%LICENSE%
+GPL2
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+glibc
+

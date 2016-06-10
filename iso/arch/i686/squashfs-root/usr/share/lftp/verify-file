@@ -1,0 +1,124 @@
+#!/usr/bin/perl -w
+#
+# This is a file verification tool for lftp.
+#
+# Copyright (c) 2005-2014 by Alexander V. Lukyanov (lav@yars.free.net)
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+use strict;
+use Digest::MD5;
+use String::CRC32;
+
+my $err=0;
+file: foreach my $file (@ARGV) {
+   my $verified=0;
+   if(-d $file) {
+      print STDERR "$file: Is a directory\n";
+      $err++;
+      next;
+   }
+   unless(-r $file) {
+      print STDERR "$file: $!\n";
+      $err++;
+      next;
+   }
+   my ($dir,$name);
+   if($file=~m'/') {
+      ($dir,$name)=($file=~m{(.*)/(.+)});
+      $dir='/' if $dir eq '';
+   } else {
+      $name=$file;
+      $dir='.';
+   }
+   my @md5files=(glob("$dir/*md5{,sum}"),glob("$dir/*MD5{,SUM}"));
+   if(@md5files) {
+      open MD5,'-|',qw{fgrep -w --},$name,'/dev/null',@md5files;
+      while(<MD5>) {
+	 chomp;
+	 my ($md5,$name1)=split;
+	 (my $md5_file,$md5)=($md5=~m{(.*):(.*)});
+	 $md5_file=~s{^\./}{};
+	 next if $name1 ne $name;
+	 my $ctx=Digest::MD5->new;
+	 open FILE,'<',$file;
+	 $ctx->addfile(*FILE);
+	 close FILE;
+	 if(lc($md5) ne $ctx->hexdigest) {
+	    print STDERR "$file: MD5 digest mismatch (md5 file: $md5_file)\n";
+	    $err++;
+	    $verified++;
+	 } else {
+	    print "$file: MD5 OK (md5 file: $md5_file)\n";
+	    $verified++;
+	 }
+      }
+      close MD5;
+   }
+
+   next file if $verified;
+
+   my @sfvfiles=(glob("$dir/*.sfv"),glob("$dir/*.SFV"));
+   if(@sfvfiles) {
+      open SFV,'-|',qw{fgrep -w --},$name,'/dev/null',@sfvfiles;
+      while(<SFV>) {
+	 chomp;
+	 my ($name1,$crc32)=split;
+	 (my $sfv_file,$name1)=($name1=~m{(.*):(.*)});
+	 $sfv_file=~s{^\./}{};
+	 next if $name1 ne $name;
+	 open FILE,'<',$file;
+	 my $crc321=crc32(*FILE);
+	 close FILE;
+	 if($crc321!=hex($crc32)) {
+	    print STDERR "$file: CRC32 mismatch (sfv file: $sfv_file)\n";
+	    $err++;
+	    $verified++;
+	 } else {
+	    print "$file: CRC32 OK (sfv file: $sfv_file)\n";
+	    $verified++;
+	 }
+      }
+      close SFV;
+   }
+
+   next file if $verified;
+
+   if($name=~/\.gz$/) {
+      system qw{gzip -tv},$file;
+      my $e=($?>>8);
+      $err++ if $e;
+      next file;
+   }
+   if($name=~/\.bz2$/) {
+      system qw{bzip2 -tv},$file;
+      my $e=($?>>8);
+      $err++ if $e;
+      next file;
+   }
+   if($name=~/\.zip$/) {
+      system qw{unzip -tqq},$file;
+      my $e=($?>>8);
+      $err++ if $e;
+      next file;
+   }
+   if($name=~/\.rpm$/) {
+      system qw{rpm --checksig},$file;
+      my $e=($?>>8);
+      $err++ if $e;
+      next file;
+   }
+}
+exit $err?1:0;

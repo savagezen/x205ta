@@ -1,0 +1,43 @@
+%NAME%
+openssh
+
+%VERSION%
+7.2p2-2
+
+%DESC%
+Free version of the SSH connectivity tools
+
+%URL%
+http://www.openssh.org/portable.html
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1463264607
+
+%INSTALLDATE%
+1464799535
+
+%PACKAGER%
+Gaetan Bisson <bisson@archlinux.org>
+
+%SIZE%
+5342208
+
+%LICENSE%
+custom:BSD
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+krb5
+openssl
+libedit
+ldns
+
+%OPTDEPENDS%
+xorg-xauth: X11 forwarding
+x11-ssh-askpass: input passphrase in X
+

@@ -1,0 +1,68 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.10. pam_ftp - module for anonymous access</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_filter.html" title="6.9. pam_filter - filter module"><link rel="next" href="sag-pam_group.html" title="6.11. pam_group - module to modify group access"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.10. pam_ftp - module for anonymous access</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_filter.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_group.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_ftp"></a>6.10. pam_ftp - module for anonymous access</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_ftp.so</code>  [
+	debug
+      ] [
+        ignore
+      ] [
+        users=<em class="replaceable"><code>XXX,YYY,</code></em>
+      ...]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_ftp-description"></a>6.10.1. DESCRIPTION</h3></div></div></div><p>
+      pam_ftp is a PAM module which provides a pluggable
+      anonymous ftp mode of access.
+    </p><p>
+      This module intercepts the user's name and password. If the name is
+      <span class="emphasis"><em>ftp</em></span> or <span class="emphasis"><em>anonymous</em></span>, the
+      user's password is broken up at the <span class="emphasis"><em>@</em></span> delimiter
+      into a <span class="emphasis"><em>PAM_RUSER</em></span> and a
+      <span class="emphasis"><em>PAM_RHOST</em></span> part; these pam-items being set
+      accordingly. The username (<span class="emphasis"><em>PAM_USER</em></span>) is set
+      to <span class="emphasis"><em>ftp</em></span>.  In this case the module succeeds.
+      Alternatively, the module sets the <span class="emphasis"><em>PAM_AUTHTOK</em></span>
+      item with the entered password and fails.
+    </p><p>
+      This module is not safe and easily spoofable.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_ftp-options"></a>6.10.2. OPTIONS</h3></div></div></div><p>
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+            <code class="option">debug</code>
+          </span></dt><dd><p>
+	      Print debug information.
+            </p></dd><dt><span class="term">
+            <code class="option">ignore</code>
+          </span></dt><dd><p>
+              Pay no attention to the email address of the user
+              (if supplied).
+            </p></dd><dt><span class="term">
+            <code class="option">ftp=<em class="replaceable"><code>XXX,YYY,...</code></em></code>
+          </span></dt><dd><p>
+              Instead of <span class="emphasis"><em>ftp</em></span> or
+              <span class="emphasis"><em>anonymous</em></span>, provide anonymous login
+              to the comma separated list of users:
+              <code class="option"><em class="replaceable"><code>XXX,YYY,...</code></em></code>.
+              Should the applicant enter
+              one of these usernames the returned username is set to
+              the first in the list: <span class="emphasis"><em>XXX</em></span>.
+            </p></dd></dl></div><p>
+
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_ftp-types"></a>6.10.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      Only the <code class="option">auth</code> module type is provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_ftp-return_values"></a>6.10.4. RETURN VALUES</h3></div></div></div><p>
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+              The authentication was successful.
+            </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+	      User not known.
+            </p></dd></dl></div><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_ftp-examples"></a>6.10.5. EXAMPLES</h3></div></div></div><p>
+      Add the following line to <code class="filename">/etc/pam.d/ftpd</code> to
+      handle ftp style anonymous login:
+      </p><pre class="programlisting">
+#
+# ftpd; add ftp-specifics. These lines enable anonymous ftp over
+#       standard UN*X access (the listfile entry blocks access to
+#       users listed in /etc/ftpusers)
+#
+auth    sufficient  pam_ftp.so
+auth    required    pam_unix.so use_first_pass
+auth    required    pam_listfile.so \
+           onerr=succeed item=user sense=deny file=/etc/ftpusers
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_ftp-author"></a>6.10.6. AUTHOR</h3></div></div></div><p>
+        pam_ftp was written by Andrew G. Morgan &lt;morgan@kernel.org&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_filter.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_group.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.9. pam_filter - filter module </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.11. pam_group - module to modify group access</td></tr></table></div></body></html>

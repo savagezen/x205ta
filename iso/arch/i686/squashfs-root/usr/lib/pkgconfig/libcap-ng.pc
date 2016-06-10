@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libcap-ng
+Description: An alternate posix capabilities library.
+Version: 0.7.7
+Libs: -L${libdir} -lcap-ng
+Cflags: -I${includedir}
+

@@ -1,0 +1,80 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>4.3. Example configuration file entries</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-configuration.html" title="Chapter 4. The Linux-PAM configuration file"><link rel="prev" href="sag-configuration-directory.html" title="4.2. Directory based configuration"><link rel="next" href="sag-security-issues.html" title="Chapter 5. Security issues"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">4.3. Example configuration file entries</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-configuration-directory.html">Prev</a> </td><th width="60%" align="center">Chapter 4. The Linux-PAM configuration file</th><td width="20%" align="right"> <a accesskey="n" href="sag-security-issues.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-configuration-example"></a>4.3. Example configuration file entries</h2></div></div></div><p>
+         In this section, we give some examples of entries that can
+         be present in the <span class="emphasis"><em>Linux-PAM</em></span>
+         configuration file. As a first attempt at configuring your
+         system you could do worse than to implement these.
+       </p><p>
+         If a system is to be considered secure, it had better have a
+         reasonably secure '<span class="emphasis"><em>other</em></span> entry.
+         The following is a paranoid setting (which is not a bad place
+         to start!):
+       </p><pre class="programlisting">
+#
+# default; deny access
+#
+other   auth     required       pam_deny.so
+other   account  required       pam_deny.so
+other   password required       pam_deny.so
+other   session  required       pam_deny.so
+       </pre><p>
+         Whilst fundamentally a secure default, this is not very
+         sympathetic to a misconfigured system. For example, such
+         a system is vulnerable to locking everyone out should the
+         rest of the file become badly written.
+       </p><p>
+         The module <span class="command"><strong>pam_deny</strong></span> (documented in a
+         <a class="link" href="sag-pam_deny.html" title="6.4. pam_deny - locking-out PAM module">later section</a>) is not very
+         sophisticated. For example, it logs no information when it
+         is invoked so unless the users of a system contact the
+         administrator when failing to execute a service application,
+         the administrator may go for a long while in ignorance of the
+         fact that his system is misconfigured.
+       </p><p>
+         The addition of the following line before those in the above
+         example would provide a suitable warning to the administrator.
+       </p><pre class="programlisting">
+#
+# default; wake up! This application is not configured
+#
+other   auth     required       pam_warn.so
+other   password required       pam_warn.so
+       </pre><p>
+         Having two '<span class="command"><strong>other auth</strong></span>' lines is an
+         example of stacking.
+       </p><p>
+         On a system that uses the <code class="filename">/etc/pam.d/</code>
+         configuration, the corresponding default setup would be
+         achieved with the following file:
+       </p><pre class="programlisting">
+#
+# default configuration: /etc/pam.d/other
+#
+auth     required       pam_warn.so
+auth     required       pam_deny.so
+account  required       pam_deny.so
+password required       pam_warn.so
+password required       pam_deny.so
+session  required       pam_deny.so
+       </pre><p>
+         This is the only explicit example we give for an
+         <code class="filename">/etc/pam.d/</code> file. In general, it
+         should be clear how to transpose the remaining examples
+         to this configuration scheme.
+       </p><p>
+         On a less sensitive computer, one on which the system
+         administrator wishes to remain ignorant of much of the
+         power of <span class="emphasis"><em>Linux-PAM</em></span>, the
+         following selection of lines (in
+         <code class="filename">/etc/pam.d/other</code>) is likely to
+         mimic the historically familiar Linux setup.
+       </p><pre class="programlisting">
+#
+# default; standard UN*X access
+#
+auth     required       pam_unix.so
+account  required       pam_unix.so
+password required       pam_unix.so
+session  required       pam_unix.so
+       </pre><p>
+         In general this will provide a starting place for most applications.
+       </p></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-configuration-directory.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-configuration.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-security-issues.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">4.2. Directory based configuration </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 5. Security issues</td></tr></table></div></body></html>

@@ -1,0 +1,33 @@
+%NAME%
+wireless_tools
+
+%VERSION%
+30.pre9-1
+
+%DESC%
+Tools allowing to manipulate the Wireless Extensions
+
+%URL%
+http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1391101546
+
+%INSTALLDATE%
+1464799590
+
+%PACKAGER%
+Gaetan Bisson <bisson@archlinux.org>
+
+%SIZE%
+348160
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+

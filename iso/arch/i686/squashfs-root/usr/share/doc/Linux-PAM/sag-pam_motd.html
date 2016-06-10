@@ -1,0 +1,24 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.21. pam_motd - display the motd file</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_mkhomedir.html" title="6.20. pam_mkhomedir - create users home directory"><link rel="next" href="sag-pam_namespace.html" title="6.22. pam_namespace - setup a private namespace"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.21. pam_motd - display the motd file</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_mkhomedir.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_namespace.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_motd"></a>6.21. pam_motd - display the motd file</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_motd.so</code>  [
+        motd=<em class="replaceable"><code>/path/filename</code></em>
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_motd-description"></a>6.21.1. DESCRIPTION</h3></div></div></div><p>
+      pam_motd is a PAM module that can be used to display
+      arbitrary motd (message of the day) files after a successful
+      login. By default the <code class="filename">/etc/motd</code> file is
+      shown. The message size is limited to 64KB.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_motd-options"></a>6.21.2. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">motd=<em class="replaceable"><code>/path/filename</code></em></code>
+        </span></dt><dd><p>
+	    The <code class="filename">/path/filename</code> file is displayed
+            as message of the day.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_motd-types"></a>6.21.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      Only the <code class="option">session</code> module type is provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_motd-return_values"></a>6.21.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_IGNORE</span></dt><dd><p>
+            This is the only return value of this module.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_motd-examples"></a>6.21.5. EXAMPLES</h3></div></div></div><p>
+      The suggested usage for <code class="filename">/etc/pam.d/login</code> is:
+      </p><pre class="programlisting">
+session  optional  pam_motd.so  motd=/etc/motd
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_motd-author"></a>6.21.6. AUTHOR</h3></div></div></div><p>
+        pam_motd was written by Ben Collins &lt;bcollins@debian.org&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_mkhomedir.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_namespace.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.20. pam_mkhomedir - create users home directory </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.22. pam_namespace - setup a private namespace</td></tr></table></div></body></html>

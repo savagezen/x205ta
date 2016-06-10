@@ -1,0 +1,33 @@
+# Contributed by: andy123 <ajs@online.de>
+
+. "$SUBR_DIR/ip"
+
+# Make sure BindsToInterfaces is set
+BindsToInterfaces=("${BindsToInterfaces[@]}")
+
+bond_up() {
+    if is_interface "$Interface"; then
+        report_error "Interface '$Interface' already exists"
+        return 1
+    fi
+
+    interface_add bond "$Interface" "" ${Mode:+mode "$Mode"}
+    bring_interface_up "$Interface"
+    for slave in "${BindsToInterfaces[@]}"; do
+        ip link set dev "$slave" master "$Interface"
+    done
+
+    ip_set
+}
+
+bond_down() {
+    for slave in "${BindsToInterfaces[@]}"; do
+        ip link set dev "$slave" nomaster
+    done
+
+    ip_unset
+    interface_delete "$Interface"
+}
+
+
+# vim: ft=sh ts=4 et sw=4:

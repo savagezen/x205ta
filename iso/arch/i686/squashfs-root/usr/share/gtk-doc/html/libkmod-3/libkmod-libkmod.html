@@ -1,0 +1,563 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>libkmod: libkmod Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="libkmod Reference Manual">
+<link rel="up" href="ch01.html" title="libkmod">
+<link rel="prev" href="ch01.html" title="libkmod">
+<link rel="next" href="libkmod-libkmod-list.html" title="libkmod-list">
+<meta name="generator" content="GTK-Doc V1.24 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#libkmod-libkmod.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ch01.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="libkmod-libkmod-list.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="libkmod-libkmod"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="libkmod-libkmod.top_of_page"></a>libkmod</span></h2>
+<p>libkmod — libkmod context</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="libkmod-libkmod.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">struct <a class="link" href="libkmod-libkmod.html#kmod-ctx" title="struct kmod_ctx"><span class="returnvalue">kmod_ctx</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod.html#kmod-new" title="kmod_new ()">kmod_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">struct <a class="link" href="libkmod-libkmod.html#kmod-ctx" title="struct kmod_ctx"><span class="returnvalue">kmod_ctx</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod.html#kmod-ref" title="kmod_ref ()">kmod_ref</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">struct <a class="link" href="libkmod-libkmod.html#kmod-ctx" title="struct kmod_ctx"><span class="returnvalue">kmod_ctx</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod.html#kmod-unref" title="kmod_unref ()">kmod_unref</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">int</span>
+</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod.html#kmod-load-resources" title="kmod_load_resources ()">kmod_load_resources</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod.html#kmod-unload-resources" title="kmod_unload_resources ()">kmod_unload_resources</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">int</span>
+</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod.html#kmod-validate-resources" title="kmod_validate_resources ()">kmod_validate_resources</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">int</span>
+</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod.html#kmod-dump-index" title="kmod_dump_index ()">kmod_dump_index</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod.html#kmod-set-log-priority" title="kmod_set_log_priority ()">kmod_set_log_priority</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">int</span>
+</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod.html#kmod-get-log-priority" title="kmod_get_log_priority ()">kmod_get_log_priority</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod.html#kmod-set-log-fn" title="kmod_set_log_fn ()">kmod_set_log_fn</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span> *
+</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod.html#kmod-get-userdata" title="kmod_get_userdata ()">kmod_get_userdata</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod.html#kmod-set-userdata" title="kmod_set_userdata ()">kmod_set_userdata</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="libkmod-libkmod.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody><tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="libkmod-libkmod.html#kmod-ctx" title="struct kmod_ctx">kmod_ctx</a></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="libkmod-libkmod.description"></a><h2>Description</h2>
+<p>The context contains the default values for the library user,
+and is passed to all library operations.</p>
+</div>
+<div class="refsect1">
+<a name="libkmod-libkmod.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="kmod-new"></a><h3>kmod_new ()</h3>
+<pre class="programlisting">struct <a class="link" href="libkmod-libkmod.html#kmod-ctx" title="struct kmod_ctx"><span class="returnvalue">kmod_ctx</span></a> *
+kmod_new (<em class="parameter"><code>const <span class="type">char</span> *dirname</code></em>,
+          <em class="parameter"><code>const <span class="type">char</span> * const *config_paths</code></em>);</pre>
+<p>Create kmod library context. This reads the kmod configuration
+and fills in the default values.</p>
+<p>The initial refcount is 1, and needs to be decremented to
+release the resources of the kmod library context.</p>
+<div class="refsect3">
+<a name="id-1.2.2.6.2.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>dirname</p></td>
+<td class="parameter_description"><p>what to consider as linux module's directory, if NULL
+defaults to /lib/modules/<code class="literal">uname -r</code>. If it's relative,
+it's treated as relative to the current working directory.
+Otherwise, give an absolute dirname.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>config_paths</p></td>
+<td class="parameter_description"><p>ordered array of paths (directories or files) where
+to load from user-defined configuration parameters such as
+alias, blacklists, commands (install, remove). If
+NULL defaults to /run/modprobe.d, /etc/modprobe.d and
+/lib/modprobe.d. Give an empty vector if configuration should
+not be read. This array must be null terminated.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.6.2.7"></a><h4>Returns</h4>
+<p> a new kmod library context</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="kmod-ref"></a><h3>kmod_ref ()</h3>
+<pre class="programlisting">struct <a class="link" href="libkmod-libkmod.html#kmod-ctx" title="struct kmod_ctx"><span class="returnvalue">kmod_ctx</span></a> *
+kmod_ref (<em class="parameter"><code><span class="type">struct kmod_ctx</span> *ctx</code></em>);</pre>
+<p>Take a reference of the kmod library context.</p>
+<div class="refsect3">
+<a name="id-1.2.2.6.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>ctx</p></td>
+<td class="parameter_description"><p>kmod library context</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.6.3.6"></a><h4>Returns</h4>
+<p> the passed kmod library context</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="kmod-unref"></a><h3>kmod_unref ()</h3>
+<pre class="programlisting">struct <a class="link" href="libkmod-libkmod.html#kmod-ctx" title="struct kmod_ctx"><span class="returnvalue">kmod_ctx</span></a> *
+kmod_unref (<em class="parameter"><code><span class="type">struct kmod_ctx</span> *ctx</code></em>);</pre>
+<p>Drop a reference of the kmod library context. If the refcount
+reaches zero, the resources of the context will be released.</p>
+<div class="refsect3">
+<a name="id-1.2.2.6.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>ctx</p></td>
+<td class="parameter_description"><p>kmod library context</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.6.4.6"></a><h4>Returns</h4>
+<p> the passed kmod library context or NULL if it's freed</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="kmod-load-resources"></a><h3>kmod_load_resources ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>
+kmod_load_resources (<em class="parameter"><code><span class="type">struct kmod_ctx</span> *ctx</code></em>);</pre>
+<p>Load indexes and keep them open in <em class="parameter"><code>ctx</code></em>
+. This way it's faster to lookup
+information within the indexes. If this function is not called before a
+search, the necessary index is always opened and closed.</p>
+<p>If user will do more than one or two lookups, insertions, deletions, most
+likely it's good to call this function first. Particularly in a daemon like
+udev that on bootup issues hundreds of calls to lookup the index, calling
+this function will speedup the searches.</p>
+<div class="refsect3">
+<a name="id-1.2.2.6.5.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>ctx</p></td>
+<td class="parameter_description"><p>kmod library context</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.6.5.7"></a><h4>Returns</h4>
+<p> 0 on success or &lt; 0 otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="kmod-unload-resources"></a><h3>kmod_unload_resources ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+kmod_unload_resources (<em class="parameter"><code><span class="type">struct kmod_ctx</span> *ctx</code></em>);</pre>
+<p>Unload all the indexes. This will free the resources to maintain the index
+open and all subsequent searches will need to open and close the index.</p>
+<p>User is free to call <a class="link" href="libkmod-libkmod.html#kmod-load-resources" title="kmod_load_resources ()"><code class="function">kmod_load_resources()</code></a> and <a class="link" href="libkmod-libkmod.html#kmod-unload-resources" title="kmod_unload_resources ()"><code class="function">kmod_unload_resources()</code></a> as
+many times as wanted during the lifecycle of <em class="parameter"><code>ctx</code></em>
+. For example, if a daemon
+knows that when starting up it will lookup a lot of modules, it could call
+<a class="link" href="libkmod-libkmod.html#kmod-load-resources" title="kmod_load_resources ()"><code class="function">kmod_load_resources()</code></a> and after the first burst of searches is gone, it
+could free the resources by calling <a class="link" href="libkmod-libkmod.html#kmod-unload-resources" title="kmod_unload_resources ()"><code class="function">kmod_unload_resources()</code></a>.</p>
+<div class="refsect3">
+<a name="id-1.2.2.6.6.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>ctx</p></td>
+<td class="parameter_description"><p>kmod library context</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.6.6.7"></a><h4>Returns</h4>
+<p> 0 on success or &lt; 0 otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="kmod-validate-resources"></a><h3>kmod_validate_resources ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>
+kmod_validate_resources (<em class="parameter"><code><span class="type">struct kmod_ctx</span> *ctx</code></em>);</pre>
+<p>Check if indexes and configuration files changed on disk and the current
+context is not valid anymore.</p>
+<div class="refsect3">
+<a name="id-1.2.2.6.7.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>ctx</p></td>
+<td class="parameter_description"><p>kmod library context</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.6.7.6"></a><h4>Returns</h4>
+<p> KMOD_RESOURCES_OK if resources are still valid,
+KMOD_RESOURCES_MUST_RELOAD if it's sufficient to call
+<a class="link" href="libkmod-libkmod.html#kmod-unload-resources" title="kmod_unload_resources ()"><code class="function">kmod_unload_resources()</code></a> and <a class="link" href="libkmod-libkmod.html#kmod-load-resources" title="kmod_load_resources ()"><code class="function">kmod_load_resources()</code></a> or
+KMOD_RESOURCES_MUST_RECREATE if <em class="parameter"><code>ctx</code></em>
+must be re-created.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="kmod-dump-index"></a><h3>kmod_dump_index ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>
+kmod_dump_index (<em class="parameter"><code><span class="type">struct kmod_ctx</span> *ctx</code></em>,
+                 <em class="parameter"><code><span class="type">enum kmod_index</span> type</code></em>,
+                 <em class="parameter"><code><span class="type">int</span> fd</code></em>);</pre>
+<p>Dump index to file descriptor. Note that this function doesn't use stdio.h
+so call <code class="function">fflush()</code> before calling this function to be sure data is written in
+order.</p>
+<div class="refsect3">
+<a name="id-1.2.2.6.8.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>ctx</p></td>
+<td class="parameter_description"><p>kmod library context</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>type</p></td>
+<td class="parameter_description"><p>index to dump, valid indexes are
+KMOD_INDEX_MODULES_DEP: index of module dependencies;
+KMOD_INDEX_MODULES_ALIAS: index of module aliases;
+KMOD_INDEX_MODULES_SYMBOL: index of symbol aliases;
+KMOD_INDEX_MODULES_BUILTIN: index of builtin module.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>fd</p></td>
+<td class="parameter_description"><p>file descriptor to dump index to</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.6.8.6"></a><h4>Returns</h4>
+<p> 0 on success or &lt; 0 otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="kmod-set-log-priority"></a><h3>kmod_set_log_priority ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+kmod_set_log_priority (<em class="parameter"><code><span class="type">struct kmod_ctx</span> *ctx</code></em>,
+                       <em class="parameter"><code><span class="type">int</span> priority</code></em>);</pre>
+<p>Set the current logging priority. The value controls which messages
+are logged.</p>
+<div class="refsect3">
+<a name="id-1.2.2.6.9.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>ctx</p></td>
+<td class="parameter_description"><p>kmod library context</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>priority</p></td>
+<td class="parameter_description"><p>the new logging priority</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="kmod-get-log-priority"></a><h3>kmod_get_log_priority ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>
+kmod_get_log_priority (<em class="parameter"><code>const <span class="type">struct kmod_ctx</span> *ctx</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.2.2.6.10.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>ctx</p></td>
+<td class="parameter_description"><p>kmod library context</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.6.10.5"></a><h4>Returns</h4>
+<p> the current logging priority</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="kmod-set-log-fn"></a><h3>kmod_set_log_fn ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+kmod_set_log_fn (<em class="parameter"><code><span class="type">struct kmod_ctx</span> *ctx</code></em>,
+                 <em class="parameter"><code><span class="type">void</span> (*log_fn) (void *log_data, int priority, const char *file, int line, const char *fn, const char *format, va_list args)</code></em>,
+                 <em class="parameter"><code>const <span class="type">void</span> *data</code></em>);</pre>
+<p>The built-in logging writes to stderr. It can be
+overridden by a custom function, to plug log messages
+into the user's logging functionality.</p>
+<div class="refsect3">
+<a name="id-1.2.2.6.11.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>ctx</p></td>
+<td class="parameter_description"><p>kmod library context</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>log_fn</p></td>
+<td class="parameter_description"><p>function to be called for logging messages</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>data</p></td>
+<td class="parameter_description"><p>data to pass to log function</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="kmod-get-userdata"></a><h3>kmod_get_userdata ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span> *
+kmod_get_userdata (<em class="parameter"><code>const <span class="type">struct kmod_ctx</span> *ctx</code></em>);</pre>
+<p>Retrieve stored data pointer from library context. This might be useful
+to access from callbacks.</p>
+<div class="refsect3">
+<a name="id-1.2.2.6.12.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>ctx</p></td>
+<td class="parameter_description"><p>kmod library context</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.2.6.12.6"></a><h4>Returns</h4>
+<p> stored userdata</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="kmod-set-userdata"></a><h3>kmod_set_userdata ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+kmod_set_userdata (<em class="parameter"><code><span class="type">struct kmod_ctx</span> *ctx</code></em>,
+                   <em class="parameter"><code>const <span class="type">void</span> *userdata</code></em>);</pre>
+<p>Store custom <em class="parameter"><code>userdata</code></em>
+ in the library context.</p>
+<div class="refsect3">
+<a name="id-1.2.2.6.13.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>ctx</p></td>
+<td class="parameter_description"><p>kmod library context</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>userdata</p></td>
+<td class="parameter_description"><p>data pointer</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="libkmod-libkmod.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="kmod-ctx"></a><h3>struct kmod_ctx</h3>
+<pre class="programlisting">struct kmod_ctx;</pre>
+<p>Opaque object representing the library context.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.24</div>
+</body>
+</html>

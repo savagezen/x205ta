@@ -1,0 +1,89 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>5.1. Functions supplied</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_ADG.html" title="The Linux-PAM Application Developers' Guide"><link rel="up" href="adg-libpam_misc.html" title="Chapter 5. A library of miscellaneous helper functions"><link rel="prev" href="adg-libpam_misc.html" title="Chapter 5. A library of miscellaneous helper functions"><link rel="next" href="adg-porting.html" title="Chapter 6. Porting legacy applications"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">5.1. Functions supplied</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="adg-libpam_misc.html">Prev</a> </td><th width="60%" align="center">Chapter 5. A library of miscellaneous helper functions</th><td width="20%" align="right"> <a accesskey="n" href="adg-porting.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="adg-libpam-functions"></a>5.1. Functions supplied</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-misc_conv"></a>5.1.1. Text based conversation function</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_misc.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">misc_conv</b>(</code></td><td><var class="pdparam">num_msg</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">msgm</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">response</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">appdata_ptr</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>int <var class="pdparam">num_msg</var></code>;<br><code>const struct pam_message **<var class="pdparam">msgm</var></code>;<br><code>struct pam_response **<var class="pdparam">response</var></code>;<br><code>void *<var class="pdparam">appdata_ptr</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-misc_conv-description"></a>5.1.1.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">misc_conv</code> function is part of
+      <span class="command"><strong>libpam_misc</strong></span> and not of the standard
+      <span class="command"><strong>libpam</strong></span> library. This function will prompt
+      the user with the appropriate comments and obtain the appropriate
+      inputs as directed by authentication modules.
+    </p><p>
+      In addition to simply slotting into the appropriate <span class="citerefentry"><span class="refentrytitle">pam_conv</span>(3)</span>, this function provides some time-out facilities.
+      The function exports five variables that can be used by an
+      application programmer to limit the amount of time this conversation
+      function will spend waiting for the user to type something. The
+      five variabls are as follows:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="type">time_t</span> <code class="varname">pam_misc_conv_warn_time</code>;</span></dt><dd><p>
+            This variable contains the <span class="emphasis"><em>time</em></span> (as
+            returned by <span class="citerefentry"><span class="refentrytitle">time</span>(2)</span>) that the user should be first warned that
+            the clock is ticking. By default it has the value
+            <span class="returnvalue">0</span>, which indicates that no such
+            warning will be given. The application may set its value to
+            sometime in the future, but this should be done prior to
+            passing control to the <span class="emphasis"><em>Linux-PAM</em></span> library.
+          </p></dd><dt><span class="term"><span class="type">const char *</span><code class="varname">pam_misc_conv_warn_line</code>;</span></dt><dd><p>
+            Used in conjuction with
+            <code class="varname">pam_misc_conv_warn_time</code>, this variable is
+            a pointer to the string that will be displayed when it becomes
+            time to warn the user that the timeout is approaching. Its
+            default value is a translated version of
+            <span class="quote">“<span class="quote">...Time is running out...</span>”</span>, but this can be
+            changed by the application prior to passing control to
+            <span class="emphasis"><em>Linux-PAM</em></span>.
+          </p></dd><dt><span class="term"><span class="type">time_t</span> <code class="varname">pam_misc_conv_die_time</code>;</span></dt><dd><p>
+            This variable contains the <span class="emphasis"><em>time</em></span> (as
+            returned by <span class="citerefentry"><span class="refentrytitle">time</span>(2)</span>) that the will time out. By default it has
+            the value <span class="returnvalue">0</span>, which indicates that
+            the conversation function will not timeout. The application
+            may set its value to sometime in the future, but this should
+            be done prior to passing control to the
+            <span class="emphasis"><em>Linux-PAM</em></span> library.
+          </p></dd><dt><span class="term"><span class="type">const char *</span><code class="varname">pam_misc_conv_die_line</code>;</span></dt><dd><p>
+            Used in conjuction with
+            <code class="varname">pam_misc_conv_die_time</code>, this variable is
+            a pointer to the string that will be displayed when the
+            conversation times out. Its default value is a translated
+            version of
+            <span class="quote">“<span class="quote">...Sorry, your time is up!</span>”</span>, but this can be
+            changed by the application prior to passing control to
+            <span class="emphasis"><em>Linux-PAM</em></span>.
+          </p></dd><dt><span class="term"><span class="type">int</span> <code class="varname">pam_misc_conv_died</code>;</span></dt><dd><p>
+            Following a return from the <span class="emphasis"><em>Linux-PAM</em></span>
+            libraray, the value of this variable indicates whether the
+            conversation has timed out. A value of
+            <span class="returnvalue">1</span> indicates the time-out occurred.
+          </p></dd></dl></div><p>
+      The following two function pointers are available for supporting
+      binary prompts in the conversation function. They are optimized
+      for the current incarnation of the <span class="command"><strong>libpamc</strong></span>
+      library and are subject to change.
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <span class="type">int</span> <code class="varname">(*pam_binary_handler_fn)</code>(<span class="type">void *</span><code class="varname">appdata</code>, <span class="type">pamc_bp_t *</span><code class="varname">prompt_p</code>);
+        </span></dt><dd><p>
+            This function pointer is initialized to
+            <span class="returnvalue">NULL</span> but can be filled with a
+            function that provides machine-machine (hidden) message
+            exchange. It is intended for use with hidden authentication
+            protocols such as RSA or Diffie-Hellman key exchanges.
+            (This is still under development.)
+          </p></dd><dt><span class="term">
+          <span class="type">int</span> <code class="varname">(*pam_binary_handler_free)</code>(<span class="type">void *</span><code class="varname">appdata</code>, <span class="type">pamc_bp_t *</span><code class="varname">delete_me</code>);
+        </span></dt><dd><p>
+            This function pointer is initialized to
+            <code class="function">PAM_BP_RENEW(delete_me, 0, 0)</code>, but can be
+            redefined as desired by the application.
+          </p></dd></dl></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_misc_paste_env"></a>5.1.2. Transcribing an environment to that of PAM</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_misc.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">pam_misc_paste_env</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">user</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>const char * const *<var class="pdparam">user</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_misc_paste_env-description"></a>5.1.2.1. DESCRIPTION</h4></div></div></div><p>
+      This function takes the supplied list of environment pointers and
+      <span class="emphasis"><em>uploads</em></span> its contents to the PAM environment.
+      Success is indicated by <span class="errorname">PAM_SUCCESS</span>.
+    </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_misc_drop_env"></a>5.1.3. Liberating a locally saved environment</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_misc.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">pam_misc_drop_env</b>(</code></td><td><var class="pdparam">env</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>char **<var class="pdparam">env</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_misc_drop_env-description"></a>5.1.3.1. DESCRIPTION</h4></div></div></div><p>
+      This function is defined to complement the <span class="citerefentry"><span class="refentrytitle">pam_getenvlist</span>(3)</span> function. It liberates the memory associated
+      with <em class="parameter"><code>env</code></em>, <span class="emphasis"><em>overwriting</em></span>
+      with <span class="emphasis"><em>0</em></span> all memory before
+      <code class="function">free()</code>ing it.
+    </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="adg-pam_misc_setenv"></a>5.1.4. BSD like PAM environment variable setting</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#include &lt;security/pam_misc.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">int <b class="fsfunc">pam_misc_setenv</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">name</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">value</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">readonly</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>const char *<var class="pdparam">name</var></code>;<br><code>const char *<var class="pdparam">value</var></code>;<br><code>int<var class="pdparam">readonly</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="adg-pam_misc_setenv-description"></a>5.1.4.1. DESCRIPTION</h4></div></div></div><p>
+      This function performs a task equivalent to <span class="citerefentry"><span class="refentrytitle">pam_putenv</span>(3)</span>, its syntax is, however, more like the BSD style
+      function; <code class="function">setenv()</code>. The <em class="parameter"><code>name</code></em>
+      and <em class="parameter"><code>value</code></em> are concatenated with an '=' to
+      form a name=value and passed to <code class="function">pam_putenv()</code>.
+      If, however, the PAM variable is already set, the replacement will
+      only be applied if the last argument, <em class="parameter"><code>readonly</code></em>,
+      is zero.
+    </p></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="adg-libpam_misc.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="adg-libpam_misc.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="adg-porting.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 5. A library of miscellaneous helper functions </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_ADG.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 6. Porting legacy applications</td></tr></table></div></body></html>

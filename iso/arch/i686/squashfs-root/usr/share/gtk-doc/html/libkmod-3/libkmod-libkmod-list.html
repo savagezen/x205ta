@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>libkmod-list: libkmod Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="libkmod Reference Manual">
+<link rel="up" href="ch01.html" title="libkmod">
+<link rel="prev" href="libkmod-libkmod.html" title="libkmod">
+<link rel="next" href="libkmod-libkmod-config.html" title="libkmod-config">
+<meta name="generator" content="GTK-Doc V1.24 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#libkmod-libkmod-list.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="libkmod-libkmod.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="libkmod-libkmod-config.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="libkmod-libkmod-list"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="libkmod-libkmod-list.top_of_page"></a>libkmod-list</span></h2>
+<p>libkmod-list — general purpose list</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="libkmod-libkmod-list.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod-list.html#kmod-list-foreach" title="kmod_list_foreach()">kmod_list_foreach</a><span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod-list.html#kmod-list-foreach-reverse" title="kmod_list_foreach_reverse()">kmod_list_foreach_reverse</a><span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">struct <a class="link" href="libkmod-libkmod-list.html#kmod-list" title="struct kmod_list"><span class="returnvalue">kmod_list</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod-list.html#kmod-list-last" title="kmod_list_last ()">kmod_list_last</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">struct <a class="link" href="libkmod-libkmod-list.html#kmod-list" title="struct kmod_list"><span class="returnvalue">kmod_list</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod-list.html#kmod-list-next" title="kmod_list_next ()">kmod_list_next</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">struct <a class="link" href="libkmod-libkmod-list.html#kmod-list" title="struct kmod_list"><span class="returnvalue">kmod_list</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="libkmod-libkmod-list.html#kmod-list-prev" title="kmod_list_prev ()">kmod_list_prev</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="libkmod-libkmod-list.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody><tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="libkmod-libkmod-list.html#kmod-list" title="struct kmod_list">kmod_list</a></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="libkmod-libkmod-list.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="libkmod-libkmod-list.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="kmod-list-foreach"></a><h3>kmod_list_foreach()</h3>
+<pre class="programlisting">#define             kmod_list_foreach(list_entry, first_entry)</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="kmod-list-foreach-reverse"></a><h3>kmod_list_foreach_reverse()</h3>
+<pre class="programlisting">#define             kmod_list_foreach_reverse(list_entry, first_entry)</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="kmod-list-last"></a><h3>kmod_list_last ()</h3>
+<pre class="programlisting">struct <a class="link" href="libkmod-libkmod-list.html#kmod-list" title="struct kmod_list"><span class="returnvalue">kmod_list</span></a> *
+kmod_list_last (<em class="parameter"><code>const <span class="type">struct kmod_list</span> *list</code></em>);</pre>
+<p>Get the last element of the <em class="parameter"><code>list</code></em>
+. As <em class="parameter"><code>list</code></em>
+ is a circular list,
+this is a cheap operation O(1) with the last element being the
+previous element.</p>
+<p>If the list has a single element it will return the list itself (as
+expected, and this is what differentiates from <a class="link" href="libkmod-libkmod-list.html#kmod-list-prev" title="kmod_list_prev ()"><code class="function">kmod_list_prev()</code></a>).</p>
+<div class="refsect3">
+<a name="id-1.2.3.6.4.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>list</p></td>
+<td class="parameter_description"><p>the head of the list</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.3.6.4.7"></a><h4>Returns</h4>
+<p> last node at <em class="parameter"><code>list</code></em>
+or NULL if the list is empty.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="kmod-list-next"></a><h3>kmod_list_next ()</h3>
+<pre class="programlisting">struct <a class="link" href="libkmod-libkmod-list.html#kmod-list" title="struct kmod_list"><span class="returnvalue">kmod_list</span></a> *
+kmod_list_next (<em class="parameter"><code>const <span class="type">struct kmod_list</span> *list</code></em>,
+                <em class="parameter"><code>const <span class="type">struct kmod_list</span> *curr</code></em>);</pre>
+<p>Get the next node in <em class="parameter"><code>list</code></em>
+ relative to <em class="parameter"><code>curr</code></em>
+ as if <em class="parameter"><code>list</code></em>
+ was not a circular
+list. I.e. calling this function in the last node of the list returns
+NULL.. It can be used to iterate a list by checking for NULL return to know
+when all elements were iterated.</p>
+<div class="refsect3">
+<a name="id-1.2.3.6.5.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>list</p></td>
+<td class="parameter_description"><p>the head of the list</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>curr</p></td>
+<td class="parameter_description"><p>the current node in the list</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.3.6.5.6"></a><h4>Returns</h4>
+<p> node next to <em class="parameter"><code>curr</code></em>
+or NULL if either this node is the last of or
+list is empty.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="kmod-list-prev"></a><h3>kmod_list_prev ()</h3>
+<pre class="programlisting">struct <a class="link" href="libkmod-libkmod-list.html#kmod-list" title="struct kmod_list"><span class="returnvalue">kmod_list</span></a> *
+kmod_list_prev (<em class="parameter"><code>const <span class="type">struct kmod_list</span> *list</code></em>,
+                <em class="parameter"><code>const <span class="type">struct kmod_list</span> *curr</code></em>);</pre>
+<p>Get the previous node in <em class="parameter"><code>list</code></em>
+ relative to <em class="parameter"><code>curr</code></em>
+ as if <em class="parameter"><code>list</code></em>
+ was not a
+circular list. I.e.: the previous of the head is NULL. It can be used to
+iterate a list by checking for NULL return to know when all elements were
+iterated.</p>
+<div class="refsect3">
+<a name="id-1.2.3.6.6.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>list</p></td>
+<td class="parameter_description"><p>the head of the list</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>curr</p></td>
+<td class="parameter_description"><p>the current node in the list</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.2.3.6.6.6"></a><h4>Returns</h4>
+<p> node previous to <em class="parameter"><code>curr</code></em>
+or NULL if either this node is the head of
+the list or the list is empty.</p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="libkmod-libkmod-list.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="kmod-list"></a><h3>struct kmod_list</h3>
+<pre class="programlisting">struct kmod_list;</pre>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.24</div>
+</body>
+</html>

@@ -1,0 +1,32 @@
+#!/bin/bash
+# Author: Steven Shiau <steven _at_ nchc org tw>
+# License: GPL
+# This script is used in DRBL client to show the IP Address of client which is connected to DRBL server. It can be used for more than one NIC or alias IP addresses.
+
+# Load DRBL setting and functions
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+
+#
+if [ -f /etc/diskless-image/config ]; then
+   # Load config file
+   . /etc/diskless-image/config
+else
+   exit 1
+fi
+   
+IP_LISTS="$(get-all-nic-ip --all-ip-address)"
+
+for IP in $IP_LISTS; do
+  for i in $NFSSERVER_LIST; do
+    if [ -n "$(grep -Ew "$IP" $drbl_syscfg/clients-of-${i}.txt 2>/dev/null)" ]; then
+      IP_TO_DRBL_SERVER="$IP"
+      break 
+    fi
+  done
+  if [ -n "$IP_TO_DRBL_SERVER" ]; then
+    echo "$IP_TO_DRBL_SERVER"
+    break
+  fi
+done

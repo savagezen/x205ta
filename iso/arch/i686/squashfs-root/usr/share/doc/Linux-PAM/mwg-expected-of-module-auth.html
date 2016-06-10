@@ -1,0 +1,90 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>3.2. Authentication management</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_MWG.html" title="The Linux-PAM Module Writers' Guide"><link rel="up" href="mwg-expected-of-module.html" title="Chapter 3. What is expected of a module"><link rel="prev" href="mwg-expected-of-module-overview.html" title="3.1. Overview"><link rel="next" href="mwg-expected-of-module-acct.html" title="3.3. Account management"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">3.2. Authentication management</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="mwg-expected-of-module-overview.html">Prev</a> </td><th width="60%" align="center">Chapter 3. What is expected of a module</th><td width="20%" align="right"> <a accesskey="n" href="mwg-expected-of-module-acct.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mwg-expected-of-module-auth"></a>3.2. Authentication management</h2></div></div></div><p>
+        To be correctly initialized, <em class="parameter"><code>PAM_SM_AUTH</code></em>
+        must be <span class="command"><strong>#define</strong></span>'d prior to including
+        <code class="function">&lt;security/pam_modules.h&gt;</code>. This will
+        ensure that the prototypes for static modules are properly declared.
+      </p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mwg-pam_sm_authenticate"></a>3.2.1. Service function for user authentication</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#define PAM_SM_AUTH</pre><pre class="funcsynopsisinfo">#include &lt;security/pam_modules.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">PAM_EXTERN int <b class="fsfunc">pam_sm_authenticate</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">flags</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">argc</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">argv</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>int <var class="pdparam">flags</var></code>;<br><code>int <var class="pdparam">argc</var></code>;<br><code>const char **<var class="pdparam">argv</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mwg-pam_sm_authenticate-description"></a>3.2.1.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_sm_authenticate</code> function is the service
+      module's implementation of the
+      <span class="citerefentry"><span class="refentrytitle">pam_authenticate</span>(3)</span> interface.
+    </p><p>
+      This function performs the task of authenticating the user.
+    </p><p>
+       Valid flags, which may be logically OR'd with
+       <span class="emphasis"><em>PAM_SILENT</em></span>, are:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SILENT</span></dt><dd><p>
+             Do not emit any messages.
+          </p></dd><dt><span class="term">PAM_DISALLOW_NULL_AUTHTOK</span></dt><dd><p>
+            Return <span class="emphasis"><em>PAM_AUTH_ERR</em></span> if the
+            database of authentication tokens for this authentication
+            mechanism has a <span class="emphasis"><em>NULL</em></span> entry for the user.
+            Without this flag, such a <span class="emphasis"><em>NULL</em></span> token
+            will lead to a success without the user being prompted.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mwg-pam_sm_authenticate-return_values"></a>3.2.1.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_AUTH_ERR</span></dt><dd><p>
+            Authentication failure.
+          </p></dd><dt><span class="term">PAM_CRED_INSUFFICIENT</span></dt><dd><p>
+            For some reason the application does not have sufficient
+            credentials to authenticate the user.
+          </p></dd><dt><span class="term">PAM_AUTHINFO_UNAVAIL</span></dt><dd><p>
+            The modules were not able to access the authentication
+            information. This might be due to a network or hardware
+            failure etc.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             The authentication token was successfully updated.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+            The supplied username is not known to the authentication
+            service.
+          </p></dd><dt><span class="term">PAM_MAXTRIES</span></dt><dd><p>
+            One or more of the authentication modules has reached its
+            limit of tries authenticating the user. Do not try again.
+          </p></dd></dl></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mwg-pam_sm_setcred"></a>3.2.2. Service function to alter credentials</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#define PAM_SM_AUTH</pre><pre class="funcsynopsisinfo">#include &lt;security/pam_modules.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">PAM_EXTERN int <b class="fsfunc">pam_sm_setcred</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">flags</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">argc</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">argv</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>int <var class="pdparam">flags</var></code>;<br><code>int <var class="pdparam">argc</var></code>;<br><code>const char **<var class="pdparam">argv</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mwg-pam_sm_setcred-description"></a>3.2.2.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_sm_setcred</code> function is the service
+      module's implementation of the
+      <span class="citerefentry"><span class="refentrytitle">pam_setcred</span>(3)</span> interface.
+    </p><p>
+      This function performs the task of altering the credentials of the
+      user with respect to the corresponding authorization
+      scheme. Generally, an authentication module may have access to more
+      information about a user than their authentication token. This
+      function is used to make such information available to the
+      application. It should only be called <span class="emphasis"><em>after</em></span> the
+      user has been authenticated but before a session has been established.
+    </p><p>
+       Valid flags, which may be logically OR'd with
+       <span class="emphasis"><em>PAM_SILENT</em></span>, are:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SILENT</span></dt><dd><p>
+             Do not emit any messages.
+          </p></dd><dt><span class="term">PAM_ESTABLISH_CRED</span></dt><dd><p>Initialize the credentials for the user.</p></dd><dt><span class="term">PAM_DELETE_CRED</span></dt><dd><p>
+            Delete the credentials associated with the authentication service.
+          </p></dd><dt><span class="term">PAM_REINITIALIZE_CRED</span></dt><dd><p>
+            Reinitialize the user credentials.
+          </p></dd><dt><span class="term">PAM_REFRESH_CRED</span></dt><dd><p>
+            Extend the lifetime of the user credentials.
+          </p></dd></dl></div><p>
+      The way the <span class="emphasis"><em>auth</em></span> stack is
+      navigated in order to evaluate the <code class="function">pam_setcred</code>()
+      function call, independent of the <code class="function">pam_sm_setcred</code>()
+      return codes, is exactly the same way that it was navigated when
+      evaluating the <code class="function">pam_authenticate</code>() library
+      call. Typically, if a stack entry was ignored in evaluating
+      <code class="function">pam_authenticate</code>(), it will be ignored when
+      libpam evaluates the <code class="function">pam_setcred</code>() function
+      call. Otherwise, the return codes from each module specific
+      <code class="function">pam_sm_setcred</code>() call are treated as
+      <span class="emphasis"><em>required</em></span>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mwg-pam_sm_setcred-return_values"></a>3.2.2.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_CRED_UNAVAIL</span></dt><dd><p>
+            This module cannot retrieve the user's credentials.
+          </p></dd><dt><span class="term">PAM_CRED_EXPIRED</span></dt><dd><p>
+            The user's credentials have expired.
+          </p></dd><dt><span class="term">PAM_CRED_ERR</span></dt><dd><p>
+            This module was unable to set the credentials of the user.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             The user credential was successfully set.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+            The user is not known to this authentication module.
+          </p></dd></dl></div><p>
+      These, non-<span class="emphasis"><em>PAM_SUCCESS</em></span>, return values will
+      typically lead to the credential stack <span class="emphasis"><em>failing</em></span>.
+      The first such error will dominate in the return value of
+      <code class="function">pam_setcred</code>().
+    </p></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="mwg-expected-of-module-overview.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="mwg-expected-of-module.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="mwg-expected-of-module-acct.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">3.1. Overview </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_MWG.html">Home</a></td><td width="40%" align="right" valign="top"> 3.3. Account management</td></tr></table></div></body></html>

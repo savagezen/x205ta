@@ -1,0 +1,106 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.29. pam_selinux - set the default security context</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_securetty.html" title="6.28. pam_securetty - limit root login to special devices"><link rel="next" href="sag-pam_shells.html" title="6.30. pam_shells - check for valid login shell"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.29. pam_selinux - set the default security context</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_securetty.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_shells.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_selinux"></a>6.29. pam_selinux - set the default security context</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_selinux.so</code>  [
+	open
+      ] [
+	close
+      ] [
+	restore
+      ] [
+	nottys
+      ] [
+	debug
+      ] [
+	verbose
+      ] [
+	select_context
+      ] [
+	env_params
+      ] [
+	use_current_range
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_selinux-description"></a>6.29.1. DESCRIPTION</h3></div></div></div><p>
+      pam_selinux is a PAM module that sets up the default SELinux security
+      context for the next executed process.
+    </p><p>
+      When a new session is started, the open_session part of the module
+      computes and sets up the execution security context used for the next
+      <span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span>
+      call, the file security context for the controlling terminal, and
+      the security context used for creating a new kernel keyring.
+    </p><p>
+      When the session is ended, the close_session part of the module restores
+      old security contexts that were in effect before the change made
+      by the open_session part of the module.
+    </p><p>
+      Adding pam_selinux into the PAM stack might disrupt behavior of other
+      PAM modules which execute applications.  To avoid that,
+      <span class="emphasis"><em>pam_selinux.so open</em></span> should be placed after such
+      modules in the PAM stack, and <span class="emphasis"><em>pam_selinux.so close</em></span>
+      should be placed before them.  When such a placement is not feasible,
+      <span class="emphasis"><em>pam_selinux.so restore</em></span> could be used to temporary
+      restore original security contexts.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_selinux-options"></a>6.29.2. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">open</code>
+        </span></dt><dd><p>
+            Only execute the open_session part of the module.
+          </p></dd><dt><span class="term">
+          <code class="option">close</code>
+        </span></dt><dd><p>
+            Only execute the close_session part of the module.
+          </p></dd><dt><span class="term">
+          <code class="option">restore</code>
+        </span></dt><dd><p>
+            In open_session part of the module, temporarily restore the
+            security contexts as they were before the previous call of
+            the module.  Another call of this module without the restore
+            option will set up the new security contexts again.
+          </p></dd><dt><span class="term">
+          <code class="option">nottys</code>
+        </span></dt><dd><p>
+            Do not setup security context of the controlling terminal.
+          </p></dd><dt><span class="term">
+          <code class="option">debug</code>
+        </span></dt><dd><p>
+            Turn on debug messages via
+            <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span>.
+          </p></dd><dt><span class="term">
+          <code class="option">verbose</code>
+        </span></dt><dd><p>
+            Attempt to inform the user when security context is set.
+          </p></dd><dt><span class="term">
+          <code class="option">select_context</code>
+        </span></dt><dd><p>
+            Attempt to ask the user for a custom security context role.
+            If MLS is on, ask also for sensitivity level.
+          </p></dd><dt><span class="term">
+          <code class="option">env_params</code>
+        </span></dt><dd><p>
+            Attempt to obtain a custom security context role from PAM environment.
+            If MLS is on, obtain also sensitivity level.  This option and the
+            select_context option are mutually exclusive.  The respective PAM
+            environment variables are <span class="emphasis"><em>SELINUX_ROLE_REQUESTED</em></span>,
+            <span class="emphasis"><em>SELINUX_LEVEL_REQUESTED</em></span>, and
+            <span class="emphasis"><em>SELINUX_USE_CURRENT_RANGE</em></span>.  The first two variables
+            are self describing and the last one if set to 1 makes the PAM module behave as
+            if the use_current_range was specified on the command line of the module.
+          </p></dd><dt><span class="term">
+          <code class="option">use_current_range</code>
+        </span></dt><dd><p>
+            Use the sensitivity level of the current process for the user context
+            instead of the default level. Also suppresses asking of the
+            sensitivity level from the user or obtaining it from PAM environment.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_selinux-types"></a>6.29.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      Only the <code class="option">session</code> module type is provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_selinux-return_values"></a>6.29.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+            The security context was set successfully.
+          </p></dd><dt><span class="term">PAM_SESSION_ERR</span></dt><dd><p>
+            Unable to get or set a valid context.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+            The user is not known to the system.
+          </p></dd><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+            Memory allocation error.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_selinux-examples"></a>6.29.5. EXAMPLES</h3></div></div></div><pre class="programlisting">
+auth     required  pam_unix.so
+session  required  pam_permit.so
+session  optional  pam_selinux.so
+    </pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_selinux-author"></a>6.29.6. AUTHOR</h3></div></div></div><p>
+        pam_selinux was written by Dan Walsh &lt;dwalsh@redhat.com&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_securetty.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_shells.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.28. pam_securetty - limit root login to special devices </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.30. pam_shells - check for valid login shell</td></tr></table></div></body></html>

@@ -1,0 +1,11 @@
+#!/bin/bash
+# Author: Steven Shiau <steven _at_ nchc org tw>
+# License: GPL
+# Description: To get the hostname by IP address assigend in /etc/drbl/client-ip-hostname
+
+#
+IP=$1
+[ -z "$IP" ] && exit 1
+if [ -f /etc/drbl/client-ip-hostname ]; then
+  LC_ALL=C grep -iEw "^[[:space:]]*${IP}" /etc/drbl/client-ip-hostname | awk -F" " '{print $2}'
+fi

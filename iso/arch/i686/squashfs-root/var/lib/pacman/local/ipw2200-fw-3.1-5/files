@@ -1,0 +1,12 @@
+%FILES%
+usr/
+usr/lib/
+usr/lib/firmware/
+usr/lib/firmware/ipw2200-bss.fw
+usr/lib/firmware/ipw2200-ibss.fw
+usr/lib/firmware/ipw2200-sniffer.fw
+usr/share/
+usr/share/licenses/
+usr/share/licenses/ipw2200-fw/
+usr/share/licenses/ipw2200-fw/LICENSE
+

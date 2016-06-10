@@ -1,0 +1,36 @@
+%NAME%
+libaio
+
+%VERSION%
+0.3.110-1
+
+%DESC%
+The Linux-native asynchronous I/O facility (aio) library
+
+%URL%
+http://lse.sourceforge.net/io/aio.html
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1415738891
+
+%INSTALLDATE%
+1464799563
+
+%PACKAGER%
+Anatol Pomozov <anatol.pomozov@gmail.com>
+
+%SIZE%
+29696
+
+%REASON%
+1
+
+%LICENSE%
+LGPL
+
+%VALIDATION%
+pgp
+

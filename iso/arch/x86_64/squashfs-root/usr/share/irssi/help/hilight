@@ -1,0 +1,42 @@
+
+%9Syntax:%9
+
+HILIGHT %|[-nick | -word | -line] [-mask | -full | -regexp] [-color <color>] [-actcolor <color>] [-level <level>] [-network <network>] [-channels <channels>] <text>
+
+%9Parameters:%9
+
+    -nick:        Highlights only the nickname and not the whole line.
+    -word:        Highlights only the word and not the whole line.
+    -line:        Highlights the whole line.
+    -mask:        Highlights all messages from users matching the mask.
+    -full:        The text must match the full word.
+    -regexp:      The text is a regular expression.
+    -color:       The color the display the highlight in.
+    -actcolor:    The color to mark the highlight activity in the statusbar.
+    -level:       Matches only on the given message level.
+    -network:     Matches only on the given network.
+    -channels:    Matches only on the given channels.
+    -priority:    The priority to use when multiple highlights match.
+
+    The text to highlight on; if no argument is given, the list of highlights
+    will be displayed.
+
+%9Description:%9
+
+    Highlights the keyword or pattern to make sure that you don't miss any
+    important messages.
+
+%9Examples:%9
+
+    /HILIGHT
+    /HILIGHT mike
+    /HILIGHT -regexp mi+ke+
+    /HILIGHT -mask bob!*@*.irssi.org -color %%G
+    /HILIGHT -full -color %%G -actcolor %%Y redbull
+
+%9References:%9
+
+    https://github.com/irssi/irssi/blob/master/docs/formats.txt
+
+%9See also:%9 DEHILIGHT, LEVELS
+

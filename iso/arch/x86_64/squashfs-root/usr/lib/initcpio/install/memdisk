@@ -1,0 +1,22 @@
+#!/bin/bash
+
+build() {
+    add_module 'phram'
+    add_module 'mtdblock'
+
+    add_file /usr/lib/initcpio/udev/01-memdisk.rules /lib/udev/rules.d/01-memdisk.rules
+    add_binary "memdiskfind"
+
+    add_runscript
+}
+
+help() {
+    cat <<HELPEOF
+This hook detects a virtual disk created by the memdisk tool
+(http://syslinux.zytor.com/wiki/index.php/MEMDISK).
+
+It requires memdiskfind from syslinux 4.00 or newer.
+HELPEOF
+}
+
+# vim: set ft=sh ts=4 sw=4 et:

@@ -1,0 +1,33 @@
+Description='Example PPPoE connection'
+Interface=eth0
+Connection=pppoe
+User='example@yourprovider.com'
+Password='very secret'
+
+# Always keep a connection established
+ConnectionMode='persist'
+# Establish connection on demand
+#ConnectionMode='demand'
+#IdleTimeout=300
+
+# Use default route provided by the peer (default: true)
+#DefaultRoute=true
+# Use DNS provided by the peer (default: true)
+#UsePeerDNS=true
+
+# Override default LCP parameters from /etc/ppp/options
+#LCPEchoInterval=15
+#LCPEchoFailure=10
+
+# PPPoE options - experts only
+#
+# PPPoE service name
+#PPPoEService=''
+# PPPoE access concentrator name
+#PPPoEAC=''
+# Attach to existing session (sessid:macaddr)
+#PPPoESession=''
+# Only connect to specified MAC address
+#PPPoEMAC=''
+# Enable IPv6 support
+#PPPoEIP6=yes

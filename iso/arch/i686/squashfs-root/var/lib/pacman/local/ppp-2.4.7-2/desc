@@ -1,0 +1,37 @@
+%NAME%
+ppp
+
+%VERSION%
+2.4.7-2
+
+%DESC%
+A daemon which implements the Point-to-Point Protocol for dial-up networking
+
+%URL%
+http://www.samba.org/ppp/
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1437975448
+
+%INSTALLDATE%
+1464799538
+
+%PACKAGER%
+Allan McRae <allan@archlinux.org>
+
+%SIZE%
+877568
+
+%LICENSE%
+custom:GPL/BSD
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+glibc
+libpcap>=1.0.0
+

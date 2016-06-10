@@ -1,0 +1,21 @@
+%FILES%
+etc/
+etc/mail.rc
+usr/
+usr/bin/
+usr/bin/mail
+usr/bin/mailx
+usr/lib/
+usr/lib/mail-privsep
+usr/share/
+usr/share/licenses/
+usr/share/licenses/s-nail/
+usr/share/licenses/s-nail/COPYING
+usr/share/man/
+usr/share/man/man1/
+usr/share/man/man1/mail.1.gz
+usr/share/man/man1/mailx.1.gz
+
+%BACKUP%
+etc/mail.rc	5891ecc7018bebadd2fb6c06989b5e2f
+

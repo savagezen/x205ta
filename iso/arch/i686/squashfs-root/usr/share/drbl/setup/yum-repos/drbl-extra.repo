@@ -1,0 +1,8 @@
+[drbl-extra]
+name=DRBL extra packages
+# baseurl=http://free.nchc.org.tw/drbl-core/$basearch/RPMS.drbl-extra
+mirrorlist=http://free.nchc.org.tw/drbl-core/drbl-extra-mirror-list
+enabled=0
+gpgcheck=1
+# gpgkey=file:///usr/share/drbl/pki/rpm-gpg/RPM-GPG-KEY-DRBL
+gpgkey=http://drbl.nchc.org.tw/GPG-KEY-DRBL

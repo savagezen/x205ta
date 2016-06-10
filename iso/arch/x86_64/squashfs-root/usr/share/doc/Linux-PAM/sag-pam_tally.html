@@ -1,0 +1,197 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.32. pam_tally - login counter (tallying) module</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_succeed_if.html" title="6.31. pam_succeed_if - test account characteristics"><link rel="next" href="sag-pam_tally2.html" title="6.33. pam_tally2 - login counter (tallying) module"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.32. pam_tally - login counter (tallying) module</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_succeed_if.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_tally2.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_tally"></a>6.32. pam_tally - login counter (tallying) module</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_tally.so</code>  [
+	file=<em class="replaceable"><code>/path/to/counter</code></em>
+      ] [
+        onerr=[<em class="replaceable"><code>fail</code></em>|<em class="replaceable"><code>succeed</code></em>]
+      ] [
+        magic_root
+      ] [
+        even_deny_root_account
+      ] [
+        deny=<em class="replaceable"><code>n</code></em>
+      ] [
+        lock_time=<em class="replaceable"><code>n</code></em>
+      ] [
+        unlock_time=<em class="replaceable"><code>n</code></em>
+      ] [
+        per_user
+      ] [
+        no_lock_time
+      ] [
+        no_reset
+      ] [
+        audit
+      ] [
+        silent
+      ] [
+        no_log_info
+      ]</p></div><div class="cmdsynopsis"><p><code class="command">pam_tally</code>  [
+	--file <em class="replaceable"><code>/path/to/counter</code></em>
+      ] [
+	--user <em class="replaceable"><code>username</code></em>
+      ] [
+	--reset[=<em class="replaceable"><code>n</code></em>]
+      ] [
+        --quiet
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_tally-description"></a>6.32.1. DESCRIPTION</h3></div></div></div><p>
+      This module maintains a count of attempted accesses, can
+      reset count on success, can deny access if too many attempts
+      fail.
+    </p><p>
+      pam_tally has several limitations, which are solved with
+      pam_tally2. For this reason pam_tally is deprecated and
+      will be removed in a future release.
+    </p><p>
+      pam_tally comes in two parts:
+      <span class="emphasis"><em>pam_tally.so</em></span> and
+      <span class="command"><strong>pam_tally</strong></span>. The former is the PAM module and
+      the latter, a stand-alone program. <span class="command"><strong>pam_tally</strong></span>
+      is an (optional) application which can be used to interrogate and
+      manipulate the counter file. It can display user counts, set
+      individual counts, or clear all counts. Setting artificially high
+      counts may be useful for blocking users without changing their
+      passwords. For example, one might find it useful to clear all counts
+      every midnight from a cron job. The
+      <span class="citerefentry"><span class="refentrytitle">faillog</span>(8)</span> command can be used instead of pam_tally to to
+      maintain the counter file.
+    </p><p>
+      Normally, failed attempts to access <span class="emphasis"><em>root</em></span> will
+      <span class="emphasis"><em>not</em></span> cause the root account to become
+      blocked, to prevent denial-of-service: if your users aren't given
+      shell accounts and root may only login via <span class="command"><strong>su</strong></span> or
+      at the machine console (not telnet/rsh, etc), this is safe.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_tally-options"></a>6.32.2. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          GLOBAL OPTIONS
+        </span></dt><dd><p>
+            This can be used for <span class="emphasis"><em>auth</em></span> and
+            <span class="emphasis"><em>account</em></span> module types.
+          </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                <code class="option">onerr=[<em class="replaceable"><code>fail</code></em>|<em class="replaceable"><code>succeed</code></em>]</code>
+              </span></dt><dd><p>
+                  If something weird happens (like unable to open the file),
+                  return with <span class="errorcode">PAM_SUCCESS</span> if
+                  <code class="option">onerr=<em class="replaceable"><code>succeed</code></em></code>
+                  is given, else with the corresponding PAM error code.
+                </p></dd><dt><span class="term">
+                <code class="option">file=<em class="replaceable"><code>/path/to/counter</code></em></code>
+              </span></dt><dd><p>
+                  File where to keep counts. Default is
+                  <code class="filename">/var/log/faillog</code>.
+                </p></dd><dt><span class="term">
+                <code class="option">audit</code>
+              </span></dt><dd><p>
+                  Will log the user name into the system log if the user is not found.
+                </p></dd><dt><span class="term">
+                <code class="option">silent</code>
+              </span></dt><dd><p>
+                  Don't print informative messages.
+                </p></dd><dt><span class="term">
+                <code class="option">no_log_info</code>
+              </span></dt><dd><p>
+                  Don't log informative messages via <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span>.
+                </p></dd></dl></div></dd><dt><span class="term">
+          AUTH OPTIONS
+        </span></dt><dd><p>
+            Authentication phase first checks if user should be denied
+            access and if not it increments attempted login counter. Then
+            on call to <span class="citerefentry"><span class="refentrytitle">pam_setcred</span>(3)</span> it resets the attempts counter.
+          </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                <code class="option">deny=<em class="replaceable"><code>n</code></em></code>
+              </span></dt><dd><p>
+                  Deny access if tally for this user exceeds
+                  <em class="replaceable"><code>n</code></em>.
+                </p></dd><dt><span class="term">
+                <code class="option">lock_time=<em class="replaceable"><code>n</code></em></code>
+              </span></dt><dd><p>
+                  Always deny for <em class="replaceable"><code>n</code></em> seconds
+                  after failed attempt.
+                </p></dd><dt><span class="term">
+                <code class="option">unlock_time=<em class="replaceable"><code>n</code></em></code>
+              </span></dt><dd><p>
+                  Allow access after <em class="replaceable"><code>n</code></em> seconds
+                  after failed attempt. If this option is used the user will
+                  be locked out for the specified amount of time after he
+                  exceeded his maximum allowed attempts. Otherwise the
+                  account is locked until the lock is removed by a manual
+                  intervention of the system administrator.
+                </p></dd><dt><span class="term">
+                <code class="option">magic_root</code>
+              </span></dt><dd><p>
+                  If the module is invoked by a user with uid=0 the
+                  counter is not incremented. The sysadmin should use this
+                  for user launched services, like <span class="command"><strong>su</strong></span>,
+                  otherwise this argument should be omitted.
+                </p></dd><dt><span class="term">
+                <code class="option">no_lock_time</code>
+              </span></dt><dd><p>
+                  Do not use the .fail_locktime field in
+                  <code class="filename">/var/log/faillog</code> for this user.
+                </p></dd><dt><span class="term">
+                <code class="option">no_reset</code>
+              </span></dt><dd><p>
+                  Don't reset count on successful entry, only decrement.
+                </p></dd><dt><span class="term">
+                <code class="option">even_deny_root_account</code>
+              </span></dt><dd><p>
+                  Root account can become unavailable.
+                </p></dd><dt><span class="term">
+                <code class="option">per_user</code>
+              </span></dt><dd><p>
+                  If <code class="filename">/var/log/faillog</code> contains a non-zero
+                  .fail_max/.fail_locktime field for this user then use it
+                  instead of <code class="option">deny=<em class="replaceable"><code>n</code></em></code>/
+                  <code class="option">lock_time=<em class="replaceable"><code>n</code></em></code> parameter.
+                </p></dd><dt><span class="term">
+                <code class="option">no_lock_time</code>
+              </span></dt><dd><p>
+                  Don't use .fail_locktime filed in
+                  <code class="filename">/var/log/faillog</code> for this user.
+                </p></dd></dl></div></dd><dt><span class="term">
+          ACCOUNT OPTIONS
+        </span></dt><dd><p>
+            Account phase resets attempts counter if the user is
+            <span class="emphasis"><em>not</em></span> magic root.
+            This phase can be used optionally for services which don't call
+            <span class="citerefentry"><span class="refentrytitle">pam_setcred</span>(3)</span> correctly or if the reset should be done regardless
+            of the failure of the account phase of other modules.
+          </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+                <code class="option">magic_root</code>
+              </span></dt><dd><p>
+                  If the module is invoked by a user with uid=0 the
+                  counter is not incremented. The sysadmin should use this
+                  for user launched services, like <span class="command"><strong>su</strong></span>,
+                  otherwise this argument should be omitted.
+                </p></dd><dt><span class="term">
+                <code class="option">no_reset</code>
+              </span></dt><dd><p>
+                  Don't reset count on successful entry, only decrement.
+                </p></dd></dl></div></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_tally-types"></a>6.32.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      The <code class="option">auth</code> and <code class="option">account</code>
+      module types are provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_tally-return_values"></a>6.32.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_AUTH_ERR</span></dt><dd><p>
+            A invalid option was given, the module was not able
+            to retrieve the user name, no valid counter file
+            was found, or too many failed logins.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+            Everything was successful.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+	    User not known.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_tally-examples"></a>6.32.5. EXAMPLES</h3></div></div></div><p>
+      Add the following line to <code class="filename">/etc/pam.d/login</code> to
+      lock the account after too many failed logins. The number of
+      allowed fails is specified by <code class="filename">/var/log/faillog</code>
+      and needs to be set with pam_tally or <span class="citerefentry"><span class="refentrytitle">faillog</span>(8)</span> before.
+    </p><pre class="programlisting">
+auth     required       pam_securetty.so
+auth     required       pam_tally.so per_user
+auth     required       pam_env.so
+auth     required       pam_unix.so
+auth     required       pam_nologin.so
+account  required       pam_unix.so
+password required       pam_unix.so
+session  required       pam_limits.so
+session  required       pam_unix.so
+session  required       pam_lastlog.so nowtmp
+session  optional       pam_mail.so standard
+    </pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_tally-author"></a>6.32.6. AUTHOR</h3></div></div></div><p>
+        pam_tally was written by Tim Baverstock and Tomas Mraz.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_succeed_if.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_tally2.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.31. pam_succeed_if - test account characteristics </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.33. pam_tally2 - login counter (tallying) module</td></tr></table></div></body></html>

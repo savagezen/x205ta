@@ -1,0 +1,33 @@
+%NAME%
+rfkill
+
+%VERSION%
+0.5-1
+
+%DESC%
+Tool for enabling and disabling wireless devices
+
+%URL%
+http://wireless.kernel.org/en/users/Documentation/rfkill
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1368729324
+
+%INSTALLDATE%
+1464799589
+
+%PACKAGER%
+Gaetan Bisson <bisson@archlinux.org>
+
+%SIZE%
+13312
+
+%LICENSE%
+custom
+
+%VALIDATION%
+pgp
+

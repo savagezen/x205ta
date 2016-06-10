@@ -1,0 +1,117 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.34. pam_time - time controled access</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_tally2.html" title="6.33. pam_tally2 - login counter (tallying) module"><link rel="next" href="sag-pam_timestamp.html" title="6.35. pam_timestamp - authenticate using cached successful authentication attempts"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.34. pam_time - time controled access</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_tally2.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_timestamp.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_time"></a>6.34. pam_time - time controled access</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_time.so</code>  [
+        debug
+      ] [
+        noaudit
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_time-description"></a>6.34.1. DESCRIPTION</h3></div></div></div><p>
+      The pam_time PAM module does not authenticate the user, but instead
+      it restricts access to a system and or specific applications at
+      various times of the day and on specific days or over various
+      terminal lines. This module can be configured to deny access to
+      (individual) users based on their name, the time of day, the day of
+      week, the service they are applying for and their terminal from which
+      they are making their request.
+    </p><p>
+      By default rules for time/port access are taken from config file
+      <code class="filename">/etc/security/time.conf</code>.
+    </p><p>
+      If Linux PAM is compiled with audit support the module will report
+      when it denies access.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-time.conf-description"></a>6.34.2. DESCRIPTION</h3></div></div></div><p>
+      The pam_time PAM module does not authenticate the user, but instead
+      it restricts access to a system and or specific applications at
+      various times of the day and on specific days or over various
+      terminal lines. This module can be configured to deny access to
+      (individual) users based on their name, the time of day, the day of
+      week, the service they are applying for and their terminal from which
+      they are making their request.
+    </p><p>
+      For this module to function correctly there must be a correctly
+      formatted <code class="filename">/etc/security/time.conf</code> file present.
+      White spaces are ignored and lines maybe extended with '\' (escaped
+      newlines). Text following a '#' is ignored to the end of the line.
+   </p><p>
+      The syntax of the lines is as follows:
+    </p><p>
+      <em class="replaceable"><code>services</code></em>;<em class="replaceable"><code>ttys</code></em>;<em class="replaceable"><code>users</code></em>;<em class="replaceable"><code>times</code></em>
+    </p><p>
+      In words, each rule occupies a line, terminated with a newline
+      or the beginning of a comment; a '<span class="emphasis"><em>#</em></span>'.
+      It contains four fields separated with semicolons,
+      '<span class="emphasis"><em>;</em></span>'.
+    </p><p>
+      The first field, the <em class="replaceable"><code>services</code></em> field,
+      is a logic list of PAM service names that the rule applies to.
+    </p><p>
+      The second field, the <em class="replaceable"><code>tty</code></em>
+      field, is a logic list of terminal names that this rule applies to.
+    </p><p>
+      The third field, the <em class="replaceable"><code>users</code></em>
+      field, is a logic list of users or a netgroup of users to whom this
+      rule applies.
+    </p><p>
+      For these items the simple wildcard '*' may be used only once.
+      With netgroups no wildcards or logic operators are allowed.
+    </p><p>
+      The <em class="replaceable"><code>times</code></em> field is used to indicate the times
+      at which this rule applies. The format here is a logic
+      list of day/time-range entries. The days are specified by a sequence of
+      two character entries, MoTuSa for example is Monday Tuesday and Saturday.
+      Note that repeated days are unset MoMo = no day, and MoWk = all weekdays
+      bar Monday. The two character combinations accepted are Mo Tu We Th Fr Sa
+      Su Wk Wd Al, the last two being week-end days and all 7 days of the week
+      respectively. As a final example, AlFr means all days except Friday.
+    </p><p>
+      Each day/time-range can be prefixed with a '!' to indicate
+      "anything but".
+      The time-range part is two 24-hour times HHMM, separated by a hyphen,
+      indicating the start and finish time (if the finish time is smaller
+      than the start time it is deemed to apply on the following day).
+    </p><p>
+      For a rule to be active, ALL of service+ttys+users must be satisfied
+      by the applying process.
+    </p><p>
+      Note, currently there is no daemon enforcing the end of a session.
+      This needs to be remedied.
+    </p><p>
+      Poorly formatted rules are logged as errors using
+      <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_time-options"></a>6.34.3. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">debug</code>
+        </span></dt><dd><p>
+            Some debug information is printed with
+            <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span>.
+          </p></dd><dt><span class="term">
+          <code class="option">noaudit</code>
+        </span></dt><dd><p>
+            Do not report logins at disallowed time to the audit subsystem.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_time-types"></a>6.34.4. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      Only the <code class="option">account</code> type is provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_time-return_values"></a>6.34.5. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             Access was granted.
+          </p></dd><dt><span class="term">PAM_ABORT</span></dt><dd><p>
+             Not all relevant data could be gotten.
+          </p></dd><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+            Memory buffer error.
+          </p></dd><dt><span class="term">PAM_PERM_DENIED</span></dt><dd><p>
+            Access was not granted.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+             The user is not known to the system.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_time-files"></a>6.34.6. FILES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="filename">/etc/security/time.conf</code></span></dt><dd><p>Default configuration file</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-time.conf-examples"></a>6.34.7. EXAMPLES</h3></div></div></div><p>
+      These are some example lines which might be specified in
+      <code class="filename">/etc/security/time.conf</code>.
+    </p><p>
+      All users except for <span class="emphasis"><em>root</em></span> are denied access
+      to console-login at all times:
+      </p><pre class="programlisting">
+login ; tty* &amp; !ttyp* ; !root ; !Al0000-2400
+      </pre><p>
+    </p><p>
+      Games (configured to use PAM) are only to be accessed out of
+      working hours. This rule does not apply to the user
+      <span class="emphasis"><em>waster</em></span>:
+      </p><pre class="programlisting">
+games ; * ; !waster ; Wd0000-2400 | Wk1800-0800
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_time-authors"></a>6.34.8. AUTHOR</h3></div></div></div><p>
+      pam_time was written by Andrew G. Morgan &lt;morgan@kernel.org&gt;.
+    </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_tally2.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_timestamp.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.33. pam_tally2 - login counter (tallying) module </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.35. pam_timestamp - authenticate using cached successful authentication attempts</td></tr></table></div></body></html>

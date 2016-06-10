@@ -1,0 +1,24 @@
+
+%9Syntax:%9
+
+KILL %|<nick> <reason>
+
+%9Parameters:%9
+
+    The nickname to remove from the network and the reason thereof.
+
+%9Description:%9
+
+    Terminates a nickname's connection from the network; this command is
+    reserved for IRC operators.
+
+    You should not use this command for personal vendettas or for trolling;
+    these practices are generally frowned upon.
+
+%9Examples:%9
+
+    /KILL mike Get off my lawn
+    /KILL bob Stop breaking the network rules!
+
+%9See also:%9 DIE, OPER, WALLOPS
+

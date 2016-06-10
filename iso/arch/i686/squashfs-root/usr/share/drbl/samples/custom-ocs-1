@@ -1,0 +1,51 @@
+#!/bin/bash
+# Author: Steven Shiau <steven _at_ nchc org tw>
+# License: GPL
+#
+# In this example, it will allow your user to use clonezilla live to choose 
+# (1) A samba server as clonezilla home image where images exist.
+# (2) Choose an image to restore to disk.
+
+# When this script is ready, you can run
+# ocs-iso -g en_US.UTF-8 -k NONE -s -m ./custom-ocs-1
+# to create the iso file for CD/DVD. or
+# ocs-live-dev -g en_US.UTF-8 -k NONE -s -c -m ./custom-ocs-1
+# to create the zip file for USB flash drive.
+
+# Begin of the scripts:
+# Load DRBL setting and functions
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+. /etc/drbl/drbl-ocs.conf
+. $DRBL_SCRIPT_PATH/sbin/ocs-functions
+
+# load the setting for clonezilla live.
+[ -e /etc/ocs/ocs-live.conf ] && . /etc/ocs/ocs-live.conf
+# Load language files. For English, use "en_US.UTF-8". For Traditional Chinese, use "zh_TW.UTF-8"
+ask_and_load_lang_set en_US.UTF-8
+
+# The above is almost necessary, it is recommended to include them in your own custom-ocs.
+# From here, you can write your own scripts.
+
+# 1. Configure network
+# If you are sure there is a DHCP server, you can use "dhclient -v eth0" instead of ocs-live-netcfg.
+ocs-live-netcfg
+
+# 2. Mount the clonezilla image home. Available types:
+# local_dev, ssh_server, samba_server, nfs_server
+prep-ocsroot -t samba_server
+
+# 3. Restore the image
+if mountpoint $ocsroot &>/dev/null; then
+  # Here we use "-p true" (not "-p choose", "-p reboot", or "-p poweroff") to avoid the reboot/poweroff command being run in jfbterm/bterm. Let the ocs-live-final-action and ocs-live-run-menu to take care of the reboot/poweroff actions. Otherwise the Debian live "Press Enter to continue" message after poweroff/shutdown command is issued might be coverd by jfbterm/bterm and user will not have any idea what's happening after ocs-sr is run.
+  ocs-sr -g auto -e1 auto -e2 -c -r -j2 -p true restoredisk "ask_user" "ask_user"
+else
+  [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+  echo "Fail to find the Clonezilla image home $ocsroot!"
+  echo "Program terminated!"
+  [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+fi
+
+#
+umount $ocsroot &>/dev/null

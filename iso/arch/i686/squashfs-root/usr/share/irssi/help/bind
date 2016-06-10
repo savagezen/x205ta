@@ -1,0 +1,34 @@
+
+%9Syntax:%9
+
+BIND %|[-list] [-delete] [<key> [<command> [<data>]]]
+
+%9Parameters:%9
+
+    -list:      Displays a list of all the bindable commands.
+    -delete:    Removes the binding,
+
+    A name of the binding and the command to perform; if no parameter is given,
+    the list of bindings will be displayed.
+
+Details:
+
+    Adds or removes a binding; the binding itself is case-sensitive and may
+    contain as many characters as you want.
+
+    Uppercase characters usually indicate that you need to keep the shift-key
+    pressed to use the binding.
+
+%9Examples:%9
+
+    /BIND
+    /BIND meta-c /CLEAR
+    /BIND meta-q change_window 16
+    /BIND -delete meta-y
+    /BIND ^W^C /WINDOW NEW HIDE
+    /BIND ^W^K /WINDOW KILL
+    /BIND ^[[11~ command AWAY I'm off for today :)
+    /BIND ^[[12~ command AWAY
+
+%9See also:%9 ALIAS
+

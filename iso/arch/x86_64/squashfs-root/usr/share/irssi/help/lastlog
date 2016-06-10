@@ -1,0 +1,43 @@
+
+%9Syntax:%9
+
+LASTLOG %|[-] [-file <filename>] [-window <ref#|name>] [-new | -away] [-<level> -<level...>] [-clear] [-count] [-case] [-date] [-regexp | -word] [-before [<#>]] [-after [<#>]] [-<# before+after>] [<pattern>] [<count> [<start>]]
+
+%9Parameters:%9
+
+    -:          Doesn't print the 'Lastlog:' and 'End of Lastlog' messages.
+    -file:      Output the lastlog to a file instead of the active window.
+    -window:    Specifies the window to check.
+    -new:       Only displays results since the previous lastlog.
+    -away:      Only displays results since you previous away status.
+    -<level>:   Specifies the levels to check (e.g. -joins -quits -hilight)
+    -clear:     Removes the previous results from the active window.
+    -count:     Displays how many lines match.
+    -case:      Performs a case-sensitive matching.
+    -date:      Prepends each row with the message's date
+    -regexp:    The given text pattern is a regular expression.
+    -word:      The text must match full words.
+    -force:     Forces to display the lastlog, even if it exceeds 1000 lines.
+    -after:     Include this many lines of content after the match.
+    -before:    Include this many lines of content before the match.
+    -<#>:       Include this many lines of content around the match.
+    <count>:    Display a maximum number of `count' lines.
+    <start>:    Skip the last `start' lines.
+
+    The pattern to search for and the maximum of lines to display; if no
+    parameter is given, the entire window buffer will be displayed.
+
+%9Description:%9
+
+    Searches the active window for a pattern and displays the result.
+
+%9Examples:%9
+
+    /LASTLOG holiday
+    /LASTLOG 'is on vacation' 10
+    /LASTLOG -force -file ~/mike.log 'mike'
+    /LASTLOG -hilight
+    /LASTLOG -5 searchterm
+
+%9See also:%9 HILIGHT, SCROLLBACK
+

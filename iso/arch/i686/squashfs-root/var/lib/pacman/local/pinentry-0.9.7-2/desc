@@ -1,0 +1,46 @@
+%NAME%
+pinentry
+
+%VERSION%
+0.9.7-2
+
+%DESC%
+Collection of simple PIN or passphrase entry dialogs which utilize the Assuan protocol
+
+%URL%
+http://gnupg.org/related_software/pinentry/
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1462309866
+
+%INSTALLDATE%
+1464799512
+
+%PACKAGER%
+Gaetan Bisson <bisson@archlinux.org>
+
+%SIZE%
+431104
+
+%REASON%
+1
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+ncurses
+libcap
+libassuan
+
+%OPTDEPENDS%
+gtk2: gtk2 backend
+qt5-base: qt backend
+gcr: gnome3 backend
+

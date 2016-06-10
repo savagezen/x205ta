@@ -1,0 +1,424 @@
+# This file contains common functions used in init and in hooks
+
+# logging targets
+_rdlog_file=$(( 1 << 0 ))
+_rdlog_kmsg=$(( 1 << 1 ))
+_rdlog_cons=$(( 1 << 2 ))
+_rdlog_all=$(( (1 << 3) - 1 ))
+
+msg () {
+    [ "${quiet}" != "y" ] && echo $@
+}
+err () {
+    echo "ERROR: $@"
+}
+
+log_kmsg() {
+    local fmt=$1; shift
+    printf "<31>initramfs: $fmt\n" "$@"
+}
+
+poll_device() {
+    local device=$1 seconds=${2//[!0-9]}
+
+    [ "${seconds:-x}" = x ] && seconds=10
+    deciseconds=$(( seconds * 10 ))
+
+    # tenths of a second
+    sleepinterval=1
+
+    [ -b "$device" ] && return 0
+
+    if [ "$udevd_running" -eq 1 ]; then
+        msg "Waiting $seconds seconds for device $device ..." >&2
+        while [ ! -b "$device" -a "$deciseconds" -gt 0 ]; do
+            if [ "$sleepinterval" -ge 10 ]; then
+                sleep 1
+                deciseconds=$(( deciseconds - 10 ))
+            else
+                sleep .$sleepinterval
+                deciseconds=$(( deciseconds - sleepinterval ))
+                sleepinterval=$(( sleepinterval * 2 ))
+            fi
+        done
+    fi
+
+    [ -b "$device" ]
+}
+
+launch_interactive_shell() {
+    export PS1='[rootfs \W]\$ '
+
+    # explicitly redirect to /dev/console in case we're logging. note that
+    # anything done in the rescue shell will NOT be logged.
+    {
+        [ "$1" = "--exec" ] && exec sh -i
+        sh -i
+    } 0</dev/console 1>/dev/console 2>/dev/console
+}
+
+bitfield_has_bit() {
+    [ $(( $1 & $2 )) -eq $2 ]
+}
+
+major_minor_to_device() {
+    local dev
+
+    [ -e "/sys/dev/block/$1:$2" ] || return 1
+
+    if dev=$(readlink -f "/sys/dev/block/$1:$2" 2>/dev/null); then
+        echo "/dev/${dev##*/}"
+        return 0
+    fi
+
+    return 1
+}
+
+run_hookfunctions() {
+    local hook fn=$1 desc=$2
+
+    shift 2
+    for hook in "$@"; do
+        [ -x "/hooks/$hook" ] || continue
+
+        unset "$fn"
+        . "/hooks/$hook"
+        type "$fn" >/dev/null || continue
+
+        msg ":: running $desc [$hook]"
+        "$fn"
+    done
+}
+
+set_log_option() {
+    local opt
+
+    for opt in ${1//|/ }; do
+        case $opt in
+            all)
+                rd_logmask=$_rdlog_all
+                ;;
+            kmsg)
+                rd_logmask=$(( rd_logmask | _rdlog_kmsg ))
+                ;;
+            file)
+                rd_logmask=$(( rd_logmask | _rdlog_file ))
+                ;;
+            console)
+                rd_logmask=$(( rd_logmask | _rdlog_cons ))
+                ;;
+            *)
+                err "unknown rd.log parameter: '$opt'"
+                ;;
+        esac
+    done
+}
+
+parse_cmdline() {
+    local _w _quoted _lhs _rhs _cmdline
+    read -r _cmdline
+    for _w in $_cmdline; do
+        if [ -z "$_quoted" ]; then
+            case $_w in
+                # ignore everything after a # in the commandline
+                \#*) break ;;
+                # special cases
+                rw|ro) rwopt=$_w ;;
+                fsck.mode=*)
+                    case ${_w#*=} in
+                        force)
+                            forcefsck=y
+                            ;;
+                        skip)
+                            fastboot=y
+                            ;;
+                        *)
+                            err "unknown fsck.mode parameter: '${_w#*=}'"
+                            ;;
+                    esac
+                    ;;
+                rd.*)
+                    case ${_w#rd.} in
+                        debug)
+                            rd_debug=y
+                            ;;
+                        log)
+                            rd_logmask=$(( _rdlog_kmsg | _rdlog_cons ))
+                            ;;
+                        log=*)
+                            set_log_option "${_w#rd.log=}"
+                            ;;
+                    esac
+                    ;;
+                # abide by shell variable naming rules
+                [[:alpha:]_]*=*)
+                    _rhs=${_w#*=}
+                    _lhs=${_w%%=*}
+                    _lhs=${_lhs//[-.]/_}
+                    if [ '"' = "${_rhs:0:1}" ]; then
+                        if [ '"' = "${_rhs:$((${#_rhs}-1))}" ]; then
+                            _rhs="${_rhs:1:$((${#_rhs}-2))}"
+                        else
+                            _rhs=${_rhs:1}
+                            _quoted=1
+                            continue
+                        fi
+                    fi
+                    eval $_lhs=\$_rhs
+                    ;;
+                [[:alpha:]_]*)
+                    _lhs=${_w//[-.]/_}
+                    eval $_lhs=y
+                    ;;
+            esac
+        else
+            if [ '"' = "${_w:$((${#_w}-1))}" ]; then
+                _rhs="$_rhs ${_w%\"}"
+                unset _quoted
+                eval $_lhs=\$_rhs
+            else
+                _rhs="$_rhs $_w"
+            fi
+        fi
+    done
+}
+
+fsck_device() {
+    [ -x /sbin/fsck ] || return 255
+
+    if [ ! -b "$1" ]; then
+        err "device '$1' not found. Skipping fsck."
+        return 255
+    fi
+
+    if [ -n "$fastboot" ]; then
+        msg ":: skipping fsck on '$1'"
+        return
+    fi
+
+    msg ":: performing fsck on '$1'"
+    fsck -Ta -C"$FSCK_FD" "$1" -- ${forcefsck+-f}
+}
+
+fsck_root() {
+    fsck_device "$root"
+    fsckret=$?
+
+    if [ -n "$fsckret" ] && [ "$fsckret" -ne 255 ]; then
+        # handle error conditions; do nothing on success.
+        if bitfield_has_bit "$fsckret" 4; then
+            err "Bailing out. Run 'fsck $root' manually"
+            printf '%s\n' \
+                "********** FILESYSTEM CHECK FAILED **********" \
+                "*                                           *" \
+                "*  Please run fsck manually. After leaving  *" \
+                "*  this maintenance shell, the system will  *" \
+                "*  reboot automatically.                    *" \
+                "*                                           *" \
+                "*********************************************"
+            launch_interactive_shell
+            echo ":: Automatic reboot in progress"
+            sleep 2
+            reboot -f
+        elif bitfield_has_bit "$fsckret" 2; then
+            printf '%s\n' \
+                "************** REBOOT REQUIRED **************" \
+                "*                                           *" \
+                "*   automatically restarting in 10 seconds  *" \
+                "*                                           *" \
+                "*********************************************"
+            sleep 10
+            reboot -f
+        elif bitfield_has_bit "$fsckret" 8; then
+            err "fsck failed on '$root'"
+        elif bitfield_has_bit "$fsckret" 16; then
+            err "Failed to invoke fsck: usage or syntax error"
+        elif bitfield_has_bit "$fsckret" 32; then
+            echo ":: fsck cancelled on user request"
+        elif bitfield_has_bit "$fsckret" 128; then
+            err "fatal error invoking fsck"
+        fi
+
+        # ensure that root is going to be mounted rw. Otherwise, systemd
+        # might fsck the device again. Annoy the user so that they fix this.
+        if [ "${rwopt:-ro}" != 'rw' ]; then
+            echo "********************** WARNING **********************"
+            echo "*                                                   *"
+            echo "*  The root device is not configured to be mounted  *"
+            echo "*  read-write! It may be fsck'd again later.        *"
+            echo "*                                                   *"
+            echo "*****************************************************"
+        fi
+    fi
+}
+
+# TODO: this really needs to follow the logic of systemd's encode_devnode_name
+# function more closely.
+tag_to_udev_path() {
+    awk -v "tag=$1" -v "value=$2" '
+    BEGIN {
+        gsub(/\//, "\\x2f", value)
+        printf "/dev/disk/by-%s/%s\n", tolower(tag), value
+    }'
+}
+
+resolve_device() {
+    local major minor dev tag device=$1
+
+    # attempt to resolve devices immediately. if this fails
+    # and udev is running, fall back on lazy resolution using
+    # /dev/disk/by-* symlinks. this is flexible enough to support
+    # usage of tags without udev and "slow" devices like root on
+    # USB, which might not immediately show up.
+    case $device in
+        UUID=*|LABEL=*|PARTUUID=*|PARTLABEL=*)
+            dev=$(blkid -lt "$device" -o device)
+            if [ -z "$dev" -a "$udevd_running" -eq 1 ]; then
+                dev=$(tag_to_udev_path "${device%%=*}" "${device#*=}")
+            fi
+    esac
+
+    [ -n "$dev" ] && device=$dev
+
+    case $device in
+        # path to kernel named block device
+        /dev/*)
+            if poll_device "$device" "$rootdelay"; then
+                echo "$device"
+                return 0
+            fi
+            ;;
+        # hex encoded major/minor, such as from LILO
+        [0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]|[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])
+            major=$(( 0x0$device >> 8 ))
+            minor=$(( 0x0$device & 0xff ))
+            ;;
+        0x[0-9a-fA-F][0-9a-fA-F]*)
+            major=$(( device >> 8 ))
+            minor=$(( device & 0xff ))
+            ;;
+    esac
+
+    if [ -n "$major" -a -n "$minor" ]; then
+        device=$(major_minor_to_device "$major" "$minor" || echo '/dev/root')
+
+        if [ ! -b "$device" ]; then
+            msg "Creating device node with major $major and minor $minor." >&2
+            mknod "$device" b "$major" "$minor"
+        fi
+        echo "$device"
+        return 0
+    fi
+
+    return 1
+}
+
+default_mount_handler() {
+    if [ ! -b "$root" ]; then
+        err "Unable to find root device '$root'."
+        echo "You are being dropped to a recovery shell"
+        echo "    Type 'exit' to try and continue booting"
+        launch_interactive_shell
+        msg "Trying to continue (this will most likely fail) ..."
+    fi
+
+    msg ":: mounting '$root' on real root"
+    if ! mount ${fstype:+-t $fstype} -o ${rwopt:-ro}${rootflags:+,$rootflags} "$root" "$1"; then
+        echo "You are now being dropped into an emergency shell."
+        launch_interactive_shell
+        msg "Trying to continue (this will most likely fail) ..."
+    fi
+}
+
+rdlogger_start() {
+    # rd.debug implies rd.log=console if rd.log(=.*)? isn't present
+    if [ "$rd_logmask" -eq 0 ] && [ -n "$rd_debug" ]; then
+        rd_logmask=$_rdlog_cons
+    fi
+
+    [ "$rd_logmask" -gt 0 ] || return
+
+    mkfifo /run/initramfs/rdlogger.pipe
+
+    rdlogger </run/initramfs/rdlogger.pipe >/dev/console 2>&1 &
+    printf %s $! >/run/initramfs/rdlogger.pid
+
+    exec >/run/initramfs/rdlogger.pipe 2>&1
+    [ -n "$rd_debug" ] && set -x
+
+    # messages would be otherwise lost if we don't unset quiet. this does,
+    # however, mean that passing rd.log=console will negate the effects of
+    # 'quiet' for initramfs console output.
+    unset quiet
+}
+
+rdlogger_stop() {
+    local i=0 pid
+
+    [ -e /run/initramfs/rdlogger.pipe ] || return
+
+    [ -n "$rd_debug" ] && { set +x; } 2>/dev/null
+
+    # this nudges rdlogger to exit
+    exec 0<>/dev/console 1<>/dev/console 2<>/dev/console
+
+    # wait up to 1 second for a graceful shutdown
+    until [ ! -e /run/initramfs/rdlogger.pipe ] || [ $i -eq 10 ]; do
+        sleep 0.1
+        i=$(( i + 1 ))
+    done
+
+    if [ $i -eq 10 ]; then
+        # racy! the logger might still go away on its own
+        read -r pid </run/initramfs/rdlogger.pid 2>/dev/null
+        if [ -n "$pid" ]; then
+            kill "$pid" 2>/dev/null
+        fi
+    fi
+}
+
+rdlogger() {
+    local line
+
+    # establish logging FDs. Either redirect to an appropriate target or to
+    # /dev/null. This way, log methods can simply write and the associated FD
+    # will Do The Right Thing™.
+
+    # rd.log=console
+    if bitfield_has_bit "$rd_logmask" "$_rdlog_cons"; then
+        exec 4>/dev/console
+    else
+        exec 4>/dev/null
+    fi
+
+    # rd.log=kmsg
+    if [ -c /dev/kmsg ] && bitfield_has_bit "$rd_logmask" "$_rdlog_kmsg"; then
+        exec 5>/dev/kmsg
+    else
+        exec 5>/dev/null
+    fi
+
+    # rd.log=file
+    if bitfield_has_bit "$rd_logmask" "$_rdlog_file"; then
+        exec 6>/run/initramfs/init.log
+    else
+        exec 6>/dev/null
+    fi
+
+    while read -r line; do
+        # rd.log=console
+        printf '%s\n' "$line" >&4
+
+        # rd.log=kmsg
+        log_kmsg '%s' "$line" >&5
+
+        # rd.log=file
+        printf '%s\n' "$line" >&6
+    done
+
+    # EOF, shutting down...
+    exec 4>&- 5>&- 6>&-
+    rm -f /run/initramfs/rdlogger.pipe /run/initramfs/rdlogger.pid
+}
+
+# vim: set ft=sh ts=4 sw=4 et:

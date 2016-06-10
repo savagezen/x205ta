@@ -1,0 +1,42 @@
+%NAME%
+syslinux
+
+%VERSION%
+6.03-6
+
+%DESC%
+Collection of boot loaders that boot from FAT, ext2/3/4 and btrfs filesystems, from CDs and via PXE
+
+%URL%
+http://www.syslinux.org/
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1461355338
+
+%INSTALLDATE%
+1464799513
+
+%PACKAGER%
+Anatol Pomozov <anatol.pomozov@gmail.com>
+
+%SIZE%
+3506176
+
+%LICENSE%
+GPL2
+
+%VALIDATION%
+pgp
+
+%OPTDEPENDS%
+perl-passwd-md5: For md5pass
+perl-digest-sha1: For sha1pass
+mtools: For mkdiskimage and syslinux support
+gptfdisk: For GPT support
+util-linux: For isohybrid
+efibootmgr: For EFI support
+dosfstools: For EFI support
+

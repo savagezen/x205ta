@@ -1,0 +1,37 @@
+%NAME%
+wpa_actiond
+
+%VERSION%
+1.4-2
+
+%DESC%
+Daemon that connects to wpa_supplicant and handles connect and disconnect events
+
+%URL%
+http://projects.archlinux.org/wpa_actiond.git/
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1369986427
+
+%INSTALLDATE%
+1464799539
+
+%PACKAGER%
+Tobias Powalowski <tpowa@archlinux.org>
+
+%SIZE%
+30720
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+glibc
+wpa_supplicant
+

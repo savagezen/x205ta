@@ -1,0 +1,37 @@
+%NAME%
+usb_modeswitch
+
+%VERSION%
+2.3.0-1
+
+%DESC%
+Activating switchable USB devices on Linux.
+
+%URL%
+http://www.draisberghof.de/usb_modeswitch/
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1455555710
+
+%INSTALLDATE%
+1464799538
+
+%PACKAGER%
+Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+%SIZE%
+329728
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+libusb
+tcl
+

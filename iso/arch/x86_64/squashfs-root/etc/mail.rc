@@ -1,0 +1,167 @@
+#@ mail.rc
+#@ Configuration file for Mail(1) v14.8.8
+# S-nail(1): v14.8.8 / 2016-03-26
+
+## The standard POSIX 2008/Cor 1-2013 mandates the following initial settings:
+# (Keep in sync: ./main.c:_startup(), ./nail.rc, ./nail.1:"Initial settings"!)
+# [a]   noallnet, noappend, asksub, noaskbcc, noaskcc, noautoprint,
+# [b-e] nobang, nocmd, nocrt, nodebug, nodot, escape="~",
+# [f-i] noflipr, nofolder, header, nohold, noignore, noignoreeof,
+# [j-o] nokeep, nokeepsave, nometoo, nooutfolder,
+# [p-r] nopage, prompt="? ", noquiet, norecord,
+# [s]   save, nosendwait, noshowto, nosign, noSign,
+# [t-z] toplines="5"
+# Notes:
+# - no*onehop* doesn't exist in this implementation.
+#   (To pass options through to an MTA, either add them after a "--" separator
+#   on the command line or by setting the *sendmail-arguments* variable.)
+# - *prompt* is "\\& " by default, which will act POSIX-compliant
+#   unless the user would set *bsdcompat*
+
+## The remaining content adjusts the standard-imposed default settings.
+# Note that some of the following flags are specific to S-nail(1) and may thus
+# not work with other Mail(1) / mailx(1) programs.
+# Entries are marked [OPTION] if their availability is compile-time dependent
+
+## Variables
+
+# If threaded mode is activated, automatically collapse thread
+set autocollapse
+
+# Enter threaded mode automatically
+#set autosort=thread
+
+# Append rather than prepend when writing to mbox automatically.
+# This has no effect unless *hold* is unset (it is set below)
+set append
+
+# Ask for a message subject.
+set ask
+
+# *bsdannounce* prints a header summary on folder change and thus complements
+# *header* on a per-folder basis (it is meaningless unless *header* is set)
+set bsdannounce
+
+# Uncomment this in order to get coloured output in $PAGER.
+# (Coloured output is only used if $TERM is either found in *colour-terms*
+# or includes the string "color")
+#set colour-pager
+
+# Assume a CRT-like terminal and invoke a $PAGER
+set crt
+
+# Define date display in header summary
+#set datefield="%R %m-%d" datefield-markout-older="   %g-%m-%d"
+
+# When composing messages a line consisting of `.' finalizes a message
+set dot
+
+# Immediately start $EDITOR (or $VISUAL) when composing a message
+#set editalong
+
+# Startup into interactive mode even if the (given) mailbox is empty
+#set emptystart
+
+# When replying to or forwarding a message the comment and name parts of email
+# addresses are removed unless this variable is set.
+#set fullnames
+
+# [OPTION] Add more entries to the history as is done by default
+set history-gabby
+
+# Do not forward to mbox by default since this is likely to be
+# irritating for most users today; also see *keepsave*
+set hold
+
+# Quote the original message in replies by "> " as usual on the Internet
+set indentprefix="> "
+
+# Mark messages that have been answered
+set markanswered
+
+# Try to circumvent false or missing MIME Content-Type descriptions
+# (Can be set to values for extended behaviour, please see the manual.)
+set mime-counter-evidence
+
+# Control loading of mime.types(5) file: the value may be a combination of the
+# letters "s" and "u": if "u" is seen ~/.mime.types will be loaded if possible;
+# "s" adds /etc/mime.types, if available; setting this without any value uses
+# only a set of builtin mimetypes; the default behaviour equals "us".
+# An extended syntax that allows loading of other, specified files is available
+# if the value contains an equal sign "=", see the manual for more
+#set mimetypes-load-control
+
+# Do not remove empty mail folders.
+# This may be relevant for privacy since other users could otherwise create
+# them with different permissions
+set keep
+
+# Do not move `save'd or `write'n message to mbox by default since this is
+# likely to be irritating for most users today; also see *hold*
+set keepsave
+
+# When writing mailbox files we strip Content-Length: and Lines: header fields
+# from edited / changed messages, because S-nail doesn't deal with these
+# (non-standard) fields -- and since other MUAs may rely on their content, if
+# present, it seems more useful to strip them than to keep them, now that they
+# became invalid; set this to include them nonetheless
+#set keep-content-length
+
+# A nice prompt for ISO 6429/ECMA-48 terminals
+#set prompt="\033[31m?\?[\$ \@]\& \033[0m"
+
+# Automatically quote the text of the message that is responded to
+set quote
+
+# On group replies, specify only the sender of the original mail in  To: and
+# mention it's other recipients in the secondary Cc: instead of placing them
+# all together in To:
+set recipients-in-cc
+
+# When responding to a message, try to answer in the same character set
+#set reply-in-same-charset
+
+# [OPTION] Outgoing messages are sent in UTF-8 if possible, otherwise LATIN1.
+# Note: it is highly advisable to read the section "Character sets" of the
+# manual in order to understand all the possibilities that exist to fine-tune
+# charset usage (variables also of interest: *ttycharset*, *charset-8bit*,
+# *sendcharsets-else-ttycharset*; and of course we inherit the $LC_CTYPE /
+# $LC_ALL / $LANG environment variables and react upon them)
+set sendcharsets=utf-8,iso-8859-1
+
+# When sending a message wait until the MTA (including the builtin SMTP one)
+# exits before accepting further commands.  Only with this variable set errors
+# reported by the MTA will be recognizable!
+#set sendwait
+
+# Display real sender names in header summaries instead of only addresses
+set showname
+
+# Show recipients of messages sent by the user himself in header summaries
+set showto
+
+## Commands
+
+# Only include these selected header fields when forwarding messages
+fwdretain subject date from to
+
+# Only include the selected header fields when printing messages
+retain date from to cc subject message-id mail-followup-to reply-to
+
+## Some pipe-TYPE/SUBTYPE entries
+
+# HTML as text, inline display via lynx(1)
+#if $features !@ HTML-FILTER
+#   set pipe-text/html="lynx -stdin -dump -force_html"
+#endif
+
+# PDF display, asynchronous display via xpdf(1)
+#set pipe-application/pdf="@&set -C;\
+#   : > \"${TMPDIR}/${NAIL_FILENAME_GENERATED}\";\
+#   trap \"rm -f \\\"${TMPDIR}/${NAIL_FILENAME_GENERATED}\\\"\" \
+#      EXIT INT QUIT PIPE TERM;\
+#   set +C;\
+#   cat > \"${TMPDIR}/${NAIL_FILENAME_GENERATED}\";\
+#   xpdf \"${TMPDIR}/${NAIL_FILENAME_GENERATED}\""
+
+# s-it-mode

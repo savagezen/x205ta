@@ -1,0 +1,18 @@
+#!/bin/bash
+
+build() {
+    if (( fs_autodetect_failed )); then
+        add_all_modules -f 'nls' '/kernel/fs'
+    else
+        add_checked_modules -f 'nls' '/kernel/fs'
+    fi
+}
+
+help() {
+    cat <<HELPEOF
+This hook adds filesystems modules to the image. If you would like to minimize
+the modules installed in the image, add the autodetect hook too.
+HELPEOF
+}
+
+# vim: set ft=sh ts=4 sw=4 et:

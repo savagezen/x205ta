@@ -1,0 +1,9 @@
+[Unit]
+Description=Preprocess NFS configuration
+After=local-fs.target
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/lib/systemd/scripts/nfs-utils_env.sh

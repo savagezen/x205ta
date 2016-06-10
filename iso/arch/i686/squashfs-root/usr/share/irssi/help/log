@@ -1,0 +1,51 @@
+
+%9Syntax:%9
+
+LOG OPEN %|[-noopen] [-autoopen] [-window] [-<server tag>] [-targets <targets>] [-colors] <fname> [<levels>]
+LOG CLOSE %|<id>|<file>
+LOG START %|<id>|<file>
+LOG STOP %|<id>|<file>
+
+%9Parameters:%9
+
+    OPEN:             Opens a log file.
+    CLOSE:            Closes a log file.
+    START:            Starts logging a log entry.
+    STOP:             Stops logging a log entry.
+
+    -noopen:          Saves the entry in the configuration, but doesn't actually
+                      start logging.
+    -autoopen:        Automatically opens the log at startup.
+    -window:          Displays the output to the active window, or the window
+                      specified in the targets parameter.
+    -<server tag>:    The server tag the targets must be on.
+    -targets:         Logs the specified nicknames or channels.
+    -colors:          Also log the color codes of the messages.
+
+    The filename of the log and the levels to match; if no argument is given,
+    the list of open logs will be displayed.
+
+%9Description:%9
+
+    Opens a log file and stores the messages of the given targets into it; the
+    log files will be locked so multiple clients cannot log to the same file.
+
+    You may use any of the date formats to create a log rotation; we strongly
+    recommend you to enable autolog if you are interested in keeping logs.
+
+%9Examples:%9
+
+    /LOG OPEN -targets mike ~/irclogs/mike.log MSGS
+    /LOG OPEN -targets #irssi-freenode ~/irclogs/freenode/irssi-%%Y-%%m-%%d
+    /LOG CLOSE ~/irclogs/freenode/irssi-%%Y-%%m-%%d
+    /LOG STOP ~/irclogs/freenode/irssi-%%Y-%%m-%%d
+    /LOG START ~/irclogs/freenode/irssi-%%Y-%%m-%%d
+
+    /SET autolog ON
+
+%9References:%9
+
+    https://github.com/irssi/irssi/blob/master/docs/formats.txt
+
+%9See also:%9 SET LOG, WINDOW LOG
+

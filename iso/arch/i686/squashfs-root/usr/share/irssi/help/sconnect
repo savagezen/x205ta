@@ -1,0 +1,25 @@
+
+%9Syntax:%9
+
+SCONNECT %|<new server> [[<port>] <existing server>]
+
+%9Parameters:%9
+
+    The server to connect to, the connection port and the remote server that
+    initiates the connection attempt.
+
+    If no remote server is given, the server you are currently connected to will
+    be used.
+
+%9Description:%9
+
+    Connect a server to the IRC network; this command is restricted to IRC
+    operators.
+
+%9Examples:%9
+
+    /SCONNECT ircsource.irssi.org
+    /SCONNECT ircsource.irssi.org 6667 be.hub
+
+%9See also:%9 DIE, KILL, OPER, RESTART, SQUIT
+

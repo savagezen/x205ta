@@ -1,0 +1,313 @@
+#!/bin/bash
+# Steven Shiau <steven _at_ nchc org tw>, Ceasar Sun <ceasar _at_ nchc org tw>
+# License: GPL
+# Description: prepare the pxelinux by using the files on the system or download and extract the required programs for DRBL.
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+[ -e /etc/drbl/drbl-ocs.conf ] && . /etc/drbl/drbl-ocs.conf
+[ -e $DRBL_SCRIPT_PATH/sbin/ocs-functions ] && . $DRBL_SCRIPT_PATH/sbin/ocs-functions
+
+# Local settings
+# Not existing in ubuntu syslinux package: gpxelinux.0 sanboot.c32 hdt.c32
+# The files are in /usr/lib/syslinux/ on Ubuntu 10.04 syslinux 3.63.
+# Debian has syslinux-common, and the above files are in syslinux-common, but ubuntu 10.04 does not, and ubuntu 11.04 does.
+# For Syslinux 5, new .c32 are required: ldlinux.c32, libcom32.c32, libutil.c32
+DRBL_NEED_PXELINUX_common="isolinux.bin memdisk pxelinux.0 lpxelinux.0 gpxelinux.0 mbr.bin"
+DRBL_NEED_PXELINUX_modules="menu.c32 vesamenu.c32 chain.c32 mboot.c32 sanboot.c32 hdt.c32 $sys_pxelinux_v5p_required_c32"
+DRBL_NEED_PXELINUX="$DRBL_NEED_PXELINUX_common $DRBL_NEED_PXELINUX_modules"
+# By default we only copy the required files to $pxelinux_binsrc_dir. This option will allow us to copy files to dir $pxecfg_pd.
+deploy_to_system_too="no"
+# default not verbose
+verbose="no"
+
+# Functions
+USAGE() {
+  echo "Put the pxelinux files in DRBL package repository"
+  echo "Usage: $0 [OPTION]"
+  echo "OPTION:"
+  echo "-u, --from-upstream   Use the binary from upstream ($syslinux_binsrc_url). If this option is not assigned, DRBL will try to use the pxelinux from your GNU/Linux distribution."
+  echo "-pv, --pxelinux-version VERSION  The pxelinux version to be used with -u|--from-upstream. If not assigned, the version number specified in drbl.conf will be used."
+  echo "-d, --deploy-to-system-too   Deploy the files to DRBL system ($pxecfg_pd), too."
+  echo "-v, --verbose                show verbose messages."
+  echo "Ex: To use the pxelinux 4.04 from $syslinux_binsrc_url, run '$0 -u -pv 4.04'"
+}
+
+#
+put_pxelinux_bin_2_drbl_repo() {
+  local pxelinux_extracted_bin_abs_path="$1"  # source dir name
+  local pxelinux_system_abs_path="$2" # destination dir name
+  [ -z "$pxelinux_extracted_bin_abs_path" ] && return 1
+  [ -z "$pxelinux_system_abs_path" ] && return 1
+  echo -n "Putting required pxelinux files to $pxelinux_system_abs_path... "
+  mkdir -p $pxelinux_system_abs_path
+  install -o root -g root -m 644 $pxelinux_extracted_bin_abs_path/* $pxelinux_system_abs_path
+  pxelinux_v="$(LC_ALL=C strings $pxelinux_file | grep "^PXELINUX")"
+  echo $pxelinux_v > $pxelinux_binsrc_dir/VERSION
+  echo "done!"
+} # end of put_pxelinux_bin_2_drbl_repo
+
+#
+put_upstream_pxelinux(){
+  # Function to use the upstream binary directly
+  local ver="$1"
+  local tmp_wd syslinux_tarball syslinux_ver_subdir
+  if [ -z "$ver" ]; then
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+    echo "No upstream syslinux/pxelinux version was assigned. Program terminated."
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+    USAGE
+    exit 1
+  fi
+  syslinux_tarball="syslinux-${ver}.tar.xz"
+  tmp_wd="$(LC_ALL=C mktemp -d /tmp/syslinux_tmp.XXXXXXX)"
+  mkdir -p $tmp_wd/upstream
+  if [ -z "$(echo $ver | grep -iE -- "-pre[[:digit:]]+")" ]; then
+    # Stable release, not testing version.
+    # Convert the version number to subdir name, e..g 4.04 -> 4.xx
+    syslinux_ver_subdir="$(LC_ALL=C echo "$ver" | sed -r -e "s/\.[[:digit:]]*$/\.xx/g")"
+  else
+    # Testing release. File name is like: syslinux-6.02-pre16.tar.xz
+    # The URL for such a testing version is like: http://free.nchc.org.tw/syslinux/Testing/6.02/
+    syslinux_ver_subdir="$(LC_ALL=C echo "$ver" | sed -r -e "s/-pre[[:digit:]]+$//g")"
+    syslinux_ver_subdir="Testing/$syslinux_ver_subdir"
+  fi
+  #echo -n "Downloading ${ver} syslinux/pxelinux files from $syslinux_binsrc_url... "
+  #LC_ALL=C wget $wget_opt -P $tmp_wd $syslinux_binsrc_url/$branch_path/$syslinux_tarball
+  echo "Downloading $syslinux_binsrc_url/$syslinux_ver_subdir/$syslinux_tarball..."
+  LC_ALL=C wget $wget_opt -P $tmp_wd $syslinux_binsrc_url/$syslinux_ver_subdir/$syslinux_tarball
+  echo "done!"
+  LC_ALL=C tar -xJf $tmp_wd/$syslinux_tarball -C $tmp_wd/upstream
+  mkdir -p $tmp_wd/extracted/syslinux
+  echo "Extracting the required files for DRBL..."
+  # Check if the tarball contains multiple arch (bios, efi32, and efi64) support.
+  if [ -n "$(find $tmp_wd/upstream -iname "efi64" -type d 2>/dev/null)" ]; then
+    syslinux_arch="multiple"
+  else
+    syslinux_arch="single"
+  fi
+  case "$syslinux_arch" in
+  "single")
+    for iprog in $DRBL_NEED_PXELINUX; do
+      find $tmp_wd/upstream -name "$iprog" -type f -exec cp -af $v_opt {} $tmp_wd/extracted/syslinux/ \;
+    done
+    put_pxelinux_bin_2_drbl_repo $tmp_wd/extracted/syslinux/ $pxelinux_binsrc_dir/bios/
+    ;;
+  "multiple")
+    # For syslinux 6.x, *.c32 modules for different arch are put in bios/, efi32, or efi64/
+    for iprog in $DRBL_NEED_PXELINUX_common; do
+      find $tmp_wd/upstream -name "$iprog" -type f -exec cp -af $v_opt {} $tmp_wd/extracted/syslinux/ \;
+    done
+    put_pxelinux_bin_2_drbl_repo $tmp_wd/extracted/syslinux/ $pxelinux_binsrc_dir/bios/
+    rm -f $v_opt $tmp_wd/extracted/syslinux/*
+    for iarch in bios efi32 efi64; do
+      for iprog in $DRBL_NEED_PXELINUX_modules; do
+        # Here we search the files under syslinux/
+        find $tmp_wd/upstream/*/$iarch/ -name "$iprog" -type f -exec cp -af $v_opt {} $tmp_wd/extracted/syslinux/ \;
+      done
+      put_pxelinux_bin_2_drbl_repo $tmp_wd/extracted/syslinux/ $pxelinux_binsrc_dir/$iarch/
+      rm -f $v_opt $tmp_wd/extracted/syslinux/*
+    done
+    # Some more extra files for efi32 and efi64
+    find $tmp_wd/upstream/*/efi32/ -name "syslinux.efi" -type f -exec \
+         install -o root -g root -m 644 {} $pxelinux_binsrc_dir/efi32/ \;
+    find $tmp_wd/upstream/*/efi32/ -name "ldlinux.e32" -type f -exec \
+	 install -o root -g root -m 644 {} $pxelinux_binsrc_dir/efi32/ \;
+    find $tmp_wd/upstream/*/efi64/ -name "syslinux.efi" -type f -exec \
+	 install -o root -g root -m 644 {} $pxelinux_binsrc_dir/efi64/ \;
+    find $tmp_wd/upstream/*/efi64/ -name "ldlinux.e64" -type f -exec \
+	 install -o root -g root -m 644 {} $pxelinux_binsrc_dir/efi64/ \;
+    ;;
+  esac
+  if [ -d "$tmp_wd" -a -n "$(echo "$tmp_wd" | grep -i syslinux_tmp)" ]; then
+    rm -rf $tmp_wd
+  fi
+} # end of put_upstream_pxelinux
+#
+put_distribution_pxelinux() {
+  # Function to use the package from distribution.
+  local possible_syslinux_pkgs req_syslinux_pkg_name syslinux_pkgs
+  # First we find pxelinux, then syslinux-common, then syslinux. The order is important.
+  possible_syslinux_pkgs="pxelinux syslinux-common syslinux-nonlinux syslinux"
+  # Package name:
+  # Debian: syslinux-common, for syslinux 6.x, sub-packages, pxelinux is available.
+  # Ubuntu: 10.04: syslinux, > 10.10: syslinux-common
+  # Fedora <=20: syslinux, >= 21: syslinux-nonlinux, by Ceasar
+  # Suse: syslinux
+  for i in $possible_syslinux_pkgs; do
+    if $query_pkglist_exist_cmd $i &>/dev/null; then
+       req_syslinux_pkg_name="$i"
+       break
+    fi
+  done
+  tmp_wd="$(LC_ALL=C mktemp -d /tmp/pxelinux_tmp.XXXXXXX)"
+  if [ -n "$req_syslinux_pkg_name" ]; then
+    # Found on the system
+    # The syslinux-common version on Debian might be like: 2:4.02+dfsg-7, to compare the version, we'd better to strip the "2:"
+    # syslinux_pkg_ver="$(LC_ALL=C dpkg-query -W -f='${Version}\n' $req_syslinux_pkg_name | sed -r -e "s/^[[:digit:]]*://g")"
+    # echo "Syslinux package version: $syslinux_pkg_ver"
+    # For Redhat-like system, there might return more than one file on a system, i.e. one file belongs to 2 rpm packages.
+    pxelinux_bin="$(LC_ALL=C $query_pkglist_cmd $req_syslinux_pkg_name | grep -Ew "pxelinux.0$" | sort | head -n 1)"
+    if [ -n "$pxelinux_bin" ]; then
+      pxelinux_v="$(LC_ALL=C strings $pxelinux_bin | grep "^PXELINUX")"
+      echo "Found $pxelinux_bin in this system:"
+      echo "PXELinux version: $pxelinux_v"
+      echo "Copying the PXELinux files to DRBL local repository..."
+      # For syslinux 6.x, on Debian another sub-package "pxelinux" from syslinux is separated, and pxelinux.0 is put in /usr/lib/PXELINUX/pxelinux.0, while those *.c32 moduels are in /usr/lib/syslinux/modules/{bios,efi32,efi64}
+      pxelinux_bin_dir="$(LC_ALL=C dirname $pxelinux_bin)"
+
+      # This part works for both syslinux <= 5 and >=6
+      # For syslinux >=5, collect and put pxelinux.0, lpxelinux.0, gpxelinux.0, and all *.c32
+      # For syslinux >=6, collect and put only pxelinux.0, lpxelinux.0, and gpxelinux.0 because only these 3 files are under $pxelinux_bin_dir/
+      for iprog in $DRBL_NEED_PXELINUX; do
+        find $pxelinux_bin_dir -name "$iprog" -type f -exec cp -af $v_opt {} $tmp_wd/ \;
+      done
+      put_pxelinux_bin_2_drbl_repo $tmp_wd $pxelinux_binsrc_dir/bios/
+      rm -f $v_opt $tmp_wd/*
+
+      # This part works for syslinux >=6
+      # Those *.c32, isolinux.bin, memdisk, and mbr.bin are copied in this part for syslinux >=6
+      # The above find command only find /usr/lib/PXELINUX for syslinux >=6, but isolinux.bin and memdisk are required. It will search /usr/lib/syslinux if syslinux <=5
+      if [ -d /usr/lib/ISOLINUX/ ]; then
+        find /usr/lib/ISOLINUX/ -name "isolinux.bin" -type f -exec \
+	cp -af $v_opt {} $tmp_wd/ \;
+      fi
+      # When syslinux <=6, memdisk will be put by the above find command. No need to copy again.
+      if [ -d /usr/lib/syslinux/ -a ! -e $pxelinux_binsrc_dir/bios/memdisk ]; then
+        find /usr/lib/syslinux/ -name "memdisk" -type f -exec \
+	cp -af $v_opt {} $tmp_wd/ \;
+      fi
+      for iarch in bios efi32 efi64; do
+        for iprog in $DRBL_NEED_PXELINUX; do
+          if [ -d $pxelinux_bin_dir/../syslinux/modules/$iarch/ ]; then
+            find $pxelinux_bin_dir/../syslinux/modules/$iarch/ -name "$iprog" \
+		 -type f -exec cp -af $v_opt {} $tmp_wd/ \;
+          fi
+	  if [ "$iarch" = "bios" ]; then
+	    # This part is only for mbr.bin of bios, not for efi32 or efi64.
+	    # For Debian/Ubuntu, mbr.bin is located in /usr/lib/syslinux/mbr/mbr.bin. Therefore we need to find /usr/lib/syslinux/mbr/, too.
+            # For Fedora/Centos, mbr.bin is located in /usr/share/syslinux/
+	    # while since pxelinux_bin=/usr/share/syslinux/pxelinux.0 so pxelinux_bin_dir=/usr/share/syslinux
+            find $pxelinux_bin_dir/../syslinux/{,mbr/} -name "mbr.bin" \
+                 -type f -exec cp -af $v_opt {} $tmp_wd/ \; &>/dev/null
+          fi
+        done
+	if [ -n "$(ls $tmp_wd/* 2>/dev/null)" ]; then
+          put_pxelinux_bin_2_drbl_repo $tmp_wd $pxelinux_binsrc_dir/$iarch/
+        fi
+	rm -f $v_opt $tmp_wd/*
+      done
+      # Some more extra files for efi32 and efi64
+      if  [ -d /usr/lib/SYSLINUX.EFI/ ]; then
+       find /usr/lib/SYSLINUX.EFI/efi32/ -name "syslinux.efi" -type f -exec \
+            install -o root -g root -m 644 {} $pxelinux_binsrc_dir/efi32/ \;
+       find /usr/lib/SYSLINUX.EFI/efi64/ -name "syslinux.efi" -type f -exec \
+            install -o root -g root -m 644 {} $pxelinux_binsrc_dir/efi64/ \;
+      fi
+      if [ -d /usr/lib/syslinux/modules/ ]; then
+       find /usr/lib/syslinux/modules/efi32/ -name "ldlinux.e32" -type f -exec \
+          install -o root -g root -m 644 {} $pxelinux_binsrc_dir/efi32/ \;
+       find /usr/lib/syslinux/modules/efi64/ -name "ldlinux.e64" -type f -exec \
+           install -o root -g root -m 644 {} $pxelinux_binsrc_dir/efi64/ \;
+      fi
+    else
+      [ "$BOOTUP" = "color" ] && $SETCOLOR_WARNING
+      echo "Package of pxelinux was installed, but pxelinux boot file not found!"
+      [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+    fi
+  else 
+    # Download and extract it. The reason we do not install it is we do not want to bother the server's boot menu
+    mkdir -p $tmp_wd/{extracted,upstream}
+    echo "Trying to download syslinux from distribution repository..."
+    if [ -e /etc/debian_version ]; then
+      # Debian
+      syslinux_pkgs=""
+      for ipkg in $possible_syslinux_pkgs; do
+        if [ -n "$(LC_ALL=C apt-cache show $ipkg 2>/dev/null)" ]; then
+          syslinux_pkgs="$syslinux_pkgs $ipkg"
+        fi
+      done
+      echo "Related syslinux package(s) on repository: $syslinux_pkgs"
+       # Clean all stale deb files in the cache dir. Otherwise there might be some old version of debs exist in the cache dir.
+      LC_ALL=C apt-get clean
+      LC_ALL=C apt-get -d --reinstall install $syslinux_pkgs
+      for i in $syslinux_pkgs; do
+        LC_ALL=C dpkg --extract /var/cache/apt/archives/${i}_*.deb $tmp_wd/upstream
+      done
+      for iprog in $DRBL_NEED_PXELINUX; do
+        find $tmp_wd/upstream -name "$iprog" -type f -exec cp -af $v_opt {} $tmp_wd/extracted \;
+      done
+      put_pxelinux_bin_2_drbl_repo $tmp_wd/extracted $pxelinux_binsrc_dir/bios/
+    elif [ -e /etc/SuSE-release ]; then
+      # SuSE
+      # The binary for syslinux-common in openSuse 11.3 is: /boot/pxelinux.bin
+      # TODO: Clean cached files in /var/cache/zypp/packages/
+      LC_ALL=C zypper install -d -f -y syslinux
+      pxelinux_rpm="$(LC_ALL=C find /var/cache/zypp/packages/ -name "syslinux-*.rpm" -print)"
+      (
+       cd $tmp_wd/upstream
+       LC_ALL=C rpm2cpio "$pxelinux_rpm" | cpio -idm
+      )
+      for iprog in $DRBL_NEED_PXELINUX; do
+        find $tmp_wd/upstream -name "$iprog" -type f -exec cp -af $v_opt {} $tmp_wd/extracted \;
+      done
+      put_pxelinux_bin_2_drbl_repo $tmp_wd/extracted $pxelinux_binsrc_dir/bios/
+    else
+      # RH-like
+      LC_ALL=C yumdownloader --destdir $tmp_wd syslinux
+      (
+       cd $tmp_wd/upstream
+       LC_ALL=C rpm2cpio $tmp_wd/syslinux*.rpm | cpio -idm
+      )
+      for iprog in $DRBL_NEED_PXELINUX; do
+        find $tmp_wd/upstream -name "$iprog" -type f -exec cp -af $v_opt {} $tmp_wd/extracted \;
+      done
+      put_pxelinux_bin_2_drbl_repo $tmp_wd/extracted $pxelinux_binsrc_dir/bios/
+    fi
+  fi
+  if [ -d "$tmp_wd" -a -n "$(LC_ALL=C echo "$tmp_wd" | grep -i pxelinux_tmp)" ]; then
+    rm -rf $tmp_wd
+  fi
+} # end of put_distribution_pxelinux
+
+############
+### MAIN ###
+############
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -u|--from-upstream) shift; mode="from-upstream" ;;
+    -pv|--pxelinux-version)
+        shift;
+        if [ -z "$(echo $1 |grep ^-.)" ]; then
+          # skip the -xx option, in case 
+          pxelinux_ver_requested="$1"
+          [ -z "$pxelinux_ver_requested" ] && USAGE && exit 1
+	  shift
+        fi
+	;;
+    -d|--deploy-to-system-too) shift; deploy_to_system_too="yes" ;;
+    -v|--verbose) shift; verbose="yes" ;;
+    *)  USAGE && exit 1 ;;
+  esac
+done
+# mode is essential
+[ -z "$mode" ] && mode="from-distribution"
+[ -z "$pxelinux_ver_requested" ] && pxelinux_ver_requested="$SYS_PXELINUX_VER_DEF"
+
+if [ "$verbose" = "yes" ]; then
+  v_opt="-v"
+fi
+
+case "$mode" in
+  from-distribution) put_distribution_pxelinux ;;
+  from-upstream)     put_upstream_pxelinux $pxelinux_ver_requested ;;
+esac
+
+if [ "$deploy_to_system_too" = "yes" ]; then
+  echo "Putting required pxelinux files in DRBL system dir $pxecfg_pd... "
+  prepare-files-for-PXE-client -p
+  echo "done!"
+fi
+
+exit 0

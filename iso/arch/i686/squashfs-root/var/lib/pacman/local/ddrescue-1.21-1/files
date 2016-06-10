@@ -1,0 +1,13 @@
+%FILES%
+usr/
+usr/bin/
+usr/bin/ddrescue
+usr/bin/ddrescuelog
+usr/share/
+usr/share/info/
+usr/share/info/ddrescue.info.gz
+usr/share/man/
+usr/share/man/man1/
+usr/share/man/man1/ddrescue.1.gz
+usr/share/man/man1/ddrescuelog.1.gz
+

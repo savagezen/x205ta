@@ -1,0 +1,5 @@
+%FILES%
+boot/
+boot/memtest86+/
+boot/memtest86+/memtest.bin
+

@@ -1,0 +1,275 @@
+#!/bin/bash
+# Author: Steven Shiau <steven _at_ nchc org tw>
+# License: GPL
+#
+# Description: This script will create a Clonezilla image, all the partition/LV image files are linked. It is intended to be used to restore the image to other disk.
+
+set -e
+#
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+. /etc/drbl/drbl-ocs.conf
+. $DRBL_SCRIPT_PATH/sbin/ocs-functions
+
+# Settings
+# By default this program is used to create an image with device converted. However, if what we want is to duplicate an image, no need to convert the device.
+cvt_dev="yes"
+
+# Ex.:
+# disk                      -> copied
+# etch-home.reiserfs-img.aa -> soft linked
+# etch-root.reiserfs-img.aa -> soft linked
+# hda1.ext3-img.aa          -> soft linked
+# hda-chs.sf                -> copied
+# hda-mbr                   -> copied
+# hda-pt.parted             -> copied
+# hda-pt.sf                 -> copied
+# lvm_etch.conf             -> copied
+# lvm_logv.list             -> copied
+# lvm_vg_dev.list           -> copied
+# parts                     -> copied
+# swappt-etch-swap_1.info   -> copied
+# sda1.files-md5sum.info.gz -> copied
+# How ? First parse parts and lvm_logv.list, find the partition/LV image, link them. For the rest, copy them.
+
+#
+USAGE() {
+    echo This script will create a Clonezilla image based on an existing image in $ocsroot, all the partition or LV image files are linked, not copied. It is intended to be used to restore the image to other disk.
+    echo "Usage:"
+    echo "$0 [OPTION] EXISTING_IMAGE NEW_IMAGE ORIGINAL_DEV NEW_DEV   To create a new image NEW_IMAGE based on existing image EXISTING_IMAGE, the original dev is ORIGINAL_DEV, the new one is NEW_DEV"
+    echo "OPTION:"
+    echo "-or, --ocsroot DIR Specify DIR (absolute path) as directory ocsroot (i.e. overwrite the ocsroot assigned in drbl.conf)"
+    echo "-n, --no-cvt-dev  Do not convert the device name. This option is used to create a duplicated image only."
+    echo "-t, --target-dir  DIR  Assign the created image will be put in DIR. If not assigned, the created image will be in /tmp."
+    echo "Ex: To convert the \"image\" as \"image-cvt\", with device \"sda\" is changed to \"sdb\", run:"
+    echo "    $0 image image-cnvt sda sdb"
+    echo "Ex: To duplicate the \"image\" as \"image-pixz\", without changing any device name, run:"
+    echo "    $0 -n image image-pixz"
+}
+
+#
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -or|--ocsroot)
+            # overwrite the ocsroot in drbl.conf
+            shift; 
+            if [ -z "$(echo $1 |grep ^-.)" ]; then
+              # skip the -xx option, in case 
+              ocsroot="$1"
+              shift;
+            fi
+            [ -z "$ocsroot" ] && USAGE && exit 1
+            ;;
+    -n|--no-cvt-dev)
+            shift; 
+            cvt_dev="no"
+            ;;
+    -f|--from-part)
+            shift
+            if [ -z "$(echo $1 |grep ^-.)" ]; then
+              # skip the -xx option, in case 
+	      from_part="$1"
+              shift
+            fi
+	    ;;
+    -d|--to-part)
+            shift
+            if [ -z "$(echo $1 |grep ^-.)" ]; then
+              # skip the -xx option, in case 
+	      to_part="$1"
+              shift
+            fi
+	    ;;
+    -t|--target-dir)
+            shift
+            if [ -z "$(echo $1 |grep ^-.)" ]; then
+              # skip the -xx option, in case 
+	      new_imghome="$1"
+              shift
+            fi
+	    ;;
+    -*)     echo "${0}: ${1}: invalid option" >&2
+            USAGE >& 2
+            exit 2 ;;
+    *)      break ;;
+  esac
+done
+
+imgname="$1"
+new_imgname="$2"
+src_dev="$3"
+tgt_dev="$4"
+
+#
+ask_and_load_lang_set $specified_lang
+
+if [ -z "$imgname" ]; then
+  echo "No EXISTING_IMAGE!"
+  echo "$msg_program_stop!"
+  USAGE
+  exit 1
+fi
+
+if [ -z "$new_imgname" ]; then
+  echo "No NEW_IMAGE!"
+  echo "$msg_program_stop!"
+  USAGE
+  exit 1
+fi
+
+# Only check source and destination device name when this program is used to create an image with device converted.
+if [ "$cvt_dev" = "yes" ]; then
+  if [ -z "$src_dev" ]; then
+    echo "No ORIGINAL_DEV!"
+    echo "$msg_program_stop!"
+    USAGE
+    exit 1
+  fi
+  
+  if [ -z "$tgt_dev" ]; then
+    echo "No NEW_DEV!"
+    echo "$msg_program_stop!"
+    USAGE
+    exit 1
+  fi
+fi
+
+# By default we put the new image in /tmp, since we need a filesystem can be symbolic linked. Otherwise it will fail, like CD (readonly) or samba server (FAT does not support symbolic link)
+if [ -z "$new_imghome" ]; then
+  new_imghome="/tmp"
+else
+  # Check if the assigned new_imghome supports software link
+  OCS_LN_TMP="$(mktemp $new_imghome/ocs_ln_tmp.XXXXXX)"
+  if ! ln -fs ${OCS_LN_TMP} ${OCS_LN_TMP}.ln &>/dev/null; then
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+    echo "File system for $new_imghome does not support software link!"
+    echo "You have to use a file system supporting software link for $new_imghome."
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+    echo "$msg_program_stop!"
+    my_ocs_exit 1
+  fi
+  [ -L "${OCS_LN_TMP}.ln" ] && rm -f ${OCS_LN_TMP}.ln
+  [ -e "$OCS_LN_TMP" ] && rm -f $OCS_LN_TMP
+fi
+# If the new image dir exists, only when the tag file converted-not-portable inside that we remove all the files. Otherwise it might happen to be the same dir name.
+if [ -d "$new_imghome/$new_imgname" -a -n "$new_imgname" -a \
+     -e "$new_imghome/$new_imgname/converted-not-portable" ]; then
+  rm -f $new_imghome/$new_imgname/*
+fi
+mkdir -p $new_imghome/$new_imgname
+
+echo "Creating a temporary image based on image $imgname..."
+# Find the file to be linked, not be copied.
+
+# Part 1: normal partition (hda1, sda1...)
+PARTIMG_LIST_TMP="$(get_parts_list_from_img $ocsroot/$imgname)"
+pt_found=""
+for i in $PARTIMG_LIST_TMP; do
+  if [ -z "$(unalias ls 2>/dev/null; ls $ocsroot/$imgname/$(to_filename $i)* 2>/dev/null)" ]; then
+    echo "$ocsroot/$imgname/$i* was not found! Skip this!"
+    continue
+  else
+    # Exclude the image info file like "sda1.dd-img.info" and "sda1.files-md5sum.info.gz"
+    pt_found="$(unalias ls 2>/dev/null; ls $ocsroot/$imgname/*$(to_filename $i)* \
+    2>/dev/null | grep -E -v "(dd-img.info$|\.info.gz$)" | while read x; do basename $x; done | sort)"
+  fi
+  PARTIMG_LIST="$PARTIMG_LIST $pt_found"
+done
+
+# Part 2: LV
+LV_LIST=""
+LOGV_PARSE_CONF="$ocsroot/$imgname/lvm_logv.list"
+if [ -e "$LOGV_PARSE_CONF" ]; then
+  exec 3< $LOGV_PARSE_CONF
+  while read -u 3 lv fs; do
+    echo "lv fs: $lv $fs"
+    # Find the real data partition
+    # Ex:
+    # /dev/vg3/lvol0  Linux rev 1.0 ext3 filesystem data (large files)
+    fn_found=""
+    fn="$(echo $lv | sed -e "s|^/dev/||" -e "s|/|-|g")"
+    if [ -z "$(unalias ls 2>/dev/null; ls $ocsroot/$imgname/*$fn* 2>/dev/null)" ]; then
+      echo "$ocsroot/$imgname/$fn* was not found! Skip this!"
+      continue
+    else
+      fn_found="$(unalias ls 2>/dev/null; ls $ocsroot/$imgname/*$fn* 2>/dev/null | while read x; do basename $x; done | sort)"
+    fi
+    # For swap partition, skip
+    case "$fs" in 
+      *[Ss][Ww][Aa][Pp]*) continue ;;
+    esac
+    LV_LIST="$LV_LIST $fn_found"
+  done
+  exec 3<&-
+fi
+
+# Softlink them
+for i in $PARTIMG_LIST $LV_LIST; do
+  ( 
+    cd $new_imghome/$new_imgname || exit 1
+    ln -fs $ocsroot/$imgname/$i .
+  )
+done
+
+# Copy the others
+( 
+  cd $new_imghome/$new_imgname 
+  for i in $ocsroot/$imgname/*; do
+    j="$(basename $i)"
+    if [ -z "$(echo $PARTIMG_LIST $LV_LIST | grep -Ewo "$j")" ]; then
+    cp -a $ocsroot/$imgname/$j .
+  fi
+  done
+)
+
+# Modify the content of checksum info, e.g. "sda1.files-md5sum.info.gz"
+for i in $new_imghome/$new_imgname/*.files-*sum.info.gz; do
+  [ ! -e "$i" ] && continue
+  # Find the mountpoint from checksum file, then change to new one
+  # The path in the checksum is like:
+  # ===================================
+  # f9389e7942c0b0ef918477cd0b24fdb3  /tmp/chksum_tmpd.yRFkST/root/.bash_history
+  # d41d8cd98f00b204e9800998ecf8427e  /tmp/chksum_tmpd.yRFkST/root/.cache/motd.legal-displayed
+  # cf277664b1771217d7006acdea006db1  /tmp/chksum_tmpd.yRFkST/root/.bashrc
+  # ===================================
+  # Unzip it, modify, then gzip it again.
+  gunzip $i
+  unzip_f="$(echo $i | sed -r -e "s/.info.gz$/.info/g")"
+  sum_part_tmpd="$(LC_ALL=C head -n 1 $unzip_f | awk -F" " '{print $2}' | grep -E -o "/tmp/chksum_tmpd.[[:alnum:]]{6}")"
+  new_sum_part_tmpd="$(LC_ALL=C mktemp -u -d /tmp/chksum_tmpd.XXXXXX)"
+  perl -pi -e "s|$sum_part_tmpd|$new_sum_part_tmpd|g" $unzip_f
+  gzip $unzip_f
+done
+
+#
+if [ "$cvt_dev" = "yes" ]; then
+  # Put a tag file
+  echo "This image was converted by $0 and it is not portable." > $new_imghome/$new_imgname/converted-not-portable
+  #
+  cnvt_force_opt=""
+  if [ -n "$from_part" -a -n "$to_part" ]; then
+    # We have to force to create the tmp image when source partition and destination partition is different.
+    # The is especially for the partitions on the same disk, like the image of sda1 is restored to sda6
+    cnvt_force_opt="-f"
+  fi
+  cnvt-ocs-dev $cnvt_force_opt -b -d $new_imghome $new_imgname $src_dev $tgt_dev
+fi
+
+if [ -n "$from_part" -a -n "$to_part" ]; then
+  # Softlink them
+  ( 
+    cd $new_imghome/$new_imgname || exit 1
+    # 1st, remove the destination partition in case it exists
+    rm -f ${to_part}.*
+    # sda1.ext4-ptcl-img.gz.aa -> sdb5.ext4-ptcl-img.gz.aa
+    for i in $ocsroot/$imgname/${from_part}.*; do
+      [ ! -e "$i" ] && continue
+      fn="$(basename $i)"
+      fn_new="$(echo "$fn" | sed -e "s|${from_part}\.|${to_part}\.|")"
+      ln -fs "${i}" "${fn_new}"
+    done
+  )
+fi
+
+echo "The created image is \"$new_imghome/$new_imgname\"."

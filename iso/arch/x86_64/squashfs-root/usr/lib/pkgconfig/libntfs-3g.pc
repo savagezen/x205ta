@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libntfs-3g
+Description: NTFS-3G Read/Write Driver Library
+Version: 2016.2.22
+Cflags: -I${includedir}
+Libs:  -L${libdir} -lntfs-3g

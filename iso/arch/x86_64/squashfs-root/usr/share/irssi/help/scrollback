@@ -1,0 +1,41 @@
+
+%9Syntax:%9
+
+SCROLLBACK CLEAR %|[-all] [<refnum>]
+SCROLLBACK LEVELCLEAR %|[-all] [-level <level>] [<refnum>]
+SCROLLBACK GOTO %|<+|-linecount>|<linenum>|<timestamp>
+SCROLLBACK HOME%|
+SCROLLBACK END
+
+%9Parameters:%9
+
+    CLEAR:         Clears the screen and the buffer of all text.
+    LEVELCLEAR:    Clears the screen and the buffer of text matching the given
+                   levels.
+    GOTO:          Go to the given position.
+    HOME:          Go to the start of the buffer.
+    END:           Go to the end of the buffer.
+
+    -all:          Applies to all windows instead of only the active one.
+    -level:        The levels, separated by a comma, to match.
+
+    The line number, timestamp to jump to or the window reference number to
+    clear.
+
+%9Description:%9
+
+    Manipulate the text in the window to go to a to the given line number, or
+    clear the buffers.
+
+    The timestamp format is format is '[dd[.mm] | -<days ago>] hh:mi[:ss]'.
+
+%9Examples:%9
+
+    /SCROLLBACK CLEAR
+    /SCROLLBACK LEVELCLEAR -level NOTICES
+    /SCROLLBACK GOTO 100
+    /SCROLLBACK HOME
+    /SCROLLBACK END
+
+%9See also:%9 CLEAR, WINDOW
+

@@ -1,0 +1,33 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>1.1. Description</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_MWG.html" title="The Linux-PAM Module Writers' Guide"><link rel="up" href="mwg-introduction.html" title="Chapter 1. Introduction"><link rel="prev" href="mwg-introduction.html" title="Chapter 1. Introduction"><link rel="next" href="mwg-introduction-synopsis.html" title="1.2. Synopsis"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">1.1. Description</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="mwg-introduction.html">Prev</a> </td><th width="60%" align="center">Chapter 1. Introduction</th><td width="20%" align="right"> <a accesskey="n" href="mwg-introduction-synopsis.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mwg-introduction-description"></a>1.1. Description</h2></div></div></div><p>
+        <span class="emphasis"><em>Linux-PAM</em></span> (Pluggable Authentication
+        Modules for Linux) is a library that enables the local system
+        administrator to choose how individual applications authenticate
+        users. For an overview of the
+        <span class="emphasis"><em>Linux-PAM</em></span> library see the
+        <span class="emphasis"><em>Linux-PAM System Administrators' Guide</em></span>.
+      </p><p>
+        A <span class="emphasis"><em>Linux-PAM</em></span> module is a single
+        executable binary file that can be loaded by the
+        <span class="emphasis"><em>Linux-PAM</em></span> interface library.
+        This PAM library is configured locally with a system file,
+        <code class="filename">/etc/pam.conf</code>, to authenticate a user
+        request via the locally available authentication modules. The
+        modules themselves will usually be located in the directory
+        <code class="filename">/lib/security</code> (or
+        <code class="filename">/lib64/security</code>, depending on the architecture)
+        and take the form of dynamically loadable object files (see
+        <span class="citerefentry"><span class="refentrytitle">dlopen</span>(3)</span>. Alternatively, the modules can be statically
+        linked into the <span class="emphasis"><em>Linux-PAM</em></span> library;
+        this is mostly to allow <span class="emphasis"><em>Linux-PAM</em></span> to
+        be used on platforms without dynamic linking available, but this is
+        a <span class="emphasis"><em>deprecated</em></span> functionality. It is the
+        <span class="emphasis"><em>Linux-PAM</em></span> interface that is called
+        by an application and it is the responsibility of the library to
+        locate, load and call the appropriate functions in a
+        <span class="emphasis"><em>Linux-PAM</em></span>-module.
+      </p><p>
+        Except for the immediate purpose of interacting with the user
+        (entering a password etc..) the module should never call the
+        application directly. This exception requires a "conversation
+        mechanism" which is documented below.
+      </p></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="mwg-introduction.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="mwg-introduction.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="mwg-introduction-synopsis.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 1. Introduction </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_MWG.html">Home</a></td><td width="40%" align="right" valign="top"> 1.2. Synopsis</td></tr></table></div></body></html>

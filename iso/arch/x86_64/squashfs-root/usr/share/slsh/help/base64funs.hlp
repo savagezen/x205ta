@@ -1,0 +1,211 @@
+_base64_decoder_accumulate
+
+ SYNOPSIS
+  Accumulate data to be base64 decoded
+
+ USAGE
+  _base64_decoder_accumulate(Base64_Type b64, String_Type data)
+
+ DESCRIPTION
+  This routine adds a tring to the base64 decoder queue of the
+  specifed Base64_Type object, previously instantiated using the
+  `_base64_decoder_new'.
+
+  See the documentation for `_base64_decoder_new' for more
+  detailed usage.
+
+ SEE ALSO
+  _base64_decoder_new, _base64_decoder_close, _base64_encoder_new
+
+--------------------------------------------------------------
+
+_base64_decoder_new
+
+ SYNOPSIS
+  Intantiate a new base64 decoder
+
+ USAGE
+  Base64_Type _base64_decoder_new (Ref_Type func [,func_data])
+
+ DESCRIPTION
+  This routine returns instantiates a Base64_Type decoder object that
+  may be used to decode base64 data.  It require a single
+  `Ref_Type' parameter that is a reference to a callback function
+  that the decoder will call with with (partially) decoded data.  The second
+  argument, `func_data', is optional.  If present it will also be
+  passed to the callback function.
+
+  The callback function must be defined to accept one or two
+  parameters, depending upon whether the `_base64_decoder_new' function
+  was called with the optional `func_data' argument.  If
+  `func_data' was passed, then it will be passed as the first
+  argument to the callback function.  The (partially) encoded string
+  is passed as the last argument.  The callback function shall return
+  nothing.
+
+ EXAMPLE
+  The following example defines a function that base64-decodes a string.
+
+   private define decode_callback (strp, decoded_str)
+   {
+     @strp = @strp + decoded_str;
+   }
+
+   define b64decode_string (str)
+   {
+     variable b = ""B;     % The decoded string is binary
+     variable b64 = _base64_decoder_new (&decode_callback, &b);
+     _base64_decoder_accumulate (b64, str);
+     _base64_decoder_close (b64);
+     return b;
+   }
+
+
+ EXAMPLE
+  The following example takes data from an input file pointer
+  `fpin' and writes the decoded data to an output file pointer
+  `fpout':
+
+   private define decoder_callback (fpout, data)
+   {
+      () = fwrite (data, fpout);
+   }
+
+   define base64_decode_file (fpin, fpout)
+   {
+      variable b64 = _base64_decoder_new (&encoder_callback, fpout);
+      variable line;
+      while (-1 != fgets (&line, fpin))
+        _base64_decoder_accumulate (b64, line);
+      _base64_decoder_close (b64);
+   }
+
+
+ SEE ALSO
+  _base64_decoder_accumulate, _base64_decoder_close, _base64_encoder_new
+
+--------------------------------------------------------------
+
+_base64_decoder_close
+
+ SYNOPSIS
+  Flush and delete a base64 decoder
+
+ USAGE
+  _base64_decoder_close (Base64_Type b64)
+
+ DESCRIPTION
+  This function must be called when there is no more data for the
+  specified base64 decoder to process.  See the documentation for
+  `_base64_decoder_new' for additional information and usage.
+
+ SEE ALSO
+  _base64_decoder_new, _base64_decoder_accumulate, _base64_encoder_close
+
+--------------------------------------------------------------
+
+_base64_encoder_accumulate
+
+ SYNOPSIS
+  Accumulate data to be base64 encoded
+
+ USAGE
+  _base64_encoder_accumulate(Base64_Type b64, BString_Type data)
+
+ DESCRIPTION
+  This routine adds a binary string to the encoder queue of the
+  specifed Base64_Type object, previously instantiated using the
+  `_base64_encoder_new'.
+
+  See the documentation for `_base64_encoder_new' for more
+  detailed usage.
+
+ SEE ALSO
+  _base64_encoder_new, _base64_encoder_close, _base64_decoder_new
+
+--------------------------------------------------------------
+
+_base64_encoder_new
+
+ SYNOPSIS
+  Intantiate a new base64 encoder
+
+ USAGE
+  Base64_Type _base64_encoder_new (Ref_Type func [,func_data])
+
+ DESCRIPTION
+  This routine returns instantiates a Base64_Type decoder object that
+  may be used to base64-encode data.  It require a single
+  `Ref_Type' parameter that is a reference to a callback function
+  that the encoder will call with the data to be encoded.  The second
+  argument, `func_data', is optional.  If present it will also be
+  passed to the callback function.
+
+  The callback function must be defined to accept one or two
+  parameters, depending upon whether the `_base64_encoder_new' function
+  was called with the optional `func_data' argument.  If
+  `func_data' was passed, then it will be passed as the first
+  argument to the callback function.  The (partially) encoded string
+  is passed as the last argument.  The callback function shall return
+  nothing.
+
+ EXAMPLE
+  The following example defines a function that base64 encodes a string.
+
+   private define encode_callback (strp, encoded_str)
+   {
+     @strp = @strp + encoded_str;
+   }
+
+   define b64encode_string (bstr)
+   {
+     variable s = "";
+     variable b64 = _base64_encoder_new (&encode_callback, &s);
+     _base64_encoder_accumulate (b64, bstr);
+     _base64_encoder_close (b64);
+     return b;
+   }
+
+
+ EXAMPLE
+  The following example takes data from an input file pointer
+  `fpin' and writes the encoded data to an output file pointer
+  `fpout':
+
+   private define encoder_callback (fpout, encoded_data)
+   {
+      () = fputs (encoded_data, fpout);
+   }
+
+   define define base64_encode_file (fpin, fpout)
+   {
+      variable b64 = _base64_encoder_new (&encoder_callback, fpout);
+      variable bytes;
+      while (-1 != fread_bytes (&bytes, 512, fpin))
+        _base64_encoder_accumulate (b64, bytes);
+      _base64_encoder_close (b64);
+   }
+
+
+ SEE ALSO
+  _base64_encoder_accumulate, _base64_encoder_close, _base64_decoder_new
+
+--------------------------------------------------------------
+
+_base64_encoder_close
+
+ SYNOPSIS
+  Flush and delete a base64 encoder
+
+ USAGE
+  _base64_encoder_close (Base64_Type b64)
+
+ DESCRIPTION
+  This function must be called when there is no more data for the
+  specified base64 encoder to process.  See the documentation for
+  `_base64_encoder_new' for additional information and usage.
+
+ SEE ALSO
+  _base64_encoder_new, _base64_encoder_accumulate, _base64_decoder_close
+
+--------------------------------------------------------------

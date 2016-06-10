@@ -1,0 +1,23 @@
+
+%9Syntax:%9
+
+LOAD %|<module> [<submodule>]
+
+%9Parameters:%9
+
+    The name of the module and submodule to load.
+
+%9Description:%9
+
+    Loads a plugin; if the full path isn't given, it will attempt to load from
+    common directories in your installation path.
+
+    To load a perl script, you must use the SCRIPT command.
+
+%9Examples:%9
+
+    /LOAD fish
+    /LOAD ~/irssi-fish/libfish.so
+
+%9See also:%9 SCRIPT, UNLOAD
+

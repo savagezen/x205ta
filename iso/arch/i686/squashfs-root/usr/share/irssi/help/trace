@@ -1,0 +1,25 @@
+
+%9Syntax:%9
+
+TRACE %|[<server>|<nick>]
+
+%9Parameters:%9
+
+    The channel or the nickname; if no argument is given, the active server
+    will be used.
+
+%9Description:%9
+
+    Displays the list of servers and users connects to a server, or a list of
+    the servers between yourself and the target user.
+
+    This command is usually restricted to IRC operators.
+
+%9Examples:%9
+
+    /TRACE
+    /TRACE mike
+    /TRACE ircsource.irssi.org
+
+%9See also:%9 MAP, TIME, WHOIS
+

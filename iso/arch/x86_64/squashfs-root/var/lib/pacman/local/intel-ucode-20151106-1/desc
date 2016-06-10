@@ -1,0 +1,36 @@
+%NAME%
+intel-ucode
+
+%VERSION%
+20151106-1
+
+%DESC%
+Microcode update files for Intel CPUs
+
+%URL%
+http://downloadcenter.intel.com/SearchResult.aspx?lang=eng&keyword=%22microcode%22
+
+%ARCH%
+any
+
+%BUILDDATE%
+1453138674
+
+%INSTALLDATE%
+1464799583
+
+%PACKAGER%
+Tobias Powalowski <tpowa@archlinux.org>
+
+%SIZE%
+700416
+
+%LICENSE%
+custom
+
+%VALIDATION%
+pgp
+
+%REPLACES%
+microcode_ctl
+

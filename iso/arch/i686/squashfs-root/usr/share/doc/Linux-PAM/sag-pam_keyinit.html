@@ -1,0 +1,84 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.13. pam_keyinit - display the keyinit file</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_issue.html" title="6.12. pam_issue - add issue file to user prompt"><link rel="next" href="sag-pam_lastlog.html" title="6.14. pam_lastlog - display date of last login"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.13. pam_keyinit - display the keyinit file</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_issue.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_lastlog.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_keyinit"></a>6.13. pam_keyinit - display the keyinit file</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_keyinit.so</code>  [
+	debug
+      ] [
+	force
+      ] [
+	revoke
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_keyinit-description"></a>6.13.1. DESCRIPTION</h3></div></div></div><p>
+      The pam_keyinit PAM module ensures that the invoking process has a
+      session keyring other than the user default session keyring.
+    </p><p>
+      The session component of the module checks to see if the process's
+      session keyring is the user default, and, if it is, creates a new
+      anonymous session keyring with which to replace it.
+    </p><p>
+      If a new session keyring is created, it will install a link to the user
+      common keyring in the session keyring so that keys common to the user
+      will be automatically accessible through it.
+    </p><p>
+      The session keyring of the invoking process will thenceforth be inherited
+      by all its children unless they override it.
+    </p><p>
+      This module is intended primarily for use by login processes.  Be aware
+      that after the session keyring has been replaced, the old session keyring
+      and the keys it contains will no longer be accessible.
+    </p><p>
+      This module should not, generally, be invoked by programs like
+      <span class="emphasis"><em>su</em></span>, since it is usually desirable for the
+      key set to percolate through to the alternate context.  The keys have
+      their own permissions system to manage this.
+    </p><p>
+      This module should be included as early as possible in a PAM
+      configuration, so that other PAM modules can attach tokens to the
+      keyring.
+    </p><p>
+      The keyutils package is used to manipulate keys more directly.  This
+      can be obtained from:
+    </p><p>
+      <a class="ulink" href="http://people.redhat.com/~dhowells/keyutils/" target="_top">
+	Keyutils
+      </a>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_keyinit-options"></a>6.13.2. OPTIONS</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+          <code class="option">debug</code>
+        </span></dt><dd><p>
+            Log debug information with <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span>.
+          </p></dd><dt><span class="term">
+          <code class="option">force</code>
+        </span></dt><dd><p>
+	    Causes the session keyring of the invoking process to be replaced
+	    unconditionally.
+          </p></dd><dt><span class="term">
+          <code class="option">revoke</code>
+        </span></dt><dd><p>
+	    Causes the session keyring of the invoking process to be revoked
+	    when the invoking process exits if the session keyring was created
+	    for this process in the first place.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_keyinit-types"></a>6.13.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      Only the <code class="option">session</code> module type is provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_keyinit-return_values"></a>6.13.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+	    This module will usually return this value
+	  </p></dd><dt><span class="term">PAM_AUTH_ERR</span></dt><dd><p>
+             Authentication failure.
+          </p></dd><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+             Memory buffer error.
+          </p></dd><dt><span class="term">PAM_IGNORE</span></dt><dd><p>
+            The return value should be ignored by PAM dispatch.
+          </p></dd><dt><span class="term">PAM_SERVICE_ERR</span></dt><dd><p>
+	    Cannot determine the user name.
+          </p></dd><dt><span class="term">PAM_SESSION_ERR</span></dt><dd><p>
+	    This module will return this value if its arguments are invalid or
+	    if a system error such as ENOMEM occurs.
+	  </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+            User not known.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_keyinit-examples"></a>6.13.5. EXAMPLES</h3></div></div></div><p>
+      Add this line to your login entries to start each login session with its
+      own session keyring:
+      </p><pre class="programlisting">
+session  required  pam_keyinit.so
+      </pre><p>
+    </p><p>
+      This will prevent keys from one session leaking into another session for
+      the same user.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_keyinit-author"></a>6.13.6. AUTHOR</h3></div></div></div><p>
+        pam_keyinit was written by David Howells, &lt;dhowells@redhat.com&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_issue.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_lastlog.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.12. pam_issue - add issue file to user prompt </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.14. pam_lastlog - display date of last login</td></tr></table></div></body></html>

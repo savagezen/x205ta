@@ -1,0 +1,30 @@
+
+%9Syntax:%9
+
+KNOCK %|<channel>
+
+%9Parameters:%9
+
+    The channel you wish to get invited to.
+
+%9Description:%9
+
+    Sends an invitation request to the channel operators of the target channel;
+    this command may not work on all IRC servers.
+
+    The following conditions must be met:
+
+        * You are not banned from the channel.
+        * The channel is not private.
+        * You may not be already in the channel.
+        * The channel must be invite only, have a key or has exceeded its user
+          limit.
+
+%9Examples:%9
+
+    /KNOCK #irssi
+    /KNOCK #freenode
+    /KNOCK #github
+
+%9See also:%9 INVITE, JOIN
+

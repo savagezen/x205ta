@@ -1,0 +1,122 @@
+
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>OpenConnect VPN client.</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="description" content="VPN client compatible with Cisco AnyConnect SSL VPN" />
+    <meta name="keywords" content="OpenConnect, AnyConnect, Cisco, VPN, SSLVPN, SSL VPN" />
+    <link href="./styles/main.css" rel="styleSheet" type="text/css" />
+    <link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css' />
+ </head>
+ 
+<body>
+   <div id="logo" align="right">	
+     <img src="./images/openconnect.png" height="96px" alt="OpenConnect" />
+   </div>
+   <div id="main">
+
+
+
+	
+	
+	
+	<div id="menu1">
+
+	<span class="sel">
+<a href="index.html"><span>Home</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="features.html"><span>Features</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="building.html"><span>Getting Started</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="mail.html"><span>Mailing List / Help</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="contribute.html"><span>Contribute</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="anyconnect.html"><span>Protocols</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="http://www.infradead.org/ocserv/"><span>VPN Server</span></a>
+</span>
+
+	<p>OpenConnect VPN client</p>
+
+	</div>
+
+	
+	<div id="menu2">
+
+        <span class="sel">
+<a href="index.html"><span>About</span></a>
+</span>
+
+        <span class="nonsel">
+<a href="platforms.html"><span>Supported Platforms</span></a>
+</span>
+
+        <span class="nonsel">
+<a href="download.html"><span>Download</span></a>
+</span>
+
+        <span class="nonsel">
+<a href="packages.html"><span>Packages</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="changelog.html"><span>Changelog</span></a>
+</span>
+
+	</div>
+
+
+	     <div id="textbox">
+       <div id="text">
+	</div>
+
+
+<h1>OpenConnect</h1>
+<p>OpenConnect is an SSL VPN client initially created to support Cisco's <a href="http://www.cisco.com/go/asm">AnyConnect SSL VPN</a>. It has since been ported to support the Juniper SSL VPN which is now known as <a href="https://www.pulsesecure.net/products/connect-secure/">Pulse Connect Secure</a>.</p>
+
+<p>OpenConnect is released under the GNU Lesser Public License, version 2.1.</p>
+
+<p>Like <a href="http://www.unix-ag.uni-kl.de/~massar/vpnc/">vpnc</a>,
+OpenConnect is not officially supported by, or associated in any way
+with, Cisco Systems, Juniper Networks or Pulse Secure. It just happens to interoperate with their equipment.
+</p>
+<p>Development of OpenConnect was started after a trial of the Cisco 
+client under Linux found it to have many deficiencies:</p>
+<ul>
+  <li>Inability to use SSL certificates from a <a href="http://en.wikipedia.org/wiki/Trusted_Platform_Module">TPM</a> or
+  <a href="http://en.wikipedia.org/wiki/PKCS11">PKCS#11</a> smartcard, or even use a passphrase.</li>
+  <li>Lack of support for Linux platforms other than i386.</li>
+  <li>Lack of integration with NetworkManager on the Linux desktop.</li>
+  <li>Lack of proper (RPM/DEB) packaging for Linux distributions.</li>
+  <li>"Stealth" use of libraries with <tt>dlopen()</tt>, even using
+      the development-only symlinks such as <tt>libz.so</tt> —
+      making it hard to properly discover the dependencies which
+      proper packaging would have expressed</li>
+  <li>Tempfile races allowing unprivileged users to trick it into overwriting arbitrary files, as root.</li>
+  <li>Unable to run as an unprivileged user, which would have reduced the severity of the above bug.</li>
+  <li>Inability to audit the source code for further such "Security 101" bugs.</li>
+</ul>
+
+<p>Naturally, OpenConnect addresses all of the above issues, and more.
+</p>
+
+	      </div>
+   </div>
+  </body>
+</html>

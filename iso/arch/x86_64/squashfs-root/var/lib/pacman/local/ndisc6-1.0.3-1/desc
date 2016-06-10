@@ -1,0 +1,37 @@
+%NAME%
+ndisc6
+
+%VERSION%
+1.0.3-1
+
+%DESC%
+Collection of IPv6 networking utilities
+
+%URL%
+http://www.remlab.net/ndisc6/
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1450224560
+
+%INSTALLDATE%
+1464799588
+
+%PACKAGER%
+Sébastien Luttringer <seblu@seblu.net>
+
+%SIZE%
+204800
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+glibc
+perl
+

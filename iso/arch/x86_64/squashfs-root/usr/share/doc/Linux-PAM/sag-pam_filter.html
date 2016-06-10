@@ -1,0 +1,113 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.9. pam_filter - filter module</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_faildelay.html" title="6.8. pam_faildelay - change the delay on failure per-application"><link rel="next" href="sag-pam_ftp.html" title="6.10. pam_ftp - module for anonymous access"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.9. pam_filter - filter module</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_faildelay.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_ftp.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_filter"></a>6.9. pam_filter - filter module</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_filter.so</code>  [
+	debug
+      ] [
+        new_term
+      ] [
+        non_term
+      ]  
+        run1|run2
+         
+        <em class="replaceable"><code>filter</code></em>
+        [
+        <em class="replaceable"><code>...</code></em>
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_filter-description"></a>6.9.1. DESCRIPTION</h3></div></div></div><p>
+      This module is intended to be a platform for providing access to all
+      of the input/output that passes between the user and the application.
+      It is only suitable for tty-based and (stdin/stdout) applications.
+    </p><p>
+      To function this module requires <span class="emphasis"><em>filters</em></span> to be
+      installed on the system.
+      The single filter provided with the module simply transposes upper and
+      lower case letters in the input and output streams. (This can be very
+      annoying and is not kind to termcap based editors).
+    </p><p>
+      Each component of the module has the potential to invoke the
+      desired filter. The filter is always
+      <span class="citerefentry"><span class="refentrytitle">execv</span>(2)</span> with the privilege of the calling application
+      and <span class="emphasis"><em>not</em></span> that of the user. For this reason it
+      cannot usually be killed by the user without closing their session.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_filter-options"></a>6.9.2. OPTIONS</h3></div></div></div><p>
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+            <code class="option">debug</code>
+          </span></dt><dd><p>
+	      Print debug information.
+            </p></dd><dt><span class="term">
+            <code class="option">new_term</code>
+          </span></dt><dd><p>
+              The default action of the filter is to set the
+              <span class="emphasis"><em>PAM_TTY</em></span> item to indicate the
+              terminal that the user is using to connect to the
+              application. This argument indicates that the filter
+              should set <span class="emphasis"><em>PAM_TTY</em></span> to the filtered
+              pseudo-terminal.
+            </p></dd><dt><span class="term">
+            <code class="option">non_term</code>
+          </span></dt><dd><p>
+              don't try to set the <span class="emphasis"><em>PAM_TTY</em></span> item.
+            </p></dd><dt><span class="term">
+            <code class="option">runX</code>
+          </span></dt><dd><p>
+              In order that the module can invoke a filter it should
+              know when to invoke it. This argument is required to tell
+              the filter when to do this.
+            </p><p>
+              Permitted values for <span class="emphasis"><em>X</em></span> are
+              <span class="emphasis"><em>1</em></span> and <span class="emphasis"><em>2</em></span>. These
+              indicate the precise time that the filter is to be run.
+              To understand this concept it will be useful to have read
+              the <span class="citerefentry"><span class="refentrytitle">pam</span>(3)</span> manual page.
+              Basically, for each management group there are up to two ways
+              of calling the module's functions.
+              In the case of the <span class="emphasis"><em>authentication</em></span> and
+              <span class="emphasis"><em>session</em></span> components there are actually
+              two separate functions. For the case of authentication, these
+              functions are
+              <span class="citerefentry"><span class="refentrytitle">pam_authenticate</span>(3)</span> and
+              <span class="citerefentry"><span class="refentrytitle">pam_setcred</span>(3)</span>, here <code class="option">run1</code> means run the
+              filter from the <code class="function">pam_authenticate</code> function
+              and <code class="option">run2</code> means run the filter from
+              <code class="function">pam_setcred</code>. In the case of the
+              session modules, <span class="emphasis"><em>run1</em></span> implies
+              that the filter is invoked at the
+              <span class="citerefentry"><span class="refentrytitle">pam_open_session</span>(3)</span> stage, and <span class="emphasis"><em>run2</em></span> for
+              <span class="citerefentry"><span class="refentrytitle">pam_close_session</span>(3)</span>.
+            </p><p>
+              For the case of the account component. Either
+              <span class="emphasis"><em>run1</em></span> or <span class="emphasis"><em>run2</em></span>
+              may be used.
+            </p><p>
+              For the case of the password component, <span class="emphasis"><em>run1</em></span>
+              is used to indicate that the filter is run on the first
+              occasion of
+              <span class="citerefentry"><span class="refentrytitle">pam_chauthtok</span>(3)</span> (the <span class="emphasis"><em>PAM_PRELIM_CHECK</em></span>
+              phase) and <span class="emphasis"><em>run2</em></span> is used to indicate
+              that the filter is run on the second occasion (the
+              <span class="emphasis"><em>PAM_UPDATE_AUTHTOK</em></span> phase).
+
+            </p></dd><dt><span class="term">
+            <code class="option">filter</code>
+          </span></dt><dd><p>
+              The full pathname of the filter to be run and any command line
+              arguments that the filter might expect.
+            </p></dd></dl></div><p>
+
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_filter-types"></a>6.9.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      All module types (<code class="option">auth</code>, <code class="option">account</code>,
+      <code class="option">password</code> and <code class="option">session</code>) are provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_filter-return_values"></a>6.9.4. RETURN VALUES</h3></div></div></div><p>
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+              The new filter was set successfully.
+            </p></dd><dt><span class="term">PAM_ABORT</span></dt><dd><p>
+	      Critical error, immediate abort.
+            </p></dd></dl></div><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_filter-examples"></a>6.9.5. EXAMPLES</h3></div></div></div><p>
+      Add the following line to <code class="filename">/etc/pam.d/login</code> to
+      see how to configure login to transpose upper and lower case letters
+      once the user has logged in:
+
+      </p><pre class="programlisting">
+        session required pam_filter.so run1 /lib/security/pam_filter/upperLOWER
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_filter-author"></a>6.9.6. AUTHOR</h3></div></div></div><p>
+        pam_filter was written by Andrew G. Morgan &lt;morgan@kernel.org&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_faildelay.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_ftp.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.8. pam_faildelay - change the delay on failure per-application </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.10. pam_ftp - module for anonymous access</td></tr></table></div></body></html>

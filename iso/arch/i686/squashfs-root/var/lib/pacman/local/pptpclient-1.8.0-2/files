@@ -1,0 +1,17 @@
+%FILES%
+etc/
+etc/ppp/
+etc/ppp/options.pptp
+usr/
+usr/bin/
+usr/bin/pptp
+usr/bin/pptpsetup
+usr/share/
+usr/share/man/
+usr/share/man/man8/
+usr/share/man/man8/pptp.8.gz
+usr/share/man/man8/pptpsetup.8.gz
+
+%BACKUP%
+etc/ppp/options.pptp	d7a9dcb92832f4bf6dae77bacde7462b
+

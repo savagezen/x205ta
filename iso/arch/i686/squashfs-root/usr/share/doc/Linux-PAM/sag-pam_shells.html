@@ -1,0 +1,23 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.30. pam_shells - check for valid login shell</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_selinux.html" title="6.29. pam_selinux - set the default security context"><link rel="next" href="sag-pam_succeed_if.html" title="6.31. pam_succeed_if - test account characteristics"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.30. pam_shells - check for valid login shell</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_selinux.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_succeed_if.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_shells"></a>6.30. pam_shells - check for valid login shell</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_shells.so</code> </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_shells-description"></a>6.30.1. DESCRIPTION</h3></div></div></div><p>
+      pam_shells is a PAM module that only allows access to the
+      system if the user's shell is listed in <code class="filename">/etc/shells</code>.
+    </p><p>
+      It also checks if <code class="filename">/etc/shells</code> is a plain
+      file and not world writable.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_shells-options"></a>6.30.2. OPTIONS</h3></div></div></div><p> This module does not recognise any options.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_shells-types"></a>6.30.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      The <code class="option">auth</code> and <code class="option">account</code>
+      module types are provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_shells-return_values"></a>6.30.4. RETURN VALUES</h3></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_AUTH_ERR</span></dt><dd><p>
+             Access to the system was denied.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+            The user's login shell was listed as valid shell in
+            <code class="filename">/etc/shells</code>.
+          </p></dd><dt><span class="term">PAM_SERVICE_ERR</span></dt><dd><p>
+            The module was not able to get the name of the user.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_shells-examples"></a>6.30.5. EXAMPLES</h3></div></div></div><p>
+      </p><pre class="programlisting">
+auth  required  pam_shells.so
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_shells-author"></a>6.30.6. AUTHOR</h3></div></div></div><p>
+        pam_shells was written by Erik Troan &lt;ewt@redhat.com&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_selinux.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_succeed_if.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.29. pam_selinux - set the default security context </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.31. pam_succeed_if - test account characteristics</td></tr></table></div></body></html>

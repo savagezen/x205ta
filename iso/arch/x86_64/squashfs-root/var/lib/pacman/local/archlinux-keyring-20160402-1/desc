@@ -1,0 +1,36 @@
+%NAME%
+archlinux-keyring
+
+%VERSION%
+20160402-1
+
+%DESC%
+Arch Linux PGP keyring
+
+%URL%
+https://projects.archlinux.org/archlinux-keyring.git/
+
+%ARCH%
+any
+
+%BUILDDATE%
+1459583264
+
+%INSTALLDATE%
+1464799564
+
+%PACKAGER%
+Pierre Schmitz <pierre@archlinux.de>
+
+%SIZE%
+811008
+
+%REASON%
+1
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+

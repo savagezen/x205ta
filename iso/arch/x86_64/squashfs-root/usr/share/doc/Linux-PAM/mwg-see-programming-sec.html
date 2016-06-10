@@ -1,0 +1,110 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>5.1. Security issues for module creation</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_MWG.html" title="The Linux-PAM Module Writers' Guide"><link rel="up" href="mwg-see-programming.html" title="Chapter 5. Programming notes"><link rel="prev" href="mwg-see-programming.html" title="Chapter 5. Programming notes"><link rel="next" href="mwg-see-programming-syslog.html" title="5.2. Use of syslog(3)"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">5.1. Security issues for module creation</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="mwg-see-programming.html">Prev</a> </td><th width="60%" align="center">Chapter 5. Programming notes</th><td width="20%" align="right"> <a accesskey="n" href="mwg-see-programming-syslog.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mwg-see-programming-sec"></a>5.1. Security issues for module creation</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mwg-see-programming-sec-res"></a>5.1.1. Sufficient resources</h3></div></div></div><p>
+          Care should be taken to ensure that the proper execution
+          of a module is not compromised by a lack of system resources.
+          If a module is unable to open sufficient files to perform its
+          task, it should fail gracefully, or request additional resources.
+          Specifically, the quantities manipulated by the <span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span> family of commands should be taken into
+          consideration.
+        </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mwg-see-programming-sec-who"></a>5.1.2. Who´s who?</h3></div></div></div><p>
+          Generally, the module may wish to establish the identity of
+          the user requesting a service. This may not be the same as
+          the username returned by <code class="function">pam_get_user()</code>.
+          Indeed, that is only going to be the name of the user under
+          whose identity the service will be given. This is not
+          necessarily the user that requests the service.
+        </p><p>
+          In other words, user X runs a program that is setuid-Y, it
+          grants the user to have the permissions of Z. A specific example
+          of this sort of service request is the <span class="command"><strong>su</strong></span>
+          program: user <span class="command"><strong>joe</strong></span> executes
+          <span class="command"><strong>su</strong></span> to become the user <span class="command"><strong>jane</strong></span>.
+          In this situation X=<span class="command"><strong>joe</strong></span>, Y=<span class="command"><strong>root</strong></span>
+          and Z=<span class="command"><strong>jane</strong></span>. Clearly, it is important that
+          the module does not confuse these different users and grant an
+          inappropriate level of privilege.
+        </p><p>
+          The following is the convention to be adhered to when juggling
+          user-identities.
+        </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+              X, the identity of the user invoking the service request.
+              This is the user identifier; returned by the function
+              <span class="citerefentry"><span class="refentrytitle">getuid</span>(2)</span>.
+            </p></li><li class="listitem"><p>
+              Y, the privileged identity of the application used to
+              grant the requested service. This is the
+              <span class="emphasis"><em>effective</em></span> user identifier;
+              returned by the function <span class="citerefentry"><span class="refentrytitle">geteuid</span>(2)</span>.
+            </p></li><li class="listitem"><p>
+              Z, the user under whose identity the service will be granted.
+              This is the username returned by
+              <code class="function">pam_get_user()</code> and also stored in the
+              <span class="emphasis"><em>Linux-PAM</em></span> item,
+              <span class="emphasis"><em>PAM_USER</em></span>.
+            </p></li><li class="listitem"><p>
+              <span class="emphasis"><em>Linux-PAM</em></span> has a place for
+              an additional user identity that a module may care to make
+              use of. This is the <span class="emphasis"><em>PAM_RUSER</em></span> item.
+              Generally, network sensitive modules/applications may wish
+              to set/read this item to establish the identity of the user
+              requesting a service from a remote location.
+            </p></li></ul></div><p>
+          Note, if a module wishes to modify the identity of either the
+          <span class="emphasis"><em>uid</em></span> or <span class="emphasis"><em>euid</em></span> of the
+          running process, it should take care to restore the original
+          values prior to returning control to the
+          <span class="emphasis"><em>Linux-PAM</em></span> library.
+        </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mwg-see-programming-sec-conv"></a>5.1.3. Using the conversation function</h3></div></div></div><p>
+          Prior to calling the conversation function, the module should
+          reset the contents of the pointer that will return the applications
+          response. This is a good idea since the application may fail
+          to fill the pointer and the module should be in a position to
+          notice!
+        </p><p>
+          The module should be prepared for a failure from the
+          conversation. The generic error would be
+          <span class="emphasis"><em>PAM_CONV_ERR</em></span>, but anything other than
+          <span class="emphasis"><em>PAM_SUCCESS</em></span> should be treated as
+          indicating failure.
+        </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mwg-see-programming-sec-token"></a>5.1.4. Authentication tokens</h3></div></div></div><p>
+          To ensure that the authentication tokens are not left lying
+          around the items, <span class="emphasis"><em>PAM_AUTHTOK</em></span> and
+          <span class="emphasis"><em>PAM_OLDAUTHTOK</em></span>, are not available to
+          the application: they are defined in
+          <code class="filename">&lt;security/pam_modules.h&gt;</code>. This
+          is ostensibly for security reasons, but a maliciously
+          programmed application will always have access to all memory
+          of the process, so it is only superficially enforced. As a
+          general rule the module should overwrite authentication tokens
+          as soon as they are no longer needed. Especially before
+          <code class="function">free()</code>'ing them. The
+          <span class="emphasis"><em>Linux-PAM</em></span> library is
+          required to do this when either of these authentication
+          token items are (re)set.
+        </p><p>
+          Not to dwell too little on this concern; should the module
+          store the authentication tokens either as (automatic) function
+          variables or using <code class="function">pam_[gs]et_data()</code> the
+          associated memory should be over-written explicitly before it
+          is released. In the case of the latter storage mechanism, the
+          associated <code class="function">cleanup()</code> function should
+          explicitly overwrite the <code class="varname">*data</code> before
+          <code class="function">free()</code>'ing it: for example,
+          </p><pre class="programlisting">
+/*
+ * An example cleanup() function for releasing memory that was used to
+ * store a password.
+ */
+
+int cleanup(pam_handle_t *pamh, void *data, int error_status)
+{
+    char *xx;
+
+    if ((xx = data)) {
+        while (*xx)
+            *xx++ = '\0';
+        free(data);
+    }
+    return PAM_SUCCESS;
+}
+          </pre><p>
+        </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="mwg-see-programming.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="mwg-see-programming.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="mwg-see-programming-syslog.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 5. Programming notes </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_MWG.html">Home</a></td><td width="40%" align="right" valign="top"> 5.2. Use of <span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span></td></tr></table></div></body></html>

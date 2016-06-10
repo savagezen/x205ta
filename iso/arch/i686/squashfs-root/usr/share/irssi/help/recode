@@ -1,0 +1,41 @@
+
+%9Syntax:%9
+
+RECODE%|
+RECODE ADD %|[[<tag>/]<target>] <charset>
+RECODE REMOVE %|[<target>]
+
+%9Parameters:%9
+
+    ADD:        Adds an entry into the conversion database.
+    REMOVE:     Removes an entry from the conversion database.
+
+    The network tag and channel or nickname to add or remove; if no target is
+    given, the active nickname or channel will be used.
+
+%9Description:%9
+
+    Recodes the data transmitted to and received from nicknames and channels
+    into a specific charset.
+
+    To get a list of supported charsets on your system, you can generally use
+    the 'iconv -l' command.
+
+%9Examples:%9
+
+    /RECODE
+    /RECODE ADD Freenode/mike utf-8
+    /RECODE ADD #korea euc-kr
+    /RECODE REMOVE #korea
+
+%9Special Examples:%9
+
+    /SET term_charset utf-8
+    /SET recode_fallback ISO-8859-15
+    /SET recode_out_default_charset ISO-8859-15
+
+    /TOGGLE recode_transliterate
+    /TOGGLE recode_autodetect_utf8
+
+%9See also:%9 CONNECT, MSG, NETWORK, SERVER
+

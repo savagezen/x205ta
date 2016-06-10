@@ -1,0 +1,30 @@
+
+%9Syntax:%9
+
+SILENCE %|[[+|-]<nick!user@host>]
+SILENCE %|[<nick>]
+
+%9Parameters:%9
+
+    The nickname or hostname to silence; you must prepend it by the '+' or '-'
+    character to indicate whether the entry should be added or removed.
+
+    If no arguments are given, the list of silence entries will be displayed.
+
+%9Description:%9
+
+    Manages the server side ignore list; users or hostnames that match an entry
+    on the list are not able to send you any messages or invites.
+
+    This command does not work on all IRC networks.
+
+%9Examples:%9
+
+    /SILENCE
+    /SILENCE +mike
+    /SILENCE -mike
+    /SILENCE +*!*@*.irssi.org
+    /SILENCE -*!*@*.irssi.org
+
+%9See also:%9 ACCEPT, IGNORE
+

@@ -1,0 +1,14 @@
+
+%9Syntax:%9
+
+
+%9Description:%9
+
+    Removes all active and pending join requests.
+
+%9Examples:%9
+
+    /RMREJOINS
+
+%9See also:%9 JOIN, PART
+

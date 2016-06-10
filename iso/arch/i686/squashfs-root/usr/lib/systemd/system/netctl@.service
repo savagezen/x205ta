@@ -1,0 +1,12 @@
+[Unit]
+Description=Networking for netctl profile %I
+Documentation=man:netctl.profile(5)
+After=network-pre.target
+Before=network.target netctl.service
+Wants=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/lib/network/network start %I
+ExecStop=/usr/lib/network/network stop %I

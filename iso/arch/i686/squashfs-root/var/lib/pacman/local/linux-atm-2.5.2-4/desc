@@ -1,0 +1,36 @@
+%NAME%
+linux-atm
+
+%VERSION%
+2.5.2-4
+
+%DESC%
+Drivers and tools to support ATM networking under Linux.
+
+%URL%
+http://linux-atm.sourceforge.net/
+
+%ARCH%
+i686
+
+%BUILDDATE%
+1382358127
+
+%INSTALLDATE%
+1464799537
+
+%PACKAGER%
+Tobias Powalowski <tpowa@archlinux.org>
+
+%SIZE%
+1069056
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+glibc
+

@@ -1,0 +1,107 @@
+#!/usr/bin/ash
+
+# teardown a single device by node name
+#   $1: device node name, e.g. md0, dm-2
+stop_device() {
+    local devtype= devname=
+
+    # the device must still be active
+    [ -e "/sys/class/block/$1" ] || return 1
+
+    # this can sometimes fail on stopped md devices, when the
+    # sysfs node doesn't go away as quickly as i'd like it to.
+    devtype=$(lsblk -drno TYPE "/dev/$1" 2>/dev/null) || return 1
+    case $devtype in
+        crypt)
+            # dmsetup could be used here, but we don't know that it
+            # exists.
+            read devname <"$1/dm/name"
+            cryptsetup remove "$devname"
+            ;;
+        lvm|dm)
+            read devname <"$1/dm/name"
+            dmsetup --noudevsync remove "$devname"
+            ;;
+        raid*)
+            # wait for arrays with external metadata to be marked as
+            # clean. unfortunately, there isn't a whole lot we can do
+            # if this fails, and the array may need a full rebuild on
+            # the next reboot.
+            IFS=: read metadata _ < "/sys/class/block/$1/md/metadata_version"
+            if [ "$metadata" = external ]; then
+                mdadm --wait-clean "/dev/$1"
+            fi
+            mdadm --stop "/dev/$1"
+            ;;
+        dmraid)
+            read devname <"$1/dm/name"
+            dmraid -an "$devname"
+            ;;
+        # silently ignore unstacked devices
+    esac
+}
+
+# recursively disassemble a device chain
+#   $1: device node name, e.g. md0, dm-2
+disassemble() {
+    local holder=
+
+    for holder in "$1"/holders/*; do
+        [ -e "$holder" ] && disassemble "${holder##*/}"
+        stop_device "$1"
+    done
+}
+
+copy_binary_from_host() {
+    local bin=$1
+
+    # hardcode a sane PATH
+    for p in '/usr/sbin' '/usr/bin' '/sbin' '/bin'; do
+        if [ -e "/oldroot/$p/$bin" ]; then
+            cp "/oldroot/$p/$bin" "/usr/bin/$1"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+# XXX: Discourage libdevmapper from thinking that udev
+# might be in a useful state. FS#30995.
+rm -rf /run/udev
+
+if [ "$1" = kexec ] && ! command -v kexec >/dev/null; then
+    copy_binary_from_host kexec
+fi
+
+# chdir, so that we can avoid a lot of path chopping
+cd /sys/class/block
+
+printf '%s\n' "Unmounting all devices."
+
+umount --recursive /oldroot
+
+printf '%s\n' 'Detaching loop devices.'
+
+for loop in loop*/loop; do
+    [ -e "$loop" ] && losetup -d "${loop%/loop}"
+done
+
+printf '%s\n' "Disassembling stacked devices."
+
+# iterate over devices with holders
+for part in */holders/*; do
+    [ -e "$part" ] && disassemble "${part%%/*}"
+done
+
+case $1 in
+    poweroff|shutdown|halt)
+        "$1" -f
+        ;;
+    *)
+        type kexec >/dev/null && kexec -e
+        reboot -f
+        ;;
+esac
+
+# vim: ft=sh ts=4 sw=4

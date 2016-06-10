@@ -1,0 +1,25 @@
+
+%9Syntax:%9
+
+FORMAT %|[-delete | -reset] [<module>] [<key> [<value>]]
+
+%9Parameters:%9
+
+    -reset:     Restores the original value.
+    -delete:    Removes the format from the configuration.
+
+    The module name, the format name and the value; if no arguments are given,
+    the list of formats are displayed.
+
+%9Description:%9
+
+    Allows you to reconfigure the way messages are displayed.
+
+%9Examples:%9
+
+    /FORMAT irc away You have left planet earth
+    /FORMAT core not_good_idea I'm sorry sir, this broke my irony sensor; add -YES if you really mean it!
+    /FORMAT -reset irc away
+
+%9See also:%9 RELOAD, SAVE, SET
+

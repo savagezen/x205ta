@@ -1,0 +1,59 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>3.1. Overview</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_MWG.html" title="The Linux-PAM Module Writers' Guide"><link rel="up" href="mwg-expected-of-module.html" title="Chapter 3. What is expected of a module"><link rel="prev" href="mwg-expected-of-module.html" title="Chapter 3. What is expected of a module"><link rel="next" href="mwg-expected-of-module-auth.html" title="3.2. Authentication management"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">3.1. Overview</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="mwg-expected-of-module.html">Prev</a> </td><th width="60%" align="center">Chapter 3. What is expected of a module</th><td width="20%" align="right"> <a accesskey="n" href="mwg-expected-of-module-auth.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mwg-expected-of-module-overview"></a>3.1. Overview</h2></div></div></div><p>
+        The six module functions are grouped into four independent
+        management groups. These groups are as follows:
+        <span class="emphasis"><em>authentication</em></span>, <span class="emphasis"><em>account</em></span>,
+        <span class="emphasis"><em>session</em></span> and <span class="emphasis"><em>password</em></span>.
+        To be properly defined, a module must define all functions within
+        at least one of these groups. A single module may contain the
+        necessary functions for <span class="emphasis"><em>all</em></span> four groups.
+      </p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mwg-expected-of-module-overview-1"></a>3.1.1. Functional independence</h3></div></div></div><p>
+          The independence of the four groups of service a module can
+          offer means that the module should allow for the possibility
+          that any one of these four services may legitimately be called
+          in any order. Thus, the module writer should consider the
+          appropriateness of performing a service without the prior
+          success of some other part of the module.
+        </p><p>
+          As an informative example, consider the possibility that an
+          application applies to change a user's authentication token,
+          without having first requested that
+          <span class="emphasis"><em>Linux-PAM</em></span> authenticate the
+          user. In some cases this may be deemed appropriate: when
+          <span class="command"><strong>root</strong></span> wants to change the authentication
+          token of some lesser user. In other cases it may not be
+          appropriate: when <span class="command"><strong>joe</strong></span> maliciously wants
+          to reset <span class="command"><strong>alice</strong></span>'s password; or when anyone
+          other than the user themself wishes to reset their
+          <span class="emphasis"><em>KERBEROS</em></span> authentication token. A policy
+          for this action should be defined by any reasonable
+          authentication scheme, the module writer should consider
+          this when implementing a given module.
+        </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mwg-expected-of-module-overview-2"></a>3.1.2. Minimizing administration problems</h3></div></div></div><p>
+          To avoid system administration problems and the poor
+          construction of a <code class="filename">/etc/pam.conf</code> file,
+          the module developer may define all six of the following
+          functions. For those functions that would not be called,
+          the module should return <span class="errorname">PAM_SERVICE_ERR</span>
+          and write an appropriate message to the system log. When
+          this action is deemed inappropriate, the function would
+          simply return <span class="errorname">PAM_IGNORE</span>.
+        </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mwg-expected-of-module-overview-3"></a>3.1.3. Arguments supplied to the module</h3></div></div></div><p>
+          The <em class="parameter"><code>flags</code></em> argument of each of
+          the following functions can be logically OR'd with
+          <em class="parameter"><code>PAM_SILENT</code></em>, which is used to inform the
+          module to not pass any <span class="emphasis"><em>text</em></span> (errors or
+          warnings) application.
+        </p><p>
+          The <em class="parameter"><code>argc</code></em> and <em class="parameter"><code>argv</code></em>
+          arguments are taken from the line appropriate to this
+          module---that is, with the <span class="emphasis"><em>service_name</em></span>
+          matching that of the application---in the configuration file
+          (see the <span class="emphasis"><em>Linux-PAM</em></span>
+          System Administrators' Guide). Together these two parameters
+          provide the number of arguments and an array of pointers to
+          the individual argument tokens. This will be familiar to C
+          programmers as the ubiquitous method of passing command arguments
+          to the function <code class="function">main()</code>. Note, however, that
+          the first argument (<em class="parameter"><code>argv[0]</code></em>) is a true
+          argument and <span class="emphasis"><em>not</em></span> the name of the module.
+        </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="mwg-expected-of-module.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="mwg-expected-of-module.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="mwg-expected-of-module-auth.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 3. What is expected of a module </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_MWG.html">Home</a></td><td width="40%" align="right" valign="top"> 3.2. Authentication management</td></tr></table></div></body></html>

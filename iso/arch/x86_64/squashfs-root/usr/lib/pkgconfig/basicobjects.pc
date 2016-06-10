@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: basicobjects
+Description: Library contains basic objects like dynamic string
+Version: 0.1.1
+Libs: -L${libdir} -lbasicobjects
+Cflags: -I${includedir}
+URL: http://fedorahosted.org/sssd/

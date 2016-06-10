@@ -1,0 +1,7 @@
+Description='Virtual LAN 55 on interface eth0 using DHCP'
+Interface=eth0.55
+Connection=vlan
+# The variable name is plural, but needs precisely one interface
+BindsToInterfaces=eth0
+VLANID=55
+IP=dhcp

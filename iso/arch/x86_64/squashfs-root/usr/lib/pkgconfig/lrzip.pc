@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: lrzip
+Description: lrzip compression library
+Version: 0.621
+Libs: -L${libdir} -llrzip
+Libs.private: -llzo2 -lbz2 -lz -lm -lpthread 

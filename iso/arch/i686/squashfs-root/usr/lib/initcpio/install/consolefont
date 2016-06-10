@@ -1,0 +1,35 @@
+#!/bin/bash
+
+build() {
+    # subshell to avoid namespace pollution
+    (
+        [[ -s /etc/vconsole.conf ]] && . /etc/vconsole.conf
+
+        if [[ $FONT ]]; then
+            for file in "/usr/share/kbd/consolefonts/$FONT".@(fnt|psf?(u))?(.gz); do
+                if [[ -e $file ]]; then
+                    [[ $file =~ (\.(fnt|psfu?))(\.gz)?$ ]] && ext=${BASH_REMATCH[2]}
+                    if [[ $file = *.gz ]]; then
+                        gzip -cd "$file" > "$BUILDROOT/consolefont.$ext"
+                    else
+                        add_file "$file" "/consolefont.$ext"
+                    fi
+                    exit 0
+                fi
+            done
+            error "consolefont: requested font not found: \`%s'" "$FONT"
+            exit 1
+        else
+            warning "consolefont: no font found in configuration"
+            exit 1
+        fi
+    ) && add_runscript
+}
+
+help() {
+    cat <<HELPEOF
+This hook loads consolefont specified in vconsole.conf during early userspace.
+HELPEOF
+}
+
+# vim: set ft=sh ts=4 sw=4 et:

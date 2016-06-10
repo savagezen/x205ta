@@ -1,0 +1,21 @@
+
+%9Syntax:%9
+
+WAIT %|[-<server tag>] <milliseconds>
+
+%9Parameters:%9
+
+    The amount of milliseconds.
+
+%9Description:%9
+
+    Waits the specified amount of milliseconds before sending the next command
+    to the server.
+
+%9Examples:%9
+
+    /WAIT 1000
+    /WAIT 5000
+
+%9See also:%9 ALIAS
+

@@ -1,0 +1,43 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>3.3. Account management</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_MWG.html" title="The Linux-PAM Module Writers' Guide"><link rel="up" href="mwg-expected-of-module.html" title="Chapter 3. What is expected of a module"><link rel="prev" href="mwg-expected-of-module-auth.html" title="3.2. Authentication management"><link rel="next" href="mwg-expected-of-module-session.html" title="3.4. Session management"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">3.3. Account management</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="mwg-expected-of-module-auth.html">Prev</a> </td><th width="60%" align="center">Chapter 3. What is expected of a module</th><td width="20%" align="right"> <a accesskey="n" href="mwg-expected-of-module-session.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="mwg-expected-of-module-acct"></a>3.3. Account management</h2></div></div></div><p>
+        To be correctly initialized, <em class="parameter"><code>PAM_SM_ACCOUNT</code></em>
+        must be <span class="command"><strong>#define</strong></span>'d prior to including
+        <code class="function">&lt;security/pam_modules.h&gt;</code>. This will
+        ensure that the prototypes for static modules are properly declared.
+      </p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="mwg-pam_sm_acct_mgmt"></a>3.3.1. Service function for account management</h3></div></div></div><div class="funcsynopsis"><pre class="funcsynopsisinfo">#define PAM_SM_ACCOUNT</pre><pre class="funcsynopsisinfo">#include &lt;security/pam_modules.h&gt;</pre><table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;"><tr><td><code class="funcdef">PAM_EXTERN int <b class="fsfunc">pam_sm_acct_mgmt</b>(</code></td><td><var class="pdparam">pamh</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">flags</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">argc</var>, </td><td> </td></tr><tr><td> </td><td><var class="pdparam">argv</var><code>)</code>;</td><td> </td></tr></table><div class="paramdef-list"><code>pam_handle_t *<var class="pdparam">pamh</var></code>;<br><code>int <var class="pdparam">flags</var></code>;<br><code>int <var class="pdparam">argc</var></code>;<br><code>const char **<var class="pdparam">argv</var></code>;</div><div class="funcprototype-spacer"> </div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mwg-pam_sm_acct_mgmt-description"></a>3.3.1.1. DESCRIPTION</h4></div></div></div><p>
+      The <code class="function">pam_sm_acct_mgmt</code> function is the service
+      module's implementation of the
+      <span class="citerefentry"><span class="refentrytitle">pam_acct_mgmt</span>(3)</span> interface.
+    </p><p>
+      This function performs the task of establishing whether the user is
+      permitted to gain access at this time. It should be understood that
+      the user has previously been validated by an authentication
+      module. This function checks for other things. Such things might be:
+      the time of day or the date, the terminal line, remote hostname, etc.
+      This function may also determine things like the expiration on
+      passwords, and respond that the user change it before continuing.
+    </p><p>
+       Valid flags, which may be logically OR'd with
+       <span class="emphasis"><em>PAM_SILENT</em></span>, are:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_SILENT</span></dt><dd><p>
+             Do not emit any messages.
+          </p></dd><dt><span class="term">PAM_DISALLOW_NULL_AUTHTOK</span></dt><dd><p>
+            Return <span class="emphasis"><em>PAM_AUTH_ERR</em></span> if the
+            database of authentication tokens for this authentication
+            mechanism has a <span class="emphasis"><em>NULL</em></span> entry for the user.
+          </p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="mwg-pam_sm_acct_mgmt-return_values"></a>3.3.1.2. RETURN VALUES</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_ACCT_EXPIRED</span></dt><dd><p>
+             User account has expired.
+          </p></dd><dt><span class="term">PAM_AUTH_ERR</span></dt><dd><p>
+            Authentication failure.
+          </p></dd><dt><span class="term">PAM_NEW_AUTHTOK_REQD</span></dt><dd><p>
+            The user's authentication token has expired. Before calling
+            this function again the application will arrange for a new
+            one to be given. This will likely result in a call to
+            <code class="function">pam_sm_chauthtok()</code>.
+
+          </p></dd><dt><span class="term">PAM_PERM_DENIED</span></dt><dd><p>
+            Permission denied.
+          </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+             The authentication token was successfully updated.
+          </p></dd><dt><span class="term">PAM_USER_UNKNOWN</span></dt><dd><p>
+            User unknown to password service.
+          </p></dd></dl></div></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="mwg-expected-of-module-auth.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="mwg-expected-of-module.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="mwg-expected-of-module-session.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">3.2. Authentication management </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_MWG.html">Home</a></td><td width="40%" align="right" valign="top"> 3.4. Session management</td></tr></table></div></body></html>

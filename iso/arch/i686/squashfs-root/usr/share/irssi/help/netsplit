@@ -1,0 +1,16 @@
+
+%9Syntax:%9
+
+NETSPLIT
+
+%9Description:%9
+
+    Displays some information about users who are currently lost in one or
+    more net splits.
+
+%9Examples:%9
+
+    /NETSPLIT
+
+%9See also:%9 JOIN, LINKS, MAP, PART
+

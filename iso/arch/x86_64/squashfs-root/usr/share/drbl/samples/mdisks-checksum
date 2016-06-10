@@ -1,0 +1,499 @@
+#!/bin/bash
+# License: GPL
+# Author: Steven Shiau <steven _at_ stevenshiau org>
+# Program to save or restore disk with checksum mechanism enabled.
+# Features:
+#***Save***
+# Another copy of the checksum file will be put in /home/partimag/ after saving, with file name $image_name-$time.md5, like: myimg_22Feb16-032304.md5
+#***Restore***
+# (1) Restore an image to multiple disks
+# (2) Label a sequential names for all the partitions on the restored destination disks, like my-image_01p1, my-image_01p2 for disk /dev/sda1, and /dev/sda2, respectively."
+# (3) The inspection results for all the regular files in a partition will be put in /home/partimag/, and another copy in the restored partition. Its file name format: ${image_name}_${label}_${checksum}_results.txt, like myimg_Tiger_01p1_md5_results.txt
+#***Check***
+# The inspection results for all the regular files in a partition will be put in /home/partimag/, and another copy in the restored partition. Its file name format: ${image_name}_${label}_${checksum}_results.txt, like myimg_Tiger_01p1_md5_results.txt
+#***Check-then-label***
+# do all tasks as restore mode, except restore the image.
+
+#
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+. /etc/drbl/drbl-ocs.conf
+. $DRBL_SCRIPT_PATH/sbin/ocs-functions
+
+# Load the config in ocs-live.conf. This is specially for Clonezilla live. It will overwrite some settings of /etc/drbl/drbl-ocs.conf, such as $DIA...
+[ -e "/etc/ocs/ocs-live.conf" ] && . /etc/ocs/ocs-live.conf
+# Settings
+ocs_batch_mode="off"
+# For saving mode, default to turn on TUI.
+nogui="off"   
+# Initial number for labeling the disk, default is from 1, e.g. disk01, disk02
+initial_no_def="1"
+ocs_parallel_mode="yes"
+resize="yes"
+
+# Functions
+USAGE() {
+  echo "$ocs - To save, restore or check disk with checksum mechanism enabled"
+  echo "Usage:"
+  echo "To run $ocs:"
+  echo "$ocs [OPTION] MODE IMAGE_NAME DEVICE"
+  echo "Options:"
+  echo "-b, --batch-mode   Run image checking in batch mode"
+  echo "-i, --initial-no NO  Set the initial number for the label, and it is appended to the prefix assigned by option -p or --label-prefix. By default the initial number is set as $initial_no_def. e.g. my-image_01, my-image_02..."
+  echo "-nogui, --nogui    Do not show GUI (TUI) of Partclone or Partimage, use text only. In this program, only works for saving mode, not restoring mode because for multiple disks deployment, TUI is always off."
+  echo "-n, --no-resize    Do not resize in the destination disk. Keep the size as that from source image. This implies the options '-k1 -r -icds' will not be used for clonezilla's program ocs-sr."
+  echo "-r, --no-parallel  Do not run the checksum inspection in parallel. By default the inspection for all partitions in a disk will be run in parallel. Maybe it's not a good idea to run in parallel if too many partitions so it might casue too many I/Os then less effiency."
+  echo "-p, --label-prefix PREFIX  Set the label prefix for the destination partitions when restoring. This is only for modes 'restore' and 'check-then-label', and it will be used to create a sequential label names for all the partitions on destination disks, like my-image_01p1, my-image_01p2 for disk /dev/sda1, and /dev/sda2, respectively."
+  echo "MODE is for saving, restoring, checking, labeling. Available: save, restore, check, check-then-label (or ctl)."
+  echo "IMAGE_NAME is the image dir name, not absolute path"
+  echo "DEVICE is the device name, e.g. sda, sda... When MODE is 'save', only one disk is allowed. While when MODE is 'restore', more than one disks are accetable."
+  echo "If IMAGE_NAME and DEVICE are not assigned. An dialog menu will be shown to allow inputing or choosing."
+  echo "Ex:"
+  echo "To save disk /dev/sda as the image \"my-image\" with checksum for all files generated, run"
+  echo "   $ocs save my-image sda"
+  echo "To restore the image \"my-image\" to disks /dev/sda, /dev/sdb and inspect the checksum for all files. Also label the destination partition with prefix 'Tiger', run"
+  echo "   $ocs -p Tiger_ restore my-image sda sdb"
+  echo "To inspect the checksum file in the image \"my-image\" to the files in disks /dev/sda, /dev/sdb, run"
+  echo "   $ocs check my-image sda sdb"
+  echo
+} # end of USAGE
+do_save_mode_ask_image_dev_if_required() {
+  # output: img_name, disk
+  if [ "$img_name" = "ask_user" ]; then
+    get_target_dir_name_when_saving  # get $target_dir
+    img_name="$target_dir"
+  fi
+  if [ "$disk" = "ask_user" ]; then
+    # To get $target_hd
+    get_target_hd_name_from_local_machine "$msg_local_source_disk \n$msg_linux_disk_naming $msg_press_space_to_mark_selection"
+    disk="$(select_VG "$target_hd")"
+  fi
+} # end of do_save_mode_ask_image_dev_if_required
+#
+do_restore_or_check_mode_ask_image_dev_if_required() {
+  # output: img_name, disk
+  if [ "$img_name" = "ask_user" ]; then
+    get_target_dir_name_when_checking_img_checksum # output: target_dir
+    img_name="$target_dir"
+  fi
+  [ "$BOOTUP" = "color" ] && $SETCOLOR_WARNING
+  echo "$msg_the_image_to_be_cheked: $img_name"
+  [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+  
+  if [ "$disk" = "ask_user" ]; then
+    # To get $target_hd
+    get_target_hd_name_from_local_machine "$msg_local_source_disk \n$msg_linux_disk_naming $msg_press_space_to_mark_selection"
+    disk="$(select_VG "$target_hd")"
+  elif [ "$disk" = "all" ]; then
+    get_not_busy_disks_or_parts harddisk "" ""  # we will get dev_list
+    disk="$dev_list"
+  fi
+} # end of do_restore_or_check_mode_ask_image_dev_if_required
+#
+do_save_mode_check() {
+  echo "Checking input parameters for saving mode..."
+  if [ -z "$disk" ]; then
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+    echo "No source disk is assigned."
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+    echo "$msg_program_stop!"
+    USAGE
+    exit 1
+  elif [ "$(LC_ALL=C echo "$disk" | wc -w)" -ne 1 ]; then
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+    echo "Only one source disk is supported!"
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+    echo "$msg_program_stop!"
+    USAGE
+    exit 1
+  elif [ -z "$(LC_ALL=C grep -Ew "$disk" /proc/partitions)" ]; then
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+    echo "No destination disk $disk found on this system!"
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+    echo "Available disks and partitions on this system:"
+    echo $msg_delimiter_star_line
+    cat /proc/partitions
+    echo $msg_delimiter_star_line
+    echo "$msg_program_stop!"
+    exit 1
+  else
+    if ! is_whole_disk $disk; then
+      [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+      echo "Source disk $disk is not a disk."
+      [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+      echo "$msg_program_stop!"
+      exit 1
+    fi
+  fi 
+  if [ -z "$img_name" ]; then
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+    echo "No image name is assigned."
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+    echo "$msg_program_stop!"
+    exit 1
+  fi
+} # end of do_save_mode_check
+#
+do_restore_or_check_mode_check() {
+  # Check if image exists
+  # Check if destination disk exists
+  # Show warning if no part_label_prefix when mode is restore, but skip it when mode is check.
+  if [ "$task_mode" = "restore" ]; then
+    if [ -z "$part_label_prefix" ]; then
+      [ "$BOOTUP" = "color" ] && $SETCOLOR_WARNING
+      echo "No label prefix for destination disk(s)."
+      [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+      if [ "$ocs_batch_mode" != "on" ]; then
+        echo -n "$msg_press_enter_to_continue..."
+        read
+      fi
+    fi
+  fi
+  if [ ! -d "$ocsroot/$img_name" ]; then
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+    echo "No image $img_name found in $ocsroot!"
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+    echo "$msg_program_stop!"
+    exit 1
+  fi
+  for idsk in $disk; do
+    if [ -z "$(LC_ALL=C grep -Ew "$idsk" /proc/partitions)" ]; then
+      [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+      echo "No destination disk \"$idsk\" found on this system!"
+      [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+      echo "Available disks and partitions on this system:"
+      echo $msg_delimiter_star_line
+      cat /proc/partitions
+      echo $msg_delimiter_star_line
+      echo "$msg_program_stop!"
+      exit 1
+    fi
+  done
+} # end of do_restore_or_check_mode_check
+#
+do_mdisk_restore_task() {
+  # (1) Deploy the image to multiple destination disks
+  # (2) Label the destination partitions
+  # (3) Put checksum results in image repository and destination disk.
+  #     Format: ${image}_${part_label}_md5_results.txt (e.g. Speed_LA01p1_md5_results.txt
+  local img="$1"
+  local dest_dsk="$2"
+  local tmpd_dest
+  rm -f /var/log/*sum-results.log
+  ocs-restore-mdisks $batch_opt -p "-g auto $resize_opt -e1 auto -e2 -nogui -j2 -cmf -scr -p true" $img $dest_dsk | tee -a /var/log/${ocs}.log
+  for idsk in $dest_dsk; do 
+    echo "Searching for data partition(s)..." | tee -a /var/log/${ocs}-${idsk}.log
+    BACKUP_DEVS=""
+    get_known_partition_proc_format $idsk data
+    target_parts="$BACKUP_DEVS"
+    # Strip the single white space which should be nothing. Thanks to Borksoft.
+    target_parts="$(echo $target_parts | sed -e "s/^  *$//")"
+    tmpd_dest="$(mktemp -d /tmp/tmpd_dest.XXXXXX)"
+    trap "[ -d "$tmpd_dest" ] && umount $tmpd_dest &>/dev/null" HUP INT QUIT TERM EXIT
+    for iprt in $target_parts; do
+      pt="$(get_part_number "$iprt")"
+      initial_no="$(LC_ALL=C printf "%.2u" $initial_no)"  # e.g. 2 -> 02
+      part_label=${part_label_prefix}${initial_no}p${pt}
+      echo "Labeling /dev/${idsk}${pt} as $part_label" | tee -a /var/log/${ocs}-${idsk}.log
+      ocs-label-dev /dev/${idsk}${pt} $part_label | tee -a /var/log/${ocs}-${idsk}.log
+
+      # Find the checksum 
+      # Output for get_chksum_info_from_img: chksum_cmd, chksum_file
+      get_chksum_info_from_img "$ocsroot/$img" "*" 
+      if [ -z "$chksum_cmd" ]; then
+        [ "$BOOTUP" = "color" ] && $SETCOLOR_WARNING
+        echo "No any checksum file for files in /dev/$iprt was found in image dir $ocsroot/$img." | tee --append ${OCS_LOGFILE}
+        echo "No way to copy checksum to $ocsroot and /dev/$iprt." | tee --append ${OCS_LOGFILE}
+        [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+        continue
+      fi
+  
+      if [ -e "/var/log/${iprt}-${chksum_cmd}-results.log" ]; then
+        cp /var/log/${iprt}-${chksum_cmd}-results.log $ocsroot/${img}_${part_label}_md5_results.txt 2>&1 | tee -a /var/log/${ocs}-${idsk}.log
+        mount /dev/$iprt $tmpd_dest | tee -a /var/log/${ocs}-${idsk}.log
+        cp /var/log/${iprt}-${chksum_cmd}-results.log $tmpd_dest/${img}_${part_label}_md5_results.txt 2>&1 | tee -a /var/log/${ocs}-${idsk}.log
+        umount /dev/$iprt | tee -a /var/log/${ocs}-${idsk}.log
+      else
+        fs="$(LC_ALL=C ocs-get-part-info /dev/${iprt} fs)"
+        [ "$BOOTUP" = "color" ] && $SETCOLOR_WARNING
+        echo "File /var/log/${iprt}-${chksum_cmd}-results.log not found." | tee -a /var/log/${ocs}-${idsk}.log
+        [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+	echo "Maybe the file system \"$fs\" in ${iprt} is not supported by Linux kernel?" | tee -a /var/log/${ocs}-${idsk}.log
+      fi
+      initial_no="$(echo "scale=0; $initial_no + 1" | bc)"
+    done
+    if [ -d "$tmpd_dest" -a "$(echo "$tmpd_dest" | grep -E /tmp/tmpd_dest\.)" ]; then
+      rm -rf $tmpd_dest
+    fi
+  done
+} # end of do_mdisk_restore_task
+#
+do_mdisk_checksum_match_task() {
+  # (1) Inspect the checksum for destination disks.
+  # (2) Put checksum results in image repository and destination disk.
+  #     Format: ${image}_${part_label}_md5_results.txt (e.g. Speed_LA01p1_md5_results.txt
+  local img="$1"
+  local dest_dsk="$2"
+  local tmpd_dest LABEL
+  rm -f /var/log/*sum-results.log
+  ocs-match-checksum $parallel_opt $img $dest_dsk | tee -a /var/log/${ocs}.log
+  for idsk in $dest_dsk; do 
+    echo "Searching for data partition(s)..." | tee -a /var/log/${ocs}-${idsk}.log
+    BACKUP_DEVS=""
+    get_known_partition_proc_format $idsk data
+    target_parts="$BACKUP_DEVS"
+    # Strip the single white space which should be nothing. Thanks to Borksoft.
+    target_parts="$(echo $target_parts | sed -e "s/^  *$//")"
+    tmpd_dest="$(mktemp -d /tmp/tmpd_dest.XXXXXX)"
+    trap "[ -d "$tmpd_dest" ] && umount $tmpd_dest &>/dev/null" HUP INT QUIT TERM EXIT
+    for iprt in $target_parts; do
+      # Obtain the label
+      LC_ALL=C blkid -o export /dev/$iprt > $tmpd_dest/blkid_output
+      LABEL=""
+      . $tmpd_dest/blkid_output  # Obtain "$LABEL"
+  
+      # Find the checksum
+      # Output for get_chksum_info_from_img: chksum_cmd, chksum_file
+      get_chksum_info_from_img "$ocsroot/$img" "*" 
+      if [ -z "$chksum_cmd" ]; then
+        [ "$BOOTUP" = "color" ] && $SETCOLOR_WARNING
+        echo "No any checksum file for files in /dev/$iprt was found in image dir $ocsroot/$img." | tee --append ${OCS_LOGFILE}
+        echo "No way to copy checksum to $ocsroot and /dev/$iprt." | tee --append ${OCS_LOGFILE}
+        [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+        continue
+      fi
+      if [ -e "/var/log/${iprt}-${chksum_cmd}-results.log" ]; then
+        cp /var/log/${iprt}-${chksum_cmd}-results.log $ocsroot/${img}_${LABEL}_md5_results.txt 2>&1 | tee -a /var/log/${ocs}-${idsk}.log
+        mount /dev/$iprt $tmpd_dest | tee -a /var/log/${ocs}-${idsk}.log
+        cp /var/log/${iprt}-${chksum_cmd}-results.log $tmpd_dest/${img}_${LABEL}_md5_results.txt 2>&1 | tee -a /var/log/${ocs}-${idsk}.log
+        umount /dev/$iprt | tee -a /var/log/${ocs}-${idsk}.log
+      else
+        fs="$(LC_ALL=C ocs-get-part-info /dev/${iprt} fs)"
+        [ "$BOOTUP" = "color" ] && $SETCOLOR_WARNING
+        echo "File /var/log/${iprt}-${chksum_cmd}-results.log not found." | tee -a /var/log/${ocs}-${idsk}.log
+        [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+	echo "Maybe the file system \"$fs\" in /dev/${iprt} is not supported by Linux kernel? Or there are no any regular files in /dev/${iprt}?" | tee -a /var/log/${ocs}-${idsk}.log
+      fi
+    done
+    if [ -d "$tmpd_dest" -a "$(echo "$tmpd_dest" | grep -E /tmp/tmpd_dest\.)" ]; then
+      rm -rf $tmpd_dest
+    fi
+  done
+} # end of do_mdisk_checksum_match_task
+#
+do_mdisk_checksum_match_and_label_task() {
+  # (1) Inspect the checksum for destination disks.
+  # (2) Label the destination partitions
+  # (3) Put checksum result in image repository and destination disk.
+  #     Format: ${image}_${part_label}_md5_results.txt (e.g. Speed_LA01p1_md5_results.txt
+  local img="$1"
+  local dest_dsk="$2"
+  local tmpd_dest LABEL
+  rm -f /var/log/*sum-results.log
+  ocs-match-checksum $parallel_opt $img $dest_dsk | tee -a /var/log/${ocs}.log
+  for idsk in $dest_dsk; do 
+    echo "Searching for data partition(s)..." | tee -a /var/log/${ocs}-${idsk}.log
+    BACKUP_DEVS=""
+    get_known_partition_proc_format $idsk data
+    target_parts="$BACKUP_DEVS"
+    # Strip the single white space which should be nothing. Thanks to Borksoft.
+    target_parts="$(echo $target_parts | sed -e "s/^  *$//")"
+    tmpd_dest="$(mktemp -d /tmp/tmpd_dest.XXXXXX)"
+    trap "[ -d "$tmpd_dest" ] && umount $tmpd_dest &>/dev/null" HUP INT QUIT TERM EXIT
+    for iprt in $target_parts; do
+      pt="$(get_part_number "$iprt")"
+      initial_no="$(LC_ALL=C printf "%.2u" $initial_no)"  # e.g. 2 -> 02
+      part_label=${part_label_prefix}${initial_no}p${pt}
+      echo "Labeling /dev/${idsk}${pt} as $part_label" | tee -a /var/log/${ocs}-${idsk}.log
+      ocs-label-dev /dev/${idsk}${pt} $part_label | tee -a /var/log/${ocs}-${idsk}.log
+  
+      # Find the checksum
+      # Output for get_chksum_info_from_img: chksum_cmd, chksum_file
+      get_chksum_info_from_img "$ocsroot/$img" "*" 
+      if [ -z "$chksum_cmd" ]; then
+        [ "$BOOTUP" = "color" ] && $SETCOLOR_WARNING
+        echo "No any checksum file for files in /dev/$iprt was found in image dir $ocsroot/$img." | tee --append ${OCS_LOGFILE}
+        echo "No way to copy checksum to $ocsroot and /dev/$iprt." | tee --append ${OCS_LOGFILE}
+        [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+        continue
+      fi
+      if [ -e "/var/log/${iprt}-${chksum_cmd}-results.log" ]; then
+        cp /var/log/${iprt}-${chksum_cmd}-results.log $ocsroot/${img}_${part_label}_md5_results.txt 2>&1 | tee -a /var/log/${ocs}-${idsk}.log
+        mount /dev/$iprt $tmpd_dest | tee -a /var/log/${ocs}-${idsk}.log
+        cp /var/log/${iprt}-${chksum_cmd}-results.log $tmpd_dest/${img}_${part_label}_md5_results.txt 2>&1 | tee -a /var/log/${ocs}-${idsk}.log
+        umount /dev/$iprt | tee -a /var/log/${ocs}-${idsk}.log
+      else
+        fs="$(LC_ALL=C ocs-get-part-info /dev/${iprt} fs)"
+        [ "$BOOTUP" = "color" ] && $SETCOLOR_WARNING
+        echo "File /var/log/${iprt}-${chksum_cmd}-results.log not found." | tee -a /var/log/${ocs}-${idsk}.log
+        [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+	echo "Maybe the file system \"$fs\" in /dev/${iprt} is not supported by Linux kernel? Or there are no any regular files in /dev/${iprt}?" | tee -a /var/log/${ocs}-${idsk}.log
+      fi
+      initial_no="$(echo "scale=0; $initial_no + 1" | bc)"
+    done
+    if [ -d "$tmpd_dest" -a "$(echo "$tmpd_dest" | grep -E /tmp/tmpd_dest\.)" ]; then
+      rm -rf $tmpd_dest
+    fi
+  done
+} # end of do_mdisk_checksum_match_and_label_task
+#
+do_mdisk_save_task() {
+  # (1) Save the image from source device
+  # (2) Put checksum file in image repository.
+  #     File name format: $image_name-$time (e.g. HOWL_09Oct15-171023.md5)
+  #     Merge them to one file if more than one checksum files exist.
+  local img="$1"
+  local src_dsk="$2"
+  # (1) Save the disk as image
+  ocs-sr -q2 $batch_opt $nogui_opt -j2 -gmf -z1p -i 4096 -p true savedisk $img $src_dsk
+  #
+  time_now="$(LC_ALL=C date +%d%b%y-%H%M%S)"
+  rm -f $ocsroot/${img}-${time_now}.md5
+  echo "Preparing checksum file $ocsroot/${img}_${time_now}.md5... "
+  for ifile in $ocsroot/$img/*sum.info.gz; do
+    [ ! -e "$ifile" ] && continue
+    # checksum file
+    # Clean the temp mount point in checksum file.
+    sum_part_tmpd="$(LC_ALL=C zcat $ifile | head -n 1 | awk -F" " '{print $2}' | grep -E -o "/tmp/chksum_tmpd.[[:alnum:]]{6}")"
+    if [ -n "$sum_part_tmpd" ]; then
+      zcat $ifile | perl -p -e "s|$sum_part_tmpd|CHKSUM_TMPD|g" >> $ocsroot/${img}_${time_now}.md5
+    fi
+  done
+  echo "done!"
+} # end of do_mdisk_save_task
+#
+show_unknown_mode_then_exit() {
+  [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+  echo "Unknown mode \"$task_mode\". Only 'save' or 'restore' is supported."
+  [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+  echo "$msg_program_stop!"
+  USAGE
+  exit 1
+} # end of show_unknown_mode_then_exit
+
+################
+##### Main #####
+################
+ocs_file="$0"
+ocs=`basename $ocs_file`
+#
+while [ $# -gt 0 ]; do
+ case "$1" in
+   -b|--batch) ocs_batch_mode="on"; shift;;
+   -i|--initial-no)
+           # overwrite the ocsroot in drbl.conf
+           shift; 
+           if [ -z "$(echo $1 |grep ^-.)" ]; then
+             # skip the -xx option, in case 
+             initial_no="$1"
+             shift;
+           fi
+           [ -z "$initial_no" ] && USAGE && exit 1
+           ;;
+   -nogui|--nogui) nogui="on"; shift; ;;
+   -r|--no-parallel)  ocs_parallel_mode="no"; shift;;
+   -n|--no-resize) resize="no"; shift;;
+   -p|--label-prefix)
+           # overwrite the ocsroot in drbl.conf
+           shift; 
+           if [ -z "$(echo $1 |grep ^-.)" ]; then
+             # skip the -xx option, in case 
+             part_label_prefix="$1"
+             shift;
+           fi
+           [ -z "$part_label_prefix" ] && USAGE && exit 1
+           ;;
+   -*)     echo "${0}: ${1}: invalid option" >&2
+           USAGE >& 2
+           exit 2 ;;
+   *)      break ;;
+ esac
+done
+
+task_mode="$1"
+shift
+img_name="$1"
+shift
+disk="$*"
+
+#
+check_if_root
+ask_and_load_lang_set
+
+#
+case "$ocs_batch_mode" in
+  on)  batch_opt="-b";;
+  off) batch_opt="";;
+esac
+case "$nogui" in
+  on)  nogui_opt="-nogui";;
+  off) nogui_opt="";;
+esac
+case "$resize" in
+  yes) resize_opt="-k1 -r -icds";;
+  *)   resize_opt="";;
+esac
+case "$ocs_parallel_mode" in
+  yes) parallel_opt="-p";;
+  *)   parallel_opt="";;
+esac
+[ -z "$initial_no" ] && initial_no=$initial_no_def
+
+# Check if initial_no a positive integer
+if [ "${initial_no//[0-9]}" != "" ]; then
+  # Natural number, i.e. positive integer
+  [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+  echo "Input initial number \"${initial_no}\" is not a positive integer!"
+  [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+  echo "$msg_program_stop" | tee --append ${OCS_LOGFILE}
+  exit 1
+fi
+
+if [ -z "$task_mode" ]; then
+  show_unknown_mode_then_exit
+else
+  # Check the input
+  case "$task_mode" in
+    "save"|"restore"|"check"|"ctl"|"check-then-label") true;;
+    *)  show_unknown_mode_then_exit;;
+  esac
+fi
+
+# imagedir is a variable which ask_user related function need
+imagedir="$ocsroot"
+[ -z "$img_name" ] && img_name="ask_user"
+[ -z "$disk" ] && disk="ask_user"
+
+case "$task_mode" in
+  save)    do_save_mode_ask_image_dev_if_required;;
+  restore) do_restore_or_check_mode_ask_image_dev_if_required;;
+  check)   do_restore_or_check_mode_ask_image_dev_if_required;;
+  ctl|check-then-label)   
+	   do_restore_or_check_mode_ask_image_dev_if_required;;
+esac
+
+# check if the device exists
+ANS_TMP=`mktemp /tmp/ocs_chkdev.XXXXXX`
+trap "[ -f "$ANS_TMP" ] && rm -f $ANS_TMP" HUP INT QUIT TERM EXIT
+check_if_input_device_exist $ANS_TMP $disk 
+disk="$(cat $ANS_TMP | tr -d \")"
+[ -f "$ANS_TMP" ] && rm -f $ANS_TMP
+
+# Do the real job
+case "$task_mode" in
+  save)    do_save_mode_check 
+           do_mdisk_save_task "$img_name" "$disk"
+	   ;;
+  restore) do_restore_or_check_mode_check
+           do_mdisk_restore_task "$img_name" "$disk"
+	   ;;
+  check)   do_restore_or_check_mode_check
+           do_mdisk_checksum_match_task "$img_name" "$disk"
+	   ;;
+  ctl|check-then-label)   
+	   do_restore_or_check_mode_check
+           do_mdisk_checksum_match_and_label_task "$img_name" "$disk"
+	   ;;
+  *)       show_unknown_mode_then_exit
+	   ;;
+esac

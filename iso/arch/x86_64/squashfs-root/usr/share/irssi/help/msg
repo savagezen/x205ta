@@ -1,0 +1,28 @@
+
+%9Syntax:%9
+
+MSG %|[-<server tag>] [-channel | -nick] *|<targets> <message>
+
+%9Parameters:%9
+
+    -<server tag>:    The server tag the targets are on.
+    -channel:         Indicates that the target is a channel.
+    -nick:            Indicates that the target is a nickname.
+
+    The target nickname or channel and the message to send.
+
+    Use the wildcard character '*' if you want to use the active nickname or
+    channel.
+
+%9Description:%9
+
+    Sends a message to a nickname or channel.
+
+%9Examples:%9
+
+    /MSG mike Hi, what's up?
+    /MSG #irssi I am awesome :)
+    /MSG * Do you want to build a snowman?
+
+%9See also:%9 ACTION, DCC, JOIN
+

@@ -1,0 +1,102 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Chapter 3. Overview</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="prev" href="sag-text-conventions.html" title="Chapter 2. Some comments on the text"><link rel="next" href="sag-configuration.html" title="Chapter 4. The Linux-PAM configuration file"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 3. Overview</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-text-conventions.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="sag-configuration.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="sag-overview"></a>Chapter 3. Overview</h1></div></div></div><p>
+      For the uninitiated, we begin by considering an example.  We take an
+      application that grants some service to users;
+      <span class="command"><strong>login</strong></span> is one such program.
+      <span class="command"><strong>Login</strong></span> does two things, it first establishes that
+      the requesting user is whom they claim to be and second provides
+      them with the requested service: in the case of
+      <span class="command"><strong>login</strong></span> the service is a command shell
+      (bash, tcsh, zsh, etc.) running with the identity of the user.
+    </p><p>
+      Traditionally, the former step is achieved by the
+      <span class="command"><strong>login</strong></span> application prompting the user for a
+      password and then verifying that it agrees with that located on
+      the system; hence verifying that as far as the system is concerned
+      the user is who they claim to be. This is the task that is delegated
+      to <span class="emphasis"><em>Linux-PAM</em></span>.
+    </p><p>
+      From the perspective of the application programmer (in this case
+      the person that wrote the <span class="command"><strong>login</strong></span> application),
+      <span class="emphasis"><em>Linux-PAM</em></span> takes care of this
+      authentication task -- verifying the identity of the user.
+    </p><p>
+      The flexibility of <span class="emphasis"><em>Linux-PAM</em></span> is
+      that <span class="emphasis"><em>you</em></span>, the system administrator, have
+      the freedom to stipulate which authentication scheme is to be
+      used. You have the freedom to set the scheme for any/all
+      PAM-aware applications on your Linux system. That is, you can
+      authenticate from anything as naive as
+      <span class="emphasis"><em>simple trust</em></span> (<span class="command"><strong>pam_permit</strong></span>)
+      to something as paranoid as a combination of a retinal scan, a
+      voice print and a one-time password!
+    </p><p>
+      To illustrate the flexibility you face, consider the following
+      situation: a system administrator (parent) wishes to improve the
+      mathematical ability of her users (children). She can configure
+      their favorite ``Shoot 'em up game'' (PAM-aware of course) to
+      authenticate them with a request for the product of a couple of
+      random numbers less than 12. It is clear that if the game is any
+      good they will soon learn their
+      <span class="emphasis"><em>multiplication tables</em></span>. As they mature, the
+      authentication can be upgraded to include (long) division!
+    </p><p>
+      <span class="emphasis"><em>Linux-PAM</em></span> deals with four
+      separate types of (management) task. These are:
+      <span class="emphasis"><em>authentication management</em></span>;
+      <span class="emphasis"><em>account management</em></span>;
+      <span class="emphasis"><em>session management</em></span>; and
+      <span class="emphasis"><em>password management</em></span>.
+      The association of the preferred management scheme with the behavior
+      of an application is made with entries in the relevant
+      <span class="emphasis"><em>Linux-PAM</em></span> configuration file.
+      The management functions are performed by <span class="emphasis"><em>modules</em></span>
+      specified in the configuration file. The syntax for this
+      file is discussed in the section
+      <a class="link" href="sag-configuration.html" title="Chapter 4. The Linux-PAM configuration file">below</a>.
+    </p><p>
+      Here is a figure that describes the overall organization of
+      <span class="emphasis"><em>Linux-PAM</em></span>:
+      </p><pre class="programlisting">
+  +----------------+
+  | application: X |
+  +----------------+       /  +----------+     +================+
+  | authentication-[----&gt;--\--] Linux-   |--&lt;--| PAM config file|
+  |       +        [----&lt;--/--]   PAM    |     |================|
+  |[conversation()][--+    \  |          |     | X auth .. a.so |
+  +----------------+  |    /  +-n--n-----+     | X auth .. b.so |
+  |                |  |       __|  |           |           _____/
+  |  service user  |  A      |     |           |____,-----'
+  |                |  |      V     A
+  +----------------+  +------|-----|---------+ -----+------+
+                         +---u-----u----+    |      |      |
+                         |   auth....   |--[ a ]--[ b ]--[ c ]
+                         +--------------+
+                         |   acct....   |--[ b ]--[ d ]
+                         +--------------+
+                         |   password   |--[ b ]--[ c ]
+                         +--------------+
+                         |   session    |--[ e ]--[ c ]
+                         +--------------+
+      </pre><p>
+      By way of explanation, the left of the figure represents the
+      application; application X.  Such an application interfaces with the
+      <span class="emphasis"><em>Linux-PAM</em></span> library and knows none of
+      the specifics of its configured authentication method. The
+      <span class="emphasis"><em>Linux-PAM</em></span> library (in the center)
+      consults the contents of the PAM configuration file and loads the
+      modules that are appropriate for application-X. These modules fall
+      into one of four management groups (lower-center) and are stacked in
+      the order they appear in the configuration file. These modules, when
+      called by <span class="emphasis"><em>Linux-PAM</em></span>, perform the
+      various authentication tasks for the application. Textual information,
+      required from/or offered to the user, can be exchanged through the
+      use of the application-supplied <span class="emphasis"><em>conversation</em></span>
+      function.
+    </p><p>
+      If a program is going to use PAM, then it has to have PAM
+      functions explicitly coded into the program. If you have
+      access to the source code you can add the appropriate PAM
+      functions. If you do not have access to the source code, and
+      the binary does not have the PAM functions included, then
+      it is not possible to use PAM.
+    </p></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-text-conventions.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="sag-configuration.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 2. Some comments on the text </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 4. The Linux-PAM configuration file</td></tr></table></div></body></html>

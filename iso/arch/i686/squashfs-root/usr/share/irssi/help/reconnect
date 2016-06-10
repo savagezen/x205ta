@@ -1,0 +1,22 @@
+
+%9Syntax:%9
+
+RECONNECT %|<tag> [<quit message>]
+
+%9Parameters:%9
+
+    The network tag and message to advertise; if no arguments are given, the
+    active server and default message will be used.
+
+%9Description:%9
+
+    Disconnect and reconnect from a network.
+
+%9Examples:%9
+
+    /RECONNECT
+    /RECONNECT Freenode
+    /RECONNECT EFnet BRB :)
+
+%9See also:%9 CONNECT, DISCONNECT, NETWORK, RMRECONNS, SERVER
+

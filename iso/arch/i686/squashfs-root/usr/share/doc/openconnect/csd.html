@@ -1,0 +1,120 @@
+
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>OpenConnect VPN client.</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="description" content="VPN client compatible with Cisco AnyConnect SSL VPN" />
+    <meta name="keywords" content="OpenConnect, AnyConnect, Cisco, VPN, SSLVPN, SSL VPN" />
+    <link href="./styles/main.css" rel="styleSheet" type="text/css" />
+    <link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css' />
+ </head>
+ 
+<body>
+   <div id="logo" align="right">	
+     <img src="./images/openconnect.png" height="96px" alt="OpenConnect" />
+   </div>
+   <div id="main">
+
+
+
+	
+	
+	
+	<div id="menu1">
+
+	<span class="nonsel">
+<a href="index.html"><span>Home</span></a>
+</span>
+
+	<span class="sel">
+<a href="features.html"><span>Features</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="building.html"><span>Getting Started</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="mail.html"><span>Mailing List / Help</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="contribute.html"><span>Contribute</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="anyconnect.html"><span>Protocols</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="http://www.infradead.org/ocserv/"><span>VPN Server</span></a>
+</span>
+
+	<p>OpenConnect VPN client</p>
+
+	</div>
+
+	
+	<div id="menu2">
+
+        <span class="nonsel">
+<a href="features.html"><span>Feature list</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="nonroot.html"><span>Running as non-root user</span></a>
+</span>
+
+	<span class="sel">
+<a href="csd.html"><span>Cisco Secure Desktop</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="gui.html"><span>GUI</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="charset.html"><span>Character sets</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="token.html"><span>One Time Passwords</span></a>
+</span>
+
+	<span class="nonsel">
+<a href="pkcs11.html"><span>Smart Cards / PKCS#11</span></a>
+</span>
+
+	</div>
+
+
+	     <div id="textbox">
+       <div id="text">
+	</div>
+
+
+<h1>Cisco Secure Desktop</h1>
+
+<p>The 'Cisco Secure Desktop' is a bit of a misnomer — it works by
+downloading a trojan binary from the server and running it on your
+client machine to perform some kind of 'verification' and post its
+approval back to the server. This seems anything <em>but</em> secure
+to me, especially given their history of trivially-exploitable
+bugs.</p>
+<p>It's also fairly easy to subvert, by running your own modified binary
+instead of the one you download from the server. Or by running their
+binary but poking at it with gdb.</p>
+<p>We support this idiocy, but because of the security concerns the
+trojan will be executed only if a userid is specified on the command
+line using the <tt>--csd-user=</tt> option, or the <tt>--csd-wrapper=</tt>
+option is used to handle the script in a 'safe' manner.</p>
+<p>
+This support currently only works when the server has a Linux binary
+installed, and only when that Linux binary runs on the client machine.</p>
+
+      </div>
+   </div>
+  </body>
+</html>

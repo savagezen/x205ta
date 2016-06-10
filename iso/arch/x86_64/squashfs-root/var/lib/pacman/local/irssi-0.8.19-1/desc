@@ -1,0 +1,40 @@
+%NAME%
+irssi
+
+%VERSION%
+0.8.19-1
+
+%DESC%
+Modular text mode IRC client with Perl scripting
+
+%URL%
+http://irssi.org/
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1459924274
+
+%INSTALLDATE%
+1464799588
+
+%PACKAGER%
+Antonio Rojas <arojas@archlinux.org>
+
+%SIZE%
+1754112
+
+%LICENSE%
+GPL
+
+%VALIDATION%
+pgp
+
+%DEPENDS%
+glib2
+openssl
+
+%OPTDEPENDS%
+perl-libwww: for the scriptassist script
+

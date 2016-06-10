@@ -1,0 +1,45 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>6.12. pam_issue - add issue file to user prompt</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="Linux-PAM_SAG.html" title="The Linux-PAM System Administrators' Guide"><link rel="up" href="sag-module-reference.html" title="Chapter 6. A reference guide for available modules"><link rel="prev" href="sag-pam_group.html" title="6.11. pam_group - module to modify group access"><link rel="next" href="sag-pam_keyinit.html" title="6.13. pam_keyinit - display the keyinit file"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.12. pam_issue - add issue file to user prompt</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sag-pam_group.html">Prev</a> </td><th width="60%" align="center">Chapter 6. A reference guide for available modules</th><td width="20%" align="right"> <a accesskey="n" href="sag-pam_keyinit.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sag-pam_issue"></a>6.12. pam_issue - add issue file to user prompt</h2></div></div></div><div class="cmdsynopsis"><p><code class="command">pam_issue.so</code>  [
+        noesc
+      ] [
+        issue=<em class="replaceable"><code>issue-file-name</code></em>
+      ]</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_issue-description"></a>6.12.1. DESCRIPTION</h3></div></div></div><p>
+      pam_issue is a PAM module to prepend an issue file to the username
+      prompt. It also by default parses escape codes in the issue file
+      similar to some common getty's (using \x format).
+    </p><p>
+      Recognized escapes:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><span class="emphasis"><em>\d</em></span></span></dt><dd><p>current day</p></dd><dt><span class="term"><span class="emphasis"><em>\l</em></span></span></dt><dd><p>name of this tty</p></dd><dt><span class="term"><span class="emphasis"><em>\m</em></span></span></dt><dd><p>machine architecture (uname -m)</p></dd><dt><span class="term"><span class="emphasis"><em>\n</em></span></span></dt><dd><p>machine's network node hostname (uname -n)</p></dd><dt><span class="term"><span class="emphasis"><em>\o</em></span></span></dt><dd><p>domain name of this system</p></dd><dt><span class="term"><span class="emphasis"><em>\r</em></span></span></dt><dd><p>release number of operating system (uname -r)</p></dd><dt><span class="term"><span class="emphasis"><em>\t</em></span></span></dt><dd><p>current time</p></dd><dt><span class="term"><span class="emphasis"><em>\s</em></span></span></dt><dd><p>operating system name (uname -s)</p></dd><dt><span class="term"><span class="emphasis"><em>\u</em></span></span></dt><dd><p>number of users currently logged in</p></dd><dt><span class="term"><span class="emphasis"><em>\U</em></span></span></dt><dd><p>
+            same as \u except it is suffixed with "user" or
+            "users" (eg. "1 user" or "10 users")
+          </p></dd><dt><span class="term"><span class="emphasis"><em>\v</em></span></span></dt><dd><p>operating system version and build date (uname -v)</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_issue-options"></a>6.12.2. OPTIONS</h3></div></div></div><p>
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">
+            <code class="option">noesc</code>
+          </span></dt><dd><p>
+              Turns off escape code parsing.
+            </p></dd><dt><span class="term">
+            <code class="option">issue=<em class="replaceable"><code>issue-file-name</code></em></code>
+          </span></dt><dd><p>
+              The file to output if not using the default.
+            </p></dd></dl></div><p>
+
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_issue-types"></a>6.12.3. MODULE TYPES PROVIDED</h3></div></div></div><p>
+      Only the <code class="option">auth</code> module type is provided.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_issue-return_values"></a>6.12.4. RETURN VALUES</h3></div></div></div><p>
+      </p><div class="variablelist"><dl class="variablelist"><dt><span class="term">PAM_BUF_ERR</span></dt><dd><p>
+               Memory buffer error.
+            </p></dd><dt><span class="term">PAM_IGNORE</span></dt><dd><p>
+              The prompt was already changed.
+            </p></dd><dt><span class="term">PAM_SERVICE_ERR</span></dt><dd><p>
+	      A service module error occurred.
+            </p></dd><dt><span class="term">PAM_SUCCESS</span></dt><dd><p>
+              The new prompt was set successfully.
+            </p></dd></dl></div><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_issue-examples"></a>6.12.5. EXAMPLES</h3></div></div></div><p>
+      Add the following line to <code class="filename">/etc/pam.d/login</code> to
+      set the user specific issue at login:
+      </p><pre class="programlisting">
+        auth optional pam_issue.so issue=/etc/issue
+      </pre><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="sag-pam_issue-author"></a>6.12.6. AUTHOR</h3></div></div></div><p>
+        pam_issue was written by Ben Collins &lt;bcollins@debian.org&gt;.
+      </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sag-pam_group.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sag-module-reference.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sag-pam_keyinit.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">6.11. pam_group - module to modify group access </td><td width="20%" align="center"><a accesskey="h" href="Linux-PAM_SAG.html">Home</a></td><td width="40%" align="right" valign="top"> 6.13. pam_keyinit - display the keyinit file</td></tr></table></div></body></html>

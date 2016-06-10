@@ -1,0 +1,33 @@
+%NAME%
+darkhttpd
+
+%VERSION%
+1.12-1
+
+%DESC%
+A small and secure static webserver
+
+%URL%
+http://dmr.ath.cx/net/darkhttpd/
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1454100456
+
+%INSTALLDATE%
+1464799587
+
+%PACKAGER%
+Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+%SIZE%
+83968
+
+%LICENSE%
+BSD
+
+%VALIDATION%
+pgp
+

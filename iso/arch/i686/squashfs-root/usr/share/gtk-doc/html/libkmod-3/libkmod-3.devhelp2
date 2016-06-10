@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<book xmlns="http://www.devhelp.net/book" title="libkmod Reference Manual" link="index.html" author="" name="libkmod" version="2" language="c">
+  <chapters>
+    <sub name="libkmod" link="ch01.html">
+      <sub name="libkmod" link="libkmod-libkmod.html"/>
+      <sub name="libkmod-list" link="libkmod-libkmod-list.html"/>
+      <sub name="libkmod-config" link="libkmod-libkmod-config.html"/>
+      <sub name="libkmod-module" link="libkmod-libkmod-module.html"/>
+      <sub name="libkmod-loaded" link="libkmod-libkmod-loaded.html"/>
+    </sub>
+    <sub name="API Index" link="api-index-full.html"/>
+  </chapters>
+  <functions>
+    <keyword type="function" name="kmod_new ()" link="libkmod-libkmod.html#kmod-new"/>
+    <keyword type="function" name="kmod_ref ()" link="libkmod-libkmod.html#kmod-ref"/>
+    <keyword type="function" name="kmod_unref ()" link="libkmod-libkmod.html#kmod-unref"/>
+    <keyword type="function" name="kmod_load_resources ()" link="libkmod-libkmod.html#kmod-load-resources"/>
+    <keyword type="function" name="kmod_unload_resources ()" link="libkmod-libkmod.html#kmod-unload-resources"/>
+    <keyword type="function" name="kmod_validate_resources ()" link="libkmod-libkmod.html#kmod-validate-resources"/>
+    <keyword type="function" name="kmod_dump_index ()" link="libkmod-libkmod.html#kmod-dump-index"/>
+    <keyword type="function" name="kmod_set_log_priority ()" link="libkmod-libkmod.html#kmod-set-log-priority"/>
+    <keyword type="function" name="kmod_get_log_priority ()" link="libkmod-libkmod.html#kmod-get-log-priority"/>
+    <keyword type="function" name="kmod_set_log_fn ()" link="libkmod-libkmod.html#kmod-set-log-fn"/>
+    <keyword type="function" name="kmod_get_userdata ()" link="libkmod-libkmod.html#kmod-get-userdata"/>
+    <keyword type="function" name="kmod_set_userdata ()" link="libkmod-libkmod.html#kmod-set-userdata"/>
+    <keyword type="struct" name="struct kmod_ctx" link="libkmod-libkmod.html#kmod-ctx"/>
+    <keyword type="macro" name="kmod_list_foreach()" link="libkmod-libkmod-list.html#kmod-list-foreach"/>
+    <keyword type="macro" name="kmod_list_foreach_reverse()" link="libkmod-libkmod-list.html#kmod-list-foreach-reverse"/>
+    <keyword type="function" name="kmod_list_last ()" link="libkmod-libkmod-list.html#kmod-list-last"/>
+    <keyword type="function" name="kmod_list_next ()" link="libkmod-libkmod-list.html#kmod-list-next"/>
+    <keyword type="function" name="kmod_list_prev ()" link="libkmod-libkmod-list.html#kmod-list-prev"/>
+    <keyword type="struct" name="struct kmod_list" link="libkmod-libkmod-list.html#kmod-list"/>
+    <keyword type="function" name="kmod_config_get_blacklists ()" link="libkmod-libkmod-config.html#kmod-config-get-blacklists"/>
+    <keyword type="function" name="kmod_config_get_install_commands ()" link="libkmod-libkmod-config.html#kmod-config-get-install-commands"/>
+    <keyword type="function" name="kmod_config_get_remove_commands ()" link="libkmod-libkmod-config.html#kmod-config-get-remove-commands"/>
+    <keyword type="function" name="kmod_config_get_aliases ()" link="libkmod-libkmod-config.html#kmod-config-get-aliases"/>
+    <keyword type="function" name="kmod_config_get_options ()" link="libkmod-libkmod-config.html#kmod-config-get-options"/>
+    <keyword type="function" name="kmod_config_get_softdeps ()" link="libkmod-libkmod-config.html#kmod-config-get-softdeps"/>
+    <keyword type="function" name="kmod_config_iter_get_key ()" link="libkmod-libkmod-config.html#kmod-config-iter-get-key"/>
+    <keyword type="function" name="kmod_config_iter_get_value ()" link="libkmod-libkmod-config.html#kmod-config-iter-get-value"/>
+    <keyword type="function" name="kmod_config_iter_next ()" link="libkmod-libkmod-config.html#kmod-config-iter-next"/>
+    <keyword type="function" name="kmod_config_iter_free_iter ()" link="libkmod-libkmod-config.html#kmod-config-iter-free-iter"/>
+    <keyword type="struct" name="struct kmod_config_iter" link="libkmod-libkmod-config.html#kmod-config-iter"/>
+    <keyword type="function" name="kmod_module_new_from_lookup ()" link="libkmod-libkmod-module.html#kmod-module-new-from-lookup"/>
+    <keyword type="function" name="kmod_module_new_from_name ()" link="libkmod-libkmod-module.html#kmod-module-new-from-name"/>
+    <keyword type="function" name="kmod_module_new_from_path ()" link="libkmod-libkmod-module.html#kmod-module-new-from-path"/>
+    <keyword type="function" name="kmod_module_ref ()" link="libkmod-libkmod-module.html#kmod-module-ref"/>
+    <keyword type="function" name="kmod_module_unref ()" link="libkmod-libkmod-module.html#kmod-module-unref"/>
+    <keyword type="function" name="kmod_module_unref_list ()" link="libkmod-libkmod-module.html#kmod-module-unref-list"/>
+    <keyword type="function" name="kmod_module_insert_module ()" link="libkmod-libkmod-module.html#kmod-module-insert-module"/>
+    <keyword type="function" name="kmod_module_probe_insert_module ()" link="libkmod-libkmod-module.html#kmod-module-probe-insert-module"/>
+    <keyword type="function" name="kmod_module_remove_module ()" link="libkmod-libkmod-module.html#kmod-module-remove-module"/>
+    <keyword type="function" name="kmod_module_get_module ()" link="libkmod-libkmod-module.html#kmod-module-get-module"/>
+    <keyword type="function" name="kmod_module_get_dependencies ()" link="libkmod-libkmod-module.html#kmod-module-get-dependencies"/>
+    <keyword type="function" name="kmod_module_get_softdeps ()" link="libkmod-libkmod-module.html#kmod-module-get-softdeps"/>
+    <keyword type="function" name="kmod_module_apply_filter ()" link="libkmod-libkmod-module.html#kmod-module-apply-filter"/>
+    <keyword type="function" name="kmod_module_get_filtered_blacklist ()" link="libkmod-libkmod-module.html#kmod-module-get-filtered-blacklist"/>
+    <keyword type="function" name="kmod_module_get_install_commands ()" link="libkmod-libkmod-module.html#kmod-module-get-install-commands"/>
+    <keyword type="function" name="kmod_module_get_remove_commands ()" link="libkmod-libkmod-module.html#kmod-module-get-remove-commands"/>
+    <keyword type="function" name="kmod_module_get_name ()" link="libkmod-libkmod-module.html#kmod-module-get-name"/>
+    <keyword type="function" name="kmod_module_get_options ()" link="libkmod-libkmod-module.html#kmod-module-get-options"/>
+    <keyword type="function" name="kmod_module_get_path ()" link="libkmod-libkmod-module.html#kmod-module-get-path"/>
+    <keyword type="function" name="kmod_module_get_dependency_symbols ()" link="libkmod-libkmod-module.html#kmod-module-get-dependency-symbols"/>
+    <keyword type="function" name="kmod_module_dependency_symbol_get_bind ()" link="libkmod-libkmod-module.html#kmod-module-dependency-symbol-get-bind"/>
+    <keyword type="function" name="kmod_module_dependency_symbol_get_crc ()" link="libkmod-libkmod-module.html#kmod-module-dependency-symbol-get-crc"/>
+    <keyword type="function" name="kmod_module_dependency_symbol_get_symbol ()" link="libkmod-libkmod-module.html#kmod-module-dependency-symbol-get-symbol"/>
+    <keyword type="function" name="kmod_module_dependency_symbols_free_list ()" link="libkmod-libkmod-module.html#kmod-module-dependency-symbols-free-list"/>
+    <keyword type="function" name="kmod_module_get_sections ()" link="libkmod-libkmod-module.html#kmod-module-get-sections"/>
+    <keyword type="function" name="kmod_module_section_free_list ()" link="libkmod-libkmod-module.html#kmod-module-section-free-list"/>
+    <keyword type="function" name="kmod_module_section_get_address ()" link="libkmod-libkmod-module.html#kmod-module-section-get-address"/>
+    <keyword type="function" name="kmod_module_section_get_name ()" link="libkmod-libkmod-module.html#kmod-module-section-get-name"/>
+    <keyword type="function" name="kmod_module_get_symbols ()" link="libkmod-libkmod-module.html#kmod-module-get-symbols"/>
+    <keyword type="function" name="kmod_module_symbol_get_crc ()" link="libkmod-libkmod-module.html#kmod-module-symbol-get-crc"/>
+    <keyword type="function" name="kmod_module_symbol_get_symbol ()" link="libkmod-libkmod-module.html#kmod-module-symbol-get-symbol"/>
+    <keyword type="function" name="kmod_module_symbols_free_list ()" link="libkmod-libkmod-module.html#kmod-module-symbols-free-list"/>
+    <keyword type="function" name="kmod_module_get_versions ()" link="libkmod-libkmod-module.html#kmod-module-get-versions"/>
+    <keyword type="function" name="kmod_module_version_get_crc ()" link="libkmod-libkmod-module.html#kmod-module-version-get-crc"/>
+    <keyword type="function" name="kmod_module_version_get_symbol ()" link="libkmod-libkmod-module.html#kmod-module-version-get-symbol"/>
+    <keyword type="function" name="kmod_module_versions_free_list ()" link="libkmod-libkmod-module.html#kmod-module-versions-free-list"/>
+    <keyword type="function" name="kmod_module_get_info ()" link="libkmod-libkmod-module.html#kmod-module-get-info"/>
+    <keyword type="function" name="kmod_module_info_free_list ()" link="libkmod-libkmod-module.html#kmod-module-info-free-list"/>
+    <keyword type="function" name="kmod_module_info_get_key ()" link="libkmod-libkmod-module.html#kmod-module-info-get-key"/>
+    <keyword type="function" name="kmod_module_info_get_value ()" link="libkmod-libkmod-module.html#kmod-module-info-get-value"/>
+    <keyword type="struct" name="struct kmod_module" link="libkmod-libkmod-module.html#kmod-module"/>
+    <keyword type="function" name="kmod_module_new_from_loaded ()" link="libkmod-libkmod-loaded.html#kmod-module-new-from-loaded"/>
+    <keyword type="function" name="kmod_module_get_initstate ()" link="libkmod-libkmod-loaded.html#kmod-module-get-initstate"/>
+    <keyword type="function" name="kmod_module_initstate_str ()" link="libkmod-libkmod-loaded.html#kmod-module-initstate-str"/>
+    <keyword type="function" name="kmod_module_get_size ()" link="libkmod-libkmod-loaded.html#kmod-module-get-size"/>
+    <keyword type="function" name="kmod_module_get_refcnt ()" link="libkmod-libkmod-loaded.html#kmod-module-get-refcnt"/>
+    <keyword type="function" name="kmod_module_get_holders ()" link="libkmod-libkmod-loaded.html#kmod-module-get-holders"/>
+  </functions>
+</book>

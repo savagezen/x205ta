@@ -1,0 +1,740 @@
+median
+
+ SYNOPSIS
+  Compute the median of an array of values
+
+ USAGE
+  m = median (a [,i])
+
+ DESCRIPTION
+  This function computes the median of an array of values.  The median
+  is defined to be the value such that half of the the array values will be
+  less than or equal to the median value and the other half greater than or
+  equal to the median value.  If the array has an even number of
+  values, then the median value will be the smallest value that is
+  greater than or equal to half the values in the array.
+
+  If called with a second argument, then the optional argument
+  specifies the dimension of the array over which the median is to be
+  taken.  In this case, an array of one less dimension than the input
+  array will be returned.
+
+ NOTES
+  This function makes a copy of the input array and then partially
+  sorts the copy.  For large arrays, it may be undesirable to allocate
+  a separate copy.  If memory use is to be minimized, the
+  `median_nc' function should be used.
+
+ SEE ALSO
+  median_nc, mean
+
+--------------------------------------------------------------
+
+median_nc
+
+ SYNOPSIS
+  Compute the median of an array
+
+ USAGE
+  m = median_nc (a [,i])
+
+ DESCRIPTION
+  This function computes the median of an array.  Unlike the
+  `median' function, it does not make a temporary copy of the
+  array and, as such, is more memory efficient at the expense
+  increased run-time.  See the `median' function for more
+  information.
+
+ SEE ALSO
+  median, mean
+
+--------------------------------------------------------------
+
+mean
+
+ SYNOPSIS
+  Compute the mean of the values in an array
+
+ USAGE
+  m = mean (a [,i])
+
+ DESCRIPTION
+  This function computes the arithmetic mean of the values in an
+  array.  The optional parameter `i' may be used to specify the
+  dimension over which the mean it to be take.  The default is to
+  compute the mean of all the elements.
+
+ EXAMPLE
+  Suppose that `a' is a two-dimensional MxN array.  Then
+
+    m = mean (a);
+
+  will assign the mean of all the elements of `a' to `m'.
+  In contrast,
+
+    m0 = mean(a,0);
+    m1 = mean(a,1);
+
+  will assign the N element array to `m0', and an array of
+  M elements to `m1'.  Here, the jth element of `m0' is
+  given by `mean(a[*,j])', and the jth element of `m1' is
+  given by `mean(a[j,*])'.
+
+ SEE ALSO
+  stddev, median, kurtosis, skewness
+
+--------------------------------------------------------------
+
+stddev
+
+ SYNOPSIS
+  Compute the standard deviation of an array of values
+
+ USAGE
+  s = stddev (a [,i])
+
+ DESCRIPTION
+  This function computes the standard deviation of the values in the
+  specified array. The optional parameter `i' may be used to
+  specify the dimension over which the standard-deviation it to be
+  taken.  The default is to compute the standard deviation of all the
+  elements.
+
+ NOTES
+  This function returns the unbiased N-1 form of the sample standard
+  deviation.
+
+ SEE ALSO
+  mean, median, kurtosis, skewness
+
+--------------------------------------------------------------
+
+skewness
+
+ SYNOPSIS
+  Compute the skewness of an array of values
+
+ USAGE
+  s = skewness (a)
+
+ DESCRIPTION
+  This function computes the so-called skewness of the array `a'.
+
+ SEE ALSO
+  mean, stddev, kurtosis
+
+--------------------------------------------------------------
+
+kurtosis
+
+ SYNOPSIS
+  Compute the kurtosis of an array of values
+
+ USAGE
+  s = kurtosis (a)
+
+ DESCRIPTION
+ This function computes the so-called kurtosis of the array `a'.
+
+ NOTES
+ This function is defined such that the kurtosis of the normal
+ distribution is 0, and is also known as the ``excess-kurtosis''.
+
+ SEE ALSO
+  mean, stddev, skewness
+
+--------------------------------------------------------------
+
+binomial
+
+ SYNOPSIS
+  Compute binomial coefficients
+
+ USAGE
+  c = binomial (n [,m])
+
+ DESCRIPTION
+  This function computes the binomial coefficients (n m) where (n m)
+  is given by n!/(m!(n-m)!).  If `m' is not provided, then an
+  array of coefficients for m=0 to n will be returned.
+
+--------------------------------------------------------------
+
+chisqr_cdf
+
+ SYNOPSIS
+  Compute the Chisqr CDF
+
+ USAGE
+  cdf = chisqr_cdf (Int_Type n, Double_Type d)
+
+ DESCRIPTION
+ This function returns the probability that a random number
+ distributed according to the chi-squared distribution for `n'
+ degrees of freedom will be less than the non-negative value `d'.
+
+ NOTES
+ The importance of this distribution arises from the fact that if
+ `n' independent random variables `X_1,...X_n' are
+ distributed according to a gaussian distribution with a mean of 0 and
+ a variance of 1, then the sum
+
+    X_1^2 + X_2^2 + ... + X_n^2
+
+ follows the chi-squared distribution with `n' degrees of freedom.
+
+ SEE ALSO
+  chisqr_test, poisson_cdf
+
+--------------------------------------------------------------
+
+poisson_cdf
+
+ SYNOPSIS
+  Compute the Poisson CDF
+
+ USAGE
+  cdf = poisson_cdf (Double_Type m, Int_Type k)
+
+ DESCRIPTION
+ This function computes the CDF for the Poisson probability
+ distribution parameterized by the value `m'.  For values of
+ `m>100' and `abs(m-k)<sqrt(m)', the Wilson and Hilferty
+ asymptotic approximation is used.
+
+ SEE ALSO
+  chisqr_cdf
+
+--------------------------------------------------------------
+
+smirnov_cdf
+
+ SYNOPSIS
+  Compute the Kolmogorov CDF using Smirnov's asymptotic form
+
+ USAGE
+  cdf = smirnov_cdf (x)
+
+ DESCRIPTION
+ This function computes the CDF for the Kolmogorov distribution using
+ Smirnov's asymptotic form.  In particular, the implementation is based
+ upon equation 1.4 from W. Feller, "On the Kolmogorov-Smirnov limit
+ theorems for empirical distributions", Annals of Math. Stat, Vol 19
+ (1948), pp. 177-190.
+
+ SEE ALSO
+  ks_test, ks_test2, normal_cdf
+
+--------------------------------------------------------------
+
+normal_cdf
+
+ SYNOPSIS
+  Compute the CDF for the Normal distribution
+
+ USAGE
+  cdf = normal_cdf (x)
+
+ DESCRIPTION
+  This function computes the CDF (integrated probability) for the
+  normal distribution.
+
+ SEE ALSO
+  smirnov_cdf, mann_whitney_cdf, poisson_cdf
+
+--------------------------------------------------------------
+
+mann_whitney_cdf
+
+ SYNOPSIS
+  Compute the Mann-Whitney CDF
+
+ USAGE
+  cdf = mann_whitney_cdf (Int_Type m, Int_Type n, Int_Type s)
+
+ DESCRIPTION
+  This function computes the exact CDF P(X<=s) for the Mann-Whitney
+  distribution.  It is used by the `mw_test' function to compute
+  p-values for small values of `m' and `n'.
+
+ SEE ALSO
+  mw_test, ks_test, normal_cdf
+
+--------------------------------------------------------------
+
+kim_jennrich_cdf
+
+ SYNOPSIS
+  Compute the 2-sample KS CDF using the Kim-Jennrich Algorithm
+
+ USAGE
+  p = kim_jennrich (UInt_Type m, UInt_Type n, UInt_Type c)
+
+ DESCRIPTION
+  This function returns the exact two-sample Kolmogorov-Smirnov
+  probability that that `D_mn <= c/(mn)', where `D_mn' is
+  the two-sample Kolmogorov-Smirnov statistic computed from samples of
+  sizes `m' and `n'.
+
+  The algorithm used is that of Kim and Jennrich.  The run-time scales
+  as m*n.  As such, it is recommended that asymptotic form given by
+  the `smirnov_cdf' function be used for large values of m*n.
+
+ NOTES
+  For more information about the Kim-Jennrich algorithm, see:
+  Kim, P.J., and R.I. Jennrich (1973), Tables of the exact sampling
+  distribution of the two sample Kolmogorov-Smirnov criterion Dmn(m<n),
+  in Selected Tables in Mathematical Statistics, Volume 1, (edited
+  by H. L. Harter and D.B. Owen), American Mathematical Society,
+  Providence, Rhode Island.
+
+ SEE ALSO
+  smirnov_cdf, ks_test2
+
+--------------------------------------------------------------
+
+f_cdf
+
+ SYNOPSIS
+  Compute the CDF for the F distribution
+
+ USAGE
+  cdf = f_cdf (t, nu1, nu2)
+
+ DESCRIPTION
+  This function computes the CDF for the distribution and returns its
+  value.
+
+ SEE ALSO
+  f_test2
+
+--------------------------------------------------------------
+
+ks_test
+
+ SYNOPSIS
+  One sample Kolmogorov test
+
+ USAGE
+  p = ks_test (CDF [,&D])
+
+ DESCRIPTION
+ This function applies the Kolmogorov test to the data represented by
+ `CDF' and returns the p-value representing the probability that
+ the data values are ``consistent'' with the underlying distribution
+ function. If the optional parameter is passed to the function, then
+ it must be a reference to a variable that, upon return, will be
+ set to the value of the Kolmogorov statistic..
+
+ The `CDF' array that is passed to this function must be computed
+ from the assumed probability distribution function.  For example, if
+ the data are constrained to lie between 0 and 1, and the null
+ hypothesis is that they follow a uniform distribution, then the CDF
+ will be equal to the data.  In the data are assumed to be normally
+ (Gaussian) distributed, then the `normal_cdf' function can be
+ used to compute the CDF.
+
+ EXAMPLE
+ Suppose that X is an array of values obtained from repeated
+ measurements of some quantity.  The values are are assumed to follow
+ a normal distribution with a mean of 20 and a standard deviation of
+ 3.  The `ks_test' may be used to test this hypothesis using:
+
+    pval = ks_test (normal_cdf(X, 20, 3));
+
+
+ SEE ALSO
+  ks_test2, kuiper_test, t_test, z_test
+
+--------------------------------------------------------------
+
+ks_test2
+
+ SYNOPSIS
+  Two-Sample Kolmogorov-Smirnov test
+
+ USAGE
+  prob = ks_test2 (X, Y [,&d])
+
+ DESCRIPTION
+ This function applies the 2-sample Kolmogorov-Smirnov test to two
+ datasets `X' and `Y' and returns p-value for the null
+ hypothesis that they share the same underlying distribution.
+ If the optional parameter is passed to the function, then
+ it must be a reference to a variable that, upon return, will be
+ set to the value of the statistic.
+
+ NOTES
+ If `length(X)*length(Y)<=10000', the `kim_jennrich_cdf'
+ function will be used to compute the exact probability.  Otherwise an
+ asymptotic form will be used.
+
+ SEE ALSO
+  ks_test, kuiper_test, kim_jennrich_cdf
+
+--------------------------------------------------------------
+
+kuiper_test
+
+ SYNOPSIS
+  Perform a 1-sample Kuiper test
+
+ USAGE
+  pval = kuiper_test (CDF [,&D])
+
+ DESCRIPTION
+ This function applies the Kuiper test to the data represented by
+ `CDF' and returns the p-value representing the probability that
+ the data values are ``consistent'' with the underlying distribution
+ function.  If the optional parameter is passed to the function, then
+ it must be a reference to a variable that, upon return, will be
+ set to the value of the Kuiper statistic.
+
+ The `CDF' array that is passed to this function must be computed
+ from the assumed probability distribution function.  For example, if
+ the data are constrained to lie between 0 and 1, and the null
+ hypothesis is that they follow a uniform distribution, then the CDF
+ will be equal to the data.  In the data are assumed to be normally
+ (Gaussian) distributed, then the `normal_cdf' function can be
+ used to compute the CDF.
+
+ EXAMPLE
+ Suppose that X is an array of values obtained from repeated
+ measurements of some quantity.  The values are are assumed to follow
+ a normal distribution with a mean of 20 and a standard deviation of
+ 3.  The `ks_test' may be used to test this hypothesis using:
+
+    pval = kuiper_test (normal_cdf(X, 20, 3));
+
+
+ SEE ALSO
+  kuiper_test2, ks_test, t_test
+
+--------------------------------------------------------------
+
+kuiper_test2
+
+ SYNOPSIS
+  Perform a 2-sample Kuiper test
+
+ USAGE
+  pval = kuiper_test2 (X, Y [,&D])
+
+ DESCRIPTION
+ This function applies the 2-sample Kuiper test to two
+ datasets `X' and `Y' and returns p-value for the null
+ hypothesis that they share the same underlying distribution.
+ If the optional parameter is passed to the function, then
+ it must be a reference to a variable that, upon return, will be
+ set to the value of the Kuiper statistic.
+
+ NOTES
+ The p-value is computed from an asymotic formula suggested by
+ Stephens, M.A., Journal of the American Statistical Association, Vol
+ 69, No 347, 1974, pp 730-737.
+
+ SEE ALSO
+  ks_test2, kuiper_test
+
+--------------------------------------------------------------
+
+chisqr_test
+
+ SYNOPSIS
+  Apply the Chi-square test to a two or more datasets
+
+ USAGE
+  prob = chisqr_test (X_1[], X_2[], ..., X_N [,&t])
+
+ DESCRIPTION
+ This function applies the Chi-square test to the N datasets
+ `X_1', `X_2', ..., `X_N', and returns the probability
+ that each of the datasets were drawn from the same underlying
+ distribution.  Each of the arrays `X_k' must be the same length.
+ If the last parameter is a reference to a variable, then upon return
+ the variable will be set to the value of the statistic.
+
+ SEE ALSO
+  chisqr_cdf, ks_test2, mw_test
+
+--------------------------------------------------------------
+
+mw_test
+
+ SYNOPSIS
+  Apply the Two-sample Wilcoxon-Mann-Whitney test
+
+ USAGE
+  p = mw_test(X, Y [,&w])
+
+ DESCRIPTION
+ This function performs a Wilcoxon-Mann-Whitney test and returns the
+ p-value for the null hypothesis that there is no difference between
+ the distributions represented by the datasets `X' and `Y'.
+
+ If a third argument is given, it must be a reference to a variable
+ whose value upon return will be to to the rank-sum of `X'.
+
+ QUALIFIERS
+ The function makes use of the following qualifiers:
+
+     side=">"  :    H0: P(X<Y) >= 1/2    (right-tail)
+     side="<"  :    H0: P(X<Y) <= 1/2    (left-tail)
+
+ The default null hypothesis is that `P(X<Y)=1/2'.
+
+ NOTES
+ There are a number of definitions of this test.  While the exact
+ definition of the statistic varies, the p-values are the same.
+
+ If `length(X)<50', `length(Y)' < 50, and ties are not
+ present, then the exact p-value is computed using the
+ `mann_whitney_cdf' function.  Otherwise a normal distribution is
+ used.
+
+ This test is often referred to as the non-parametric generalization
+ of the Student t-test.
+
+ SEE ALSO
+  mann_whitney_cdf, ks_test2, chisqr_test, t_test
+
+--------------------------------------------------------------
+
+f_test2
+
+ SYNOPSIS
+  Apply the Two-sample F test
+
+ USAGE
+  p = f_test2 (X, Y [,&F]
+
+ DESCRIPTION
+  This function computes the two-sample F statistic and its p-value
+  for the data in the `X' and `Y' arrays.  This test is used
+  to compare the variances of two normally-distributed data sets, with
+  the null hypothesis that the variances are equal.  The return value
+  is the p-value, which is computed using the module's `f_cdf'
+  function.
+
+ QUALIFIERS
+  The function makes use of the following qualifiers:
+
+     side=">"  :    H0: Var[X] >= Var[Y]  (right-tail)
+     side="<"  :    H0: Var[X] <= Var[Y]  (left-tail)
+
+
+ SEE ALSO
+  f_cdf, ks_test2, chisqr_test
+
+--------------------------------------------------------------
+
+t_test
+
+ SYNOPSIS
+  Perform a Student t-test
+
+ USAGE
+  pval = t_test (X, mu [,&t])
+
+ DESCRIPTION
+ This function computes Student's t-statistic and returns the p-value
+ that the data X are consistent with a Gaussian distribution with a
+ mean of `mu'.  If the optional parameter is passed to the function, then
+ it must be a reference to a variable that, upon return, will be
+ set to the value of the statistic.
+
+ QUALIFIERS
+ The following qualifiers may be used to specify a 1-sided test:
+
+   side="<"       Perform a left-tailed test
+   side=">"       Perform a right-tailed test
+
+
+ NOTES
+ Strictly speaking, this test should only be used if the variance of
+ the data are equal to that of the assumed parent distribution.  Use
+ the Mann-Whitney-Wilcoxon (`mw_test') if the underlying
+ distribution is non-normal.
+
+ SEE ALSO
+  mw_test, t_test2
+
+--------------------------------------------------------------
+
+t_test2
+
+ SYNOPSIS
+  Perform a 2-sample Student t-test
+
+ USAGE
+  pval = t_test2 (X, Y [,&t])
+
+ DESCRIPTION
+ This function compares two data sets `X' and `Y' using the
+ Student t-statistic.  It is assumed that the the parent populations
+ are normally distributed with equal variance, but with possibly
+ different means.  The test is one that looks for differences in the
+ means.
+
+ NOTES
+ The `welch_t_test2' function may be used if it is not known that
+ the parent populations have the same variance.
+
+ SEE ALSO
+  t_test2, welch_t_test2, mw_test
+
+--------------------------------------------------------------
+
+welch_t_test2
+
+ SYNOPSIS
+  Perform Welch's t-test
+
+ USAGE
+  pval = welch_t_test2 (X, Y [,&t])
+
+ DESCRIPTION
+ This function applies Welch's t-test to the 2 datasets `X' and
+ `Y' and returns the p-value that the underlying populations have
+ the same mean.  The parent populations are assumed to be normally
+ distributed, but need not have the same variance.
+ If the optional parameter is passed to the function, then
+ it must be a reference to a variable that, upon return, will be
+ set to the value of the statistic.
+
+ QUALIFIERS
+ The following qualifiers may be used to specify a 1-sided test:
+
+   side="<"       Perform a left-tailed test
+   side=">"       Perform a right-tailed test
+
+
+ SEE ALSO
+  t_test2
+
+--------------------------------------------------------------
+
+z_test
+
+ SYNOPSIS
+  Perform a Z test
+
+ USAGE
+  pval = z_test (X, mu, sigma [,&z])
+
+ DESCRIPTION
+  This function applies a Z test to the data `X' and returns the
+  p-value that the data are consistent with a normally-distributed
+  parent population with a mean of `mu' and a standard-deviation
+  of `sigma'.  If the optional parameter is passed to the function, then
+ it must be a reference to a variable that, upon return, will be
+ set to the value of the Z statistic.
+
+ SEE ALSO
+  t_test, mw_test
+
+--------------------------------------------------------------
+
+kendall_tau
+
+ SYNOPSIS
+  Kendall's tau Correlation Test
+
+ USAGE
+  pval = kendall_tau (x, y [,&tau]
+
+ DESCRIPTION
+  This function computes Kendall's tau statistic for the paired data
+  values (x,y).  It returns the p-value associated with the statistic.
+
+ NOTES
+  The current version of this function uses an asymptotic formula
+  based upon the normal distribution to compute the p-value.
+
+ QUALIFIERS
+ The following qualifiers may be used to specify a 1-sided test:
+
+   side="<"       Perform a left-tailed test
+   side=">"       Perform a right-tailed test
+
+
+ SEE ALSO
+  spearman_r, pearson_r
+
+--------------------------------------------------------------
+
+pearson_r
+
+ SYNOPSIS
+  Compute Pearson's Correlation Coefficient
+
+ USAGE
+  pval = pearson_r (X, Y [,&r])
+
+ DESCRIPTION
+ This function computes Pearson's r correlation coefficient of the two
+ datasets `X' and `Y'.  It returns the the p-value that
+ `x' and `y' are mutually independent.
+ If the optional parameter is passed to the function, then
+ it must be a reference to a variable that, upon return, will be
+ set to the value of the correlation coefficient.
+
+ QUALIFIERS
+ The following qualifiers may be used to specify a 1-sided test:
+
+   side="<"       Perform a left-tailed test
+   side=">"       Perform a right-tailed test
+
+
+ SEE ALSO
+  kendall_tau, spearman_r
+
+--------------------------------------------------------------
+
+spearman_r
+
+ SYNOPSIS
+  Spearman's Rank Correlation test
+
+ USAGE
+  pval = spearman_r(x, y [,&r])
+
+ DESCRIPTION
+  This function computes the Spearman rank correlation coefficient (r)
+  and returns the p-value that `x' and `y' are mutually
+  independent.
+  If the optional parameter is passed to the function, then
+ it must be a reference to a variable that, upon return, will be
+ set to the value of the correlation coefficient.
+
+ QUALIFIERS
+ The following qualifiers may be used to specify a 1-sided test:
+
+   side="<"       Perform a left-tailed test
+   side=">"       Perform a right-tailed test
+
+
+ SEE ALSO
+  kendall_tau, pearson_r
+
+--------------------------------------------------------------
+
+correlation
+
+ SYNOPSIS
+  Compute the sample correlation between two datasets
+
+ USAGE
+  c = correlation (x, y)
+
+ DESCRIPTION
+  This function computes Pearson's sample correlation coefficient
+  between 2 arrays.  It is assumed that the standard deviation of each
+  array is finite and non-zero.  The returned value falls in the
+  range -1 to 1, with -1 indicating that the data are anti-correlated,
+  and +1 indicating that the data are completely correlated.
+
+ SEE ALSO
+  covariance, stdddev
+
+--------------------------------------------------------------
