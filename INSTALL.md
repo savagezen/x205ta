@@ -46,8 +46,11 @@ With my [custom Arch Linux ISO for this machine](https://drive.google.com/file/d
 -----
 
 ### Other Sections:
+
 * [Bugs](https://github.com/gtbjj/x205ta/blob/master/BUGS.md)
+
 * [Preparation](https://github.com/gtbjj/x205ta/blob/master/README.md)
+
 -----
 
 ### References
