@@ -4,7 +4,7 @@
 # NOTE:  Format USB to vfat / fat32 and nate it ARCH_<YEAR><MONTH>
 
 GIT_DIR=$HOME/git/x205ta
-GRUB_CONF=$GIT_DIR/grub_x205ta.cfg
+GRUB_CONF=$GIT_DIR/grub.cfg
 BOOTIA=$GIT_DIR/bootia32.efi
 ARCH_VER=ARCH_$(date +%Y%m)
 ISO_SOURCE=archlinux-$(date %Y.%m).01-dual.iso

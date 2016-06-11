@@ -99,15 +99,18 @@ $ sudo systemctl enable suspend-resume
 $ sudo systemctl start suspend-resume
 ```
 
+##### Bluetooth:
+
+See my [blog post detailing fix and 
+resources](https://gtbjj.github.io/linux/0024-X205TA-Bluetooth/).  
+The firmware for this is not patched into my bootable ISO.  
+
 -----
 
 ### Persistent Bugs:
 
 ##### Sound:
 * [Bug report filed for Kernel](https://bugzilla.kernel.org/show_bug.cgi?id=95681).
-
-##### Bluetooth:
-* No leads yet
 
 -----
 
@@ -117,5 +120,6 @@ $ sudo systemctl start suspend-resume
     * [fix for touchpad](http://ubuntuforums.org/showthread.php?t=2254322&page=11&p=13302773#post13302773)
     * [fix for WiFi resume](http://ubuntuforums.org/showthread.php?t=2254322&p=13402195#post13402195)
     * [fix for touchpad resume]()
+    * [fix for bluetooth](http://ubuntuforums.org/showthread.php?t=2254322&p=13490336#post13490336)
 * [Debian Wiki fix for SD Card Reader](https://wiki.debian.org/InstallingDebianOn/Asus/X205TA)
 * [Ifran's Blog](http://ifranali.blogspot.com/2015/04/installing-arch-linux-on-asus-x205ta.html)
