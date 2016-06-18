@@ -1,9 +1,5 @@
 # Installation
 
----
-
-### Description:
-
 Installing Arch Linux on Asus X205TA netbook.  These recommendations are specific to running a pure Arch Linux system.  See the Arch Wiki if you are interested in [Dual Booting with Windows](https://wiki.archlinux.org/index.php/Dual_boot_with_Windows)
 
 -----

@@ -1,10 +1,8 @@
 # Arch Linux on Asus X205TA
 
------
-
-### Description
-
 Installation guide and tools for running Arch Linux on an Asus X205TA netbook (refernces below). See also the [manufacturer's device page](https://www.asus.com/us/Notebooks/ASUS_EeeBook_X205TA/).
+
+-----
 
 ### Contents:
 
@@ -13,6 +11,8 @@ Installation guide and tools for running Arch Linux on an Asus X205TA netbook (r
 2) [Installation](https://github.com/gtbjj/x205ta/blob/master/INSTALL.md)
 
 3) [Bugs](https://github.com/gtbjj/x205ta/blob/master/BUGS.md)
+
+4) Want to help?  See the [Contributing section](https://giithub.com/gtbjj/x205ta/blob/master/CONTRIBUTING.md).
 
 For general and machine specific performance, mods, and tips, my blog features [posts tagged X205TA](https://gtbjj.github.io/tags/#x205ta) as well as [performance](https://gtbjj.github.io/tags/#performance).
 

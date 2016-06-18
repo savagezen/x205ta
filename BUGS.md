@@ -1,10 +1,6 @@
 # Arch Linux bugs on X205TA
 
----
-
-### Description
-
-Bugs with running Arch Linux on Asus X205TA and solutions as I find them.
+Bugs with running Arch Linux on Asus X205TA and solutions as I find them.  More content is available on my [blog posts tagged for this machine](https://gtbjj.github.io/tags/#x205ta).
 
 -----
 
@@ -101,20 +97,27 @@ $ sudo systemctl start suspend-resume
 
 ##### Bluetooth:
 
-See my [blog post detailing fix and 
-resources](https://gtbjj.github.io/linux/0024-X205TA-Bluetooth/).  
-The firmware for this is not patched into my bootable ISO.  
+See my [blog post detailing fix and
+resources](https://gtbjj.github.io/linux/0024-X205TA-Bluetooth/).
+The firmware for this is not patched into my bootable ISO.
+
+##### Freezing after Resume from Lid Suspend:
+
+See [this issue and and workaround suggestion](https://github.com/gtbjj/x205ta/issues/8)
 
 -----
 
 ### Persistent Bugs:
 
 ##### Sound:
+
 * [Bug report filed for Kernel](https://bugzilla.kernel.org/show_bug.cgi?id=95681).
+* I have an [open issue for discusion on development](https://github.com/gtbjj/x205ta/issues/9)
 
 -----
 
 ### References:
+
 * [Arch Wiki article for Asus X205TA](https://wiki.archlinux.org/index.php/Asus_x205ta)
 * Ubuntu Forum
     * [fix for touchpad](http://ubuntuforums.org/showthread.php?t=2254322&page=11&p=13302773#post13302773)
