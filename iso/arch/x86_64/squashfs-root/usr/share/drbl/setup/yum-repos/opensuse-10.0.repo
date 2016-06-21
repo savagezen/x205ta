@@ -1,5 +1,0 @@
-[base]
-name=OpenSuSE $releasever packages
-baseurl=http://free.nchc.org.tw/opensuse/distribution/SL-$releasever-OSS/inst-source/suse/
-enabled=1
-gpgcheck=0

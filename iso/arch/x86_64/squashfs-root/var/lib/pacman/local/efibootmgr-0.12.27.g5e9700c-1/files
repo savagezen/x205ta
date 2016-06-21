@@ -1,9 +1,0 @@
-%FILES%
-usr/
-usr/bin/
-usr/bin/efibootmgr
-usr/share/
-usr/share/man/
-usr/share/man/man8/
-usr/share/man/man8/efibootmgr.8.gz
-

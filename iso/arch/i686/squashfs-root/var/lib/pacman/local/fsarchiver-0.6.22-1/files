@@ -1,9 +1,0 @@
-%FILES%
-usr/
-usr/bin/
-usr/bin/fsarchiver
-usr/share/
-usr/share/man/
-usr/share/man/man8/
-usr/share/man/man8/fsarchiver.8.gz
-

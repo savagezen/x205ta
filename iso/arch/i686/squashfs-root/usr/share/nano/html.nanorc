@@ -1,8 +1,0 @@
-## Here is a short example for HTML.
-
-syntax "html" "\.html?$"
-magic "HTML document text"
-
-color cyan start="<" end=">"
-color red "&[^;[:space:]]*;"
-color green ""(\\.|[^"])*""
