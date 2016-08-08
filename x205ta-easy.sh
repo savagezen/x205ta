@@ -13,11 +13,12 @@ sed -i "s/ARCH_.*/$ARCH_VER/" grub.cfg
 
 # remake bootia32.efi
 echo "Creating bootia32.efi..."
-grub-mkstandalone -d /usr/lib/grub/i386-efi/ -O i386-efi --modules="part_gpt part_msdos" --fonts="unicode" --locales="uk" --themes="" -o "bootia32.ef ""boot/grub/grub.cfg=brub.cfg"
+grub-mkstandalone -d /usr/lib/grub/i386-efi/ -O i386-efi --modules="part_gpt part_msdos" --fonts="unicode" --locales="uk" --themes="" -o "bootia32.efi" "boot/grub/grub.cfg=brub.cfg"
 rm grub.cfg
 
 # fetch stock iso
-#curl -o $ISO_SOURCE https://mirrors.kernel.org/archlinux/iso/$ISO_VER/$ISO_SOURCE
+echo "Fetching Arch ISO..."
+curl -o $ISO_SOURCE https://mirrors.kernel.org/archlinux/iso/$ISO_VER/$ISO_SOURCE
 
 # prepare usb
 echo "Preparing to format USB..."
