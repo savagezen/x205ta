@@ -22,7 +22,7 @@ Regardless of the method you choose, you will need to [disable Windows Secure Bo
 
 ### Preparing Bootable USB (Windows):
 
-1) I have made a custom ISO for this machine that you can [download here](https://drive.google.com/file/d/0B2RH_BSaD6YPaUhVaHlCX2RidTQ/view?usp=sharing). The link is for the ARCH_201606 version.  If the link breaks, newer versions may be found by checking [my public shared folder on Google Drive](https://drive.google.com/open?id=0B2RH_BSaD6YPUko5QVRzZFg2MEk). The ISO contains:
+1) I have customized the Arch Linux ISO for this machine.  You can [download the latest version ](https://mega.nz/#F!12IERSoa!T1kZ1A7JwZ_EvvItkn-SDQ) from my shared MEGA folder.  The ISO contains:
 
 * The stock Arch Linux ISO image
 * A bootia32.efi file so the ISO will boot on the machine's 32-bit boot loader (this is not possible with the stock Arch ISO).
@@ -44,7 +44,7 @@ To update the ISO / compile on your own, choose one of the following:
 1) Download and (as root) run my [lazy script](https://raw.githubusercontent.com/gtbjj/x205ta/master/x205ta-lazy.sh).  This will take a very long time, but pull and compile the necessary sources (*stock iso, grub.cfg, bootia32.efi, wireless drivers for i686 and x86_64*) for making an updated custom ISO.  All you need to do beforehand is partition the USB.  The script will ask you which device to format and do everything from there. Just
 boot your USB as normal when done, no special instructions needed to load the wireless modem after booting.
 
-2) Download and (as root) run my [easy script](https://raw.githubusercontent.com/gtbjj/x205ta/master/x205ta-easy.sh).  This is a quick-and-dirty version of the *lazy script* since wireless drivers should work out of the box.  The script pulls the stock ISO then compiles and adds a bootia32.efi file before writing the image to your USB.  Again, you just need to have the device partitioned beforehand.  The script takes care of formatting, mounting, etc... Pay attention to the instructions at the end of the script.  My ISO releases are made with this script.
+2) Download and (as root) run my [easy script](https://raw.githubusercontent.com/gtbjj/x205ta/master/x205ta-easy.sh).  This is a quick-and-dirty version of the *lazy script* since wireless drivers should work out of the box.  The script pulls the stock ISO then compiles and adds a bootia32.efi file before writing the image to your USB.  Again, you just need to have the device partitioned beforehand.  The script takes care of formatting, mounting, etc... Pay attention to the instructions at the end of the script.  [My ISO releases](https://mega.nz/#F!12IERSoa!T1kZ1A7JwZ_EvvItkn-SDQ) are made with this script.
 
 -----
 
