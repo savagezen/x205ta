@@ -6,7 +6,7 @@ Installing Arch Linux on Asus X205TA netbook.  These recommendations are specifi
 
 ### Booting:
 
-With my [custom Arch Linux ISO for this machine](https://drive.google.com/file/d/0B2RH_BSaD6YPR0dxTU82SnFjMm8/view?usp=sharing) there shouldn't be a need any trickery with GRUB (as seen Ubuntu thread linked below).  That appeared to happen when a (sometimes misconfigured) bootia32.efi was copied and pasted rather than rolled with the other files when the ISO was gnereated.  Wireless functionality has also been patched, so there is no need to [manually enable WiFi](https://wiki.archlinux.org/index.php/Asus_x205ta#Install_Arch).
+With my [custom Arch Linux ISO for this machine](https://mega.nz/#F!12IERSoa!T1kZ1A7JwZ_EvvItkn-SDQ) there shouldn't be a need any trickery with GRUB (as seen Ubuntu thread linked below).  That appeared to happen when a (sometimes misconfigured) bootia32.efi was copied and pasted rather than rolled with the other files when the ISO was gnereated.  Wireless functionality has also been patched, so there is no need to [manually enable WiFi](https://wiki.archlinux.org/index.php/Asus_x205ta#Install_Arch).
 
 
 #### Partitioning:
@@ -25,7 +25,7 @@ With my [custom Arch Linux ISO for this machine](https://drive.google.com/file/d
 
 * At a minimum you'll need at least one partition that is ```FAT32``` formatted to be congruent with the machine's 32 bit boot loader.
 
-* If you have multiple partitions, ```/boot``` needs to be ```FAT32``` and the others can be whatever you'd like.  I went with [F2Fs](https://wiki.archlinux.org/index.php/F2FS) for ```/```, but [BTRFS](https://wiki.archlinux.org/index.php/Btrfs) is a very solid choice as well, as is the tried and true [EXT4](https://wiki.archlinux.org/index.php/Ext4).
+* If you have multiple partitions, ```/boot``` needs to be ```FAT32``` and the others can be whatever you'd like.  I went with [F2FS](https://wiki.archlinux.org/index.php/F2FS) for ```/```, but [BTRFS](https://wiki.archlinux.org/index.php/Btrfs) is a very solid choice as well, as is the tried and true [EXT4](https://wiki.archlinux.org/index.php/Ext4).
 
 * See [Arch Wiki article on filesystems](https://wiki.archlinux.org/index.php/File_systems#Types_of_file_systems).
 
@@ -35,7 +35,7 @@ With my [custom Arch Linux ISO for this machine](https://drive.google.com/file/d
 
 1) For the  most part you can follow the [Begninner's Guide](https://wiki.archlinux.org/index.php/Beginners'_guide) and [Installation Guide](https://wiki.archlinux.org/index.php/Installation_guide).
 
-2) Wireless Drivers have worked fine on my installation (since Kernel 4.3.3-2), but [errors have been reported](https://github.com/gtbjj/x205ta/issues/6) with ISOs using Kernel 4.5.4-1.  I have manually patched this on [my custom ISO](https://drive.google.com/file/d/0B2RH_BSaD6YPR0dxTU82SnFjMm8/view?usp=sharing).
+2) Wireless Drivers have worked fine on my installation (since Kernel 4.3.3-2), but [errors have been reported](https://github.com/gtbjj/x205ta/issues/6) with ISOs using Kernel 4.5.4-1.  I have manually patched this on [my custom ISO](https://mega.nz/#F!12IERSoa!T1kZ1A7JwZ_EvvItkn-SDQ).
 
 3) I did not have any luck with either [GRUB](https://wiki.archlinux.org/index.php/GRUB) or [SYSLINUX](https://wiki.archlinux.org/index.php/GRUB) and resorted to [systemd-boot](https://wiki.archlinux.org/index.php/Systemd-boot) which has been working fine.
 
